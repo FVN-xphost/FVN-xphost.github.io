@@ -64,8 +64,8 @@
         <div in:fadeHomeButton>
           <MyMenuButton
             onclick={() => {
-              console.log($galleryOpen)
-              galleryOpen.set(true)
+              console.log($galleryOpen);
+              galleryOpen.set(true);
             }}
           >
             {#snippet children()}
