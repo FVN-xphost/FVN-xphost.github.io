@@ -9,14 +9,16 @@
 {#if $boardText !== ""}
     <div class="back" in:fade out:fade>
         <div class="myboard" {style}>
-            {@html $boardText}
-            <MyMenuButton
-                onclick={() => boardText.set("")}
-                style="position: absolute; bottom: 60px; right: 60px;"
-            >
-                {#snippet children()}返回{/snippet}
-            </MyMenuButton>
+            <div class="boardcontent">
+                {@html $boardText}
+            </div>
         </div>
+        <MyMenuButton
+            onclick={() => boardText.set("")}
+            style="position: absolute; bottom: 60px; right: 60px;"
+        >
+            {#snippet children()}返回{/snippet}
+        </MyMenuButton>
     </div>
 {/if}
 
@@ -30,19 +32,23 @@
         left: 0px;
     }
     .myboard {
-        width: 600px;
-        height: 480px;
         position: fixed;
         margin: auto;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        padding: 80px 110px;
+        top: -100px;
+        left: -100px;
+        right: -100px;
+        bottom: -360px;
         border-radius: 10px;
         background-image: url("../../assets/Home/board.png");
         background-size: 100% 100%;
         background-position: center;
         background-repeat: no-repeat;
+    }
+    .boardcontent {
+        position: fixed;
+        left: 8rem;
+        right: 8rem;
+        top: 8rem;
+        bottom: 18rem;
     }
 </style>
