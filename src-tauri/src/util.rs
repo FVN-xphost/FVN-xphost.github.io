@@ -22,7 +22,7 @@ pub fn init_home_dir() {
                 config_file 
             },
             None => {
-                eprintln!("Error: Could not determine home directory");
+                // eprintln!("Error: Could not determine home directory");
                 std::process::exit(1);
             }
         }
