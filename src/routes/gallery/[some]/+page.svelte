@@ -3,7 +3,9 @@
     import MyMenuButton from "../../../components/input/MyMenuButton.svelte";
     import { galleryLock } from "../../../store/store";
     const { params } = $props();
-    const images = $galleryLock.find((item: any) => item.id === params.some)!.images;
+    const images = $galleryLock.find(
+        (item: any) => item.id === params.some,
+    )!.images;
     let page = $state(0);
 </script>
 
@@ -58,7 +60,12 @@
             />
         </svg>
     </button>
-    <MyMenuButton style="position: absolute; bottom: 10px; right: 10px;" onclick={() => {goto('/gallery')}}>
+    <MyMenuButton
+        style="position: absolute; bottom: 10px; right: 10px;"
+        onclick={() => {
+            goto("/gallery");
+        }}
+    >
         {#snippet children()}
             返回
         {/snippet}
@@ -72,7 +79,7 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background-size: 100% 100%;
+        background-size: auto 100%;
         background-position: center;
         background-repeat: no-repeat;
     }
@@ -82,10 +89,10 @@
         height: 50px;
         top: calc(50% - 16px);
         border-radius: 50%;
-        border: none;
+        border: 1px solid #008cff;
         outline: none;
         cursor: pointer;
-        background: linear-gradient(to bottom, skyblue, green 70%);
+        background: linear-gradient(135deg, #008c33, #008cff99);
         transition: box-shadow 0.2s;
     }
     .lrbutton:hover {

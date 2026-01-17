@@ -1,7 +1,7 @@
 <script lang="ts">
     import { fade } from "svelte/transition";
     import { sleep } from "../../utils/all";
-    import { galleryLock, galleryPage } from "../../store/store";
+    import { galleryLock, galleryPage, saveData } from "../../store/store";
     import MyMenuButton from "../../components/input/MyMenuButton.svelte";
     import { quadInOut } from "svelte/easing";
     import { onMount } from "svelte";
@@ -15,16 +15,16 @@
     let page = $state(1);
     // true 为 上一页，false 为 下一页
     async function changePages(pageControl: boolean) {
-        page = pageControl ? page - 1 : page + 1
+        page = pageControl ? page - 1 : page + 1;
         if (
             (page >= 1 && pageControl) ||
             (page <= galleryPageLength && !pageControl)
         ) {
+            galleryPage.set(page);
             await load();
         }
-        if(page >= galleryPageLength) page = galleryPageLength
-        else if(page <= 1) page = 1
-        galleryPage.set(page)
+        if (page >= galleryPageLength) page = galleryPageLength;
+        else if (page <= 1) page = 1;
     }
     async function load() {
         galleryTrans1 = new Array(pageLength).fill(false);
@@ -37,8 +37,7 @@
         }
     }
     onMount(async () => {
-        console.log($galleryPage)
-        page = $galleryPage
+        page = $galleryPage;
         o1 = true;
         await sleep(400);
         await load();
@@ -66,7 +65,7 @@
 
 {#if o1}
     <div style="width: 100vw; height: 100vh;" in:fade={{ duration: 1500 }}>
-        <div class="back">
+        <div class="back bg-img-full">
             {#each $galleryLock.filter((_, index) => {
                 const pm = page - 1;
                 return index >= pm * pageLength && index < pm * pageLength + pageLength;
@@ -75,10 +74,15 @@
                     {#if galleryTrans2[index]}
                         <button
                             in:rot2
-                            class="trans trans2"
-                            style={`background-image: url(${!item.lock ? (item.images[0] ?? GalleryBack) : GalleryBack})`}
+                            class="trans trans2 bg-img-full"
+                            style={`background-image: url(${($saveData?.gallery ?? {})[`gallery${item.id}`] ? (item.images[0] ?? GalleryBack) : GalleryBack})`}
                             onclick={() => {
-                                if (!item.lock) goto(`/gallery/${item.id}`);
+                                if (
+                                    ($saveData?.gallery ?? {})[
+                                        `gallery${item.id}`
+                                    ]
+                                )
+                                    goto(`/gallery/${item.id}`);
                             }}
                             aria-labelledby="Click me!"
                         ></button>
@@ -88,7 +92,12 @@
                             in:rot1
                             class="trans"
                             onclick={() => {
-                                if (!item.lock) goto(`/gallery/${item.id}`);
+                                if (
+                                    ($saveData?.gallery ?? {})[
+                                        `gallery${item.id}`
+                                    ]
+                                )
+                                    goto(`/gallery/${item.id}`);
                             }}
                             aria-labelledby="Click me!"
                         ></button>
@@ -123,7 +132,7 @@
         </MyMenuButton>
         <MyMenuButton
             onclick={() => {
-                galleryPage.set(1)
+                galleryPage.set(1);
                 goto("/");
             }}
             style="position: fixed; bottom: 10px; right: 16px; z-index: 10000;"
@@ -138,14 +147,12 @@
 <style>
     .back {
         position: fixed;
+        overflow: hidden;
         left: 0;
         top: 0;
         width: 100vw;
         height: 100vh;
         background-image: url("../../assets/Home/paper2.png");
-        background-size: 100% 100%;
-        background-repeat: no-repeat;
-        background-position: center;
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         grid-template-rows: repeat(2, minmax(0, 1fr));
@@ -168,9 +175,6 @@
         transform: rotate(0);
         background-color: white;
         background-image: url("../../assets/gallery/galleryback.png");
-        background-size: 100% 100%;
-        background-position: center;
-        background-repeat: no-repeat;
         z-index: 10;
         cursor: pointer;
     }

@@ -2,8 +2,8 @@
     import "../style/index.css";
     import { onMount } from "svelte";
     import MyMenuButton from "../components/input/MyMenuButton.svelte";
-    import { sleep } from "../utils/all";
-    import { boardText, mounted } from "../store/store";
+    import { sleep, init } from "../utils/all";
+    import { boardText, mounted, saveData } from "../store/store";
     import { window } from "@tauri-apps/api";
     import MyBlackBoard from "../components/board/MyBlackBoard.svelte";
     import { quadInOut } from "svelte/easing";
@@ -25,6 +25,7 @@
             o5 = true;
             o6 = true;
         } else {
+            init();
             o1 = true;
             await sleep(1500);
             o2 = true;
@@ -52,7 +53,7 @@
 </script>
 
 {#if o1}
-    <main class="container" in:fade={{ duration: 1500 }}>
+    <main class="container bg-img-full" in:fade={{ duration: 1500 }}>
         {#if o2}
             <img
                 src={MyTitleImg}
@@ -64,7 +65,11 @@
         <div class="main-div">
             {#if o3}
                 <div in:fadeHomeButton>
-                    <MyMenuButton onclick={() => {}}>
+                    <MyMenuButton
+                        onclick={() => {
+                            goto("/saves");
+                        }}
+                    >
                         {#snippet children()}
                             开始游戏
                         {/snippet}
@@ -136,10 +141,7 @@
         position: fixed;
         width: 100vw;
         height: 100vh;
-        background: url(/src/assets/Home/back.png);
-        background-size: 100% 100%;
-        background-position: center;
-        background-repeat: no-repeat;
+        background-image: url(/src/assets/Home/back.png);
         overflow: hidden;
     }
     .titleImage {

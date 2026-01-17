@@ -1,15 +1,15 @@
-/* 已废弃的 css 文件 */
 * {
     font-size: 1rem;
     image-rendering: pixelated;
     user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
     box-sizing: border-box;
 }
 :root {
     background-color: black;
     height: calc(100vh);
 }
-
 body {
     margin: 0;
     padding: 0;
@@ -23,4 +23,26 @@ body {
 @font-face {
     font-family: ShanHaiZhongXiaYe;
     src: url(../assets/fonts/ShanHaiZhongXiaYeWuYuW-2.ttf);
+}
+.bg-img-full {
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+@keyframes ash {
+    0% {
+        opacity: 0;
+        box-shadow: none;
+        transform: translateY(0vh);
+    }
+    50% {
+        opacity: 1;
+        box-shadow: 0 0 10px 5px darkgray;
+    }
+    100% {
+        opacity: 0;
+        box-shadow: none;
+        transform: translateY(-20vh);
+    }
 }
