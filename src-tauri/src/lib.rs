@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS galleryLock(
         result.insert("gallery".to_string(), serde_json::Value::Object(gallery.clone()));
     }
     conn.execute(r#"
-CREATE TABLE IF NOT EXISTS saveInstance(
+CREATE TABLE IF NOT EXISTS saveObject(
     id INTEGER PRIMARY KEY,
     saved INTEGER NOT NULL,
     image TEXT,
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS saveInstance(
         let tx2 = conn.transaction().ok()?;
         for i in 1..=save_count {
             tx2.execute(
-                "INSERT OR IGNORE INTO saveInstance (id, saved) VALUES (?1, 0)",
+                "INSERT OR IGNORE INTO saveObject (id, saved) VALUES (?1, 0)",
                 params![&i],
             ).ok()?;
         }
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS saveInstance(
     }
     {
         let mut stmt = conn.prepare(
-            "SELECT * FROM saveInstance"
+            "SELECT * FROM saveObject"
         ).ok()?;
         let rows = stmt.query_map([], |row| {
             Ok((

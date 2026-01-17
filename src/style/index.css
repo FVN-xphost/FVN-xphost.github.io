@@ -24,6 +24,10 @@ body {
     font-family: ShanHaiZhongXiaYe;
     src: url(../assets/fonts/ShanHaiZhongXiaYeWuYuW-2.ttf);
 }
+@font-face {
+    font-family: Silver;
+    src: url(../assets/fonts/Silver.ttf);
+}
 .bg-img-full {
     background-size: 100% 100%;
     background-position: center;

@@ -67,13 +67,18 @@
                     }) as item}
                         <div
                             class="save bg-img-full"
-                            style="{!item.image
-                                ? ''
-                                : `background-image: ${item.image}`}}"
+                            style={$saveData.saves[item].image
+                                ? `background-image: ${$saveData.saves[item].image}`
+                                : ""}
                             in:slideIn
                             out:slideOut
+                            onclick={() =>
+                                goto(`/saves/${item.replace("save", "")}`)}
+                            aria-label={$saveData.saves[item].name ??
+                                "暂无存档"}
+                            aria-hidden="true"
                         >
-                            {item}
+                            {$saveData.saves[item].name ?? "暂无存档"}
                         </div>
                     {/each}
                 </div>
