@@ -17,6 +17,7 @@ pub fn init_home_dir() {
                 let config_file = format!("{}/.AWakeOfRuin", home_dir);
                 #[cfg(target_os = "android")]
                 let config_file = format!("/storage/emulated/0/.AWakeOfRuin");
+                create_dir(config_file.as_str());
                 config_file
             },
             None => {
