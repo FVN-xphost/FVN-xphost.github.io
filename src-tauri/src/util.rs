@@ -44,3 +44,21 @@ macro_rules! path_join {
         path_buf.to_string_lossy().to_string()
     }};
 }
+pub fn get_or_init_version(force: bool) -> String {
+    use crate::VERSION;
+    let real_path = path_join!(HOME_DIR.get().unwrap(), "VERSION");
+    let p = std::path::Path::new(real_path.as_str());
+    use std::io::Write;
+    use std::io::Read;
+    if (!p.exists() || p.is_dir()) || force {
+        let mut file = std::fs::File::create(real_path.as_str()).expect("create failed");
+        file.write_all(VERSION.as_bytes()).expect("write failed");
+        let _ = std::fs::remove_file(path_join!(HOME_DIR.get().unwrap(), "data.db"));
+        return "".to_string();
+    }else{
+        let mut file = std::fs::File::open(real_path.as_str()).unwrap();
+        let mut content = String::new();
+        file.read_to_string(&mut content).unwrap();
+        return content.clone();
+    }
+}

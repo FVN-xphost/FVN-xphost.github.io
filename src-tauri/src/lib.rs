@@ -2,8 +2,14 @@
 pub mod util;
 use rusqlite::*;
 use util::*;
+
+const VERSION: &str = "v1";
+
 #[tauri::command]
 fn get_all_data(gallery_count: i32, save_count: i32) -> Option<String> {
+    if !get_or_init_version(false).eq(VERSION) {
+        let _ = get_or_init_version(true);
+    }
     let mut conn = Connection::open(path_join!(HOME_DIR.get().unwrap(), "data.db")).ok()?;
     let mut result = serde_json::Map::new();
     conn.execute(r#"
@@ -91,7 +97,10 @@ CREATE TABLE IF NOT EXISTS saveObject(
 CREATE TABLE IF NOT EXISTS saveInstance(
     id INTEGER PRIMARY KEY,
     name TEXT,
-    current INTEGER NOT NULL DEFAULT 0
+    current INTEGER NOT NULL DEFAULT 0,
+    branch1 TEXT NOT NULL DEFAULT '',
+    branch2 TEXT NOT NULL DEFAULT '',
+    branch3 INTEGER NOT NULL DEFAULT -1
 )
 "#, []).ok()?;
     {
@@ -112,15 +121,21 @@ CREATE TABLE IF NOT EXISTS saveInstance(
             Ok((
                 row.get::<_, i32>(0)?,
                 row.get::<_, Option<String>>(1)?,
-                row.get::<_, Option<i32>>(2)?,
+                row.get::<_, i32>(2)?,
+                row.get::<_, String>(3)?,
+                row.get::<_, String>(4)?,
+                row.get::<_, i32>(5)?,
             ))
         }).ok()?;
         let mut saves = serde_json::Map::new();
         for row in rows {
-            let (id, name, current) = row.ok()?;
+            let (id, name, current, branch1, branch2, branch3) = row.ok()?;
             let mut save = serde_json::Map::new();
             save.insert("name".to_string(), serde_json::json!(name.unwrap_or_default()));
-            save.insert("current".to_string(), serde_json::json!(current.unwrap_or_default()));
+            save.insert("current".to_string(), serde_json::json!(current));
+            save.insert("branch1".to_string(), serde_json::json!(branch1));
+            save.insert("branch2".to_string(), serde_json::json!(branch2));
+            save.insert("branch3".to_string(), serde_json::json!(branch3));
             saves.insert(format!("save{}", id), serde_json::Value::Object(save.clone()));
         }
         result.insert("saveInstance".to_string(), serde_json::Value::Object(saves.clone()));
@@ -129,21 +144,21 @@ CREATE TABLE IF NOT EXISTS saveInstance(
     Some(json_value.to_string())
 }
 #[tauri::command]
-fn update_save(id: String, name: String, current: i32, update_time: String, image: String) -> Option<()> {
+fn update_save(id: String, update_time: String, image: String, name: String, current: i32, branch1: String, branch2: String, branch3: i32) -> Option<()> {
     let mut conn = Connection::open(path_join!(HOME_DIR.get().unwrap(), "data.db")).ok()?;
     {
         let tx = conn.transaction().ok()?;
         tx.execute(
-            "UPDATE saveInstance SET name = ?1, current = ?2 WHERE id = ?3",
-            params![&name, &current, &id],
+            "UPDATE saveObject SET update_time = ?1, image = ?2, saved = 1, remark = '' WHERE id = ?3",
+            params![&update_time, &image, &id],
         ).ok()?;
         tx.commit().ok()?;
     }
     {
         let tx = conn.transaction().ok()?;
         tx.execute(
-            "UPDATE saveObject SET update_time = ?1, image = ?2, saved = 1, remark = '' WHERE id = ?3",
-            params![&update_time, &image, &id],
+            "UPDATE saveInstance SET name = ?1, current = ?2, branch1 = ?4, branch2 = ?5, branch3 = ?6 WHERE id = ?3",
+            params![&name, &current, &id, &branch1, &branch2, &branch3],
         ).ok()?;
         tx.commit().ok()?;
     }

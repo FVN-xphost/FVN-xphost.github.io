@@ -26,7 +26,7 @@
             ashDom.style.top = `${Math.random() * 80 + 20}vh`;
             ashDom.style.left = `${Math.random() * 100}vw`;
             await sleep(250);
-            backDom.appendChild(ashDom);
+            backDom!.appendChild(ashDom);
         }
     });
     let page = $state(1);

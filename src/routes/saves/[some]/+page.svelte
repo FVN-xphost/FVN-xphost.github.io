@@ -2,14 +2,15 @@
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import MyMessageBox from "../../../components/board/MyMessageBox.svelte";
-    import { saveData, saveInstance } from "../../../store/store";
-    import { showMessageBox } from "../../../utils/messagebox.ts";
+    import { saveData, saveInstance, branchs } from "../../../store/store";
+    import { showMessageBox } from "../../../utils/messagebox";
     import { sleep, router } from "../../../utils/all";
     import { invoke } from "@tauri-apps/api/core";
     import Dragon from "../../../assets/illustration/dragon_dressed.png";
     import html2canvas from "html2canvas";
     import piano from "../../../assets/music/mp3/piano.mp3";
     import experience from "../../../assets/music/ogg/experience.ogg";
+    import MyBlackBoard from "../../../components/board/MyBlackBoard.svelte";
     const pianoIns = new Audio(piano);
     const experienceIns = new Audio(experience);
     const { params } = $props();
@@ -42,7 +43,7 @@
             },
         });
     }
-    function setSaveInfo(key: string, value: string) {
+    function setSaveInfo(key: string, value: string | number) {
         saveData.set({
             ...$saveData,
             saveInstance: {
@@ -58,14 +59,29 @@
         await invoke("update_gallery", { id });
         setGalleryMeta(id);
     }
-    function getSaveInfo(key: string) {
+    function getSaveInfo(key: string | undefined) {
+        if (key === undefined) {
+            return $saveData.saveInstance[thisname];
+        }
         return $saveData.saveInstance[thisname][key];
     }
-    function plusOne() {
-        setSaveInfo("current", parseInt(getSaveInfo("current")) + 1);
+    function gc(): number {
+        return parseInt(getSaveInfo("current"));
     }
-    function doStyle(current: number) {
-        if (current === 6) {
+    function plusOne() {
+        setSaveInfo("current", gc() + 1);
+    }
+    function minusOne() {
+        setSaveInfo("current", gc() - 1);
+    }
+    async function doStyle(current: number, isQuick: boolean = false) {
+        pianoIns.pause();
+        pianoIns.currentTime = 0;
+        experienceIns.pause();
+        experienceIns.currentTime = 0;
+        if (current === 5) {
+          liveStyle = "";
+        } else if (current === 6) {
             liveStyle = "animation: run 2s infinite;";
         } else if (current === 7) {
             liveStyle = "transform: rotateY(180deg);";
@@ -77,17 +93,13 @@
             unlockGallery(1);
             liveStyle = "";
         } else if (current === 11) {
-            liveStyle = "";
             experienceIns.play();
+            liveStyle = "";
         } else if (current === 12) {
-            liveStyle = "";
             pianoIns.play();
-        } else {
-            pianoIns.pause();
-            pianoIns.currentTime = 0;
-            experienceIns.pause();
-            experienceIns.currentTime = 0;
             liveStyle = "";
+        } else if (current === 26) {
+            //liveStyle = "transform: rotateY(180deg);";
         }
     }
     onMount(async () => {
@@ -118,24 +130,24 @@
         next(false);
     });
     async function next(plus: boolean = true) {
-        if (getSaveInfo("current") >= $saveInstance.length) {
+        if (gc() >= $saveInstance.length) {
             return;
         }
+        if (!$saveInstance[gc()]?.message) return;
         if (lockText) {
             exitText = true;
-            currentText = $saveInstance[
-                parseInt(getSaveInfo("current"))
-            ]?.message?.replace("%self", getSaveInfo("name"));
+            currentText = replaceCurrentText($saveInstance[gc()]?.message);
             return;
         }
         lockText = true;
         currentText = "";
-        if (plus) plusOne();
-        doStyle(parseInt(getSaveInfo("current")));
-        let ct = $saveInstance[
-            parseInt(getSaveInfo("current"))
-        ]?.message?.replace("%self", getSaveInfo("name"));
-        for (let i = 0; i < ct?.length ?? 0; i++) {
+        if (plus) {
+            jumpTo(true);
+            plusOne();
+        }
+        await doStyle(gc());
+        let ct = replaceCurrentText($saveInstance[gc()]?.message);
+        for (let i = 0; i < (ct?.length ?? 0); i++) {
             if (exitText) {
                 break;
             }
@@ -151,28 +163,68 @@
         exitText = false;
         lockText = false;
     }
+    function replaceCurrentText(text: string | undefined) {
+        if (text === undefined) return "";
+        Object.keys(getSaveInfo(undefined))
+            .filter((item) => item !== "current")
+            .forEach((key) => {
+                text = text!.replace(`%${key}`, getSaveInfo(key) ?? "");
+            });
+        return text;
+    }
+    function jumpTo(ps: boolean) {
+        while (true) {
+            const j = $saveInstance[gc() + (ps ? 1 : -1)]?.if;
+            if (j) {
+                let count = 0;
+                for (let i = 0; i < j.length; i++) {
+                    const key = j[i]?.key;
+                    const value = j[i]?.value;
+                    if (getSaveInfo(key) === value) {
+                        count++;
+                    }
+                }
+                if (count >= j.length) {
+                    break;
+                }
+                setSaveInfo("current", gc() + (ps ? 1 : -1));
+            } else {
+                break;
+            }
+            // const key = $saveInstance[gc() + (ps ? 1 : -1)]?.key;
+            // const value = $saveInstance[gc() + (ps ? 1 : -1)]?.value;
+            // console.log(key, value, 2222);
+            // if (key && value) {
+            //     if (getSaveInfo(key) === value) {
+            //         break;
+            //     }
+            //     setSaveInfo("current", gc() + (ps ? 1 : -1));
+            // } else {
+            //     break;
+            // }
+        }
+    }
     function prev() {
-        if (parseInt(getSaveInfo("current")) <= 0) return;
-        setSaveInfo("current", parseInt(getSaveInfo("current")) - 1);
-        doStyle(parseInt(getSaveInfo("current")));
-        currentText = $saveInstance[
-            parseInt(getSaveInfo("current"))
-        ]?.message?.replace("%self", getSaveInfo("name"));
+        if (gc() <= 0) return;
+        jumpTo(false);
+        minusOne();
+        doStyle(gc(), true);
+        currentText = replaceCurrentText($saveInstance[gc()]?.message);
     }
     async function quick() {
         quickCurrent = !quickCurrent;
         while (true) {
             if (
                 !quickCurrent ||
-                parseInt(getSaveInfo("current")) >= $saveInstance.length
+                gc() >= $saveInstance.length ||
+                !$saveInstance[gc()]?.message
             )
-                return;
+                break;
+            jumpTo(true);
             await sleep(50);
-            setSaveInfo("current", parseInt(getSaveInfo("current")) + 1);
-            doStyle(parseInt(getSaveInfo("current")));
-            currentText = $saveInstance[
-                parseInt(getSaveInfo("current"))
-            ]?.message?.replace("%self", getSaveInfo("name"));
+            plusOne();
+            await doStyle(gc(), true);
+            currentText = replaceCurrentText($saveInstance[gc()]?.message);
         }
     }
     function spaceDown(e: KeyboardEvent) {
@@ -203,10 +255,13 @@
         setSaveMeta("updateTime", updateTime);
         await invoke("update_save", {
             id: params.some,
-            name,
-            current,
             updateTime,
             image,
+            name,
+            current,
+            branch1: getSaveInfo("branch1"),
+            branch2: getSaveInfo("branch2"),
+            branch3: getSaveInfo("branch3"),
         });
         console.log($saveData);
     }
@@ -234,13 +289,37 @@
         <div class="dialog">
             <div class="avatar" style="grid-row: 1 / 3;"></div>
             <div class="title">
-                {$saveInstance[parseInt(getSaveInfo("current"))]?.name?.replace(
-                    "%self",
+                {$saveInstance[gc()]?.name?.replace(
+                    "%name",
                     getSaveInfo("name"),
                 )}
             </div>
             <div class="content">
-                {@html currentText}
+                {#if $saveInstance[gc()]?.type === "choice"}
+                    <div class="choose">
+                        {#each $saveInstance[gc()]?.choice as choice}
+                            <button
+                                class="choice-button"
+                                onclick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setSaveInfo(
+                                        $saveInstance[gc()]?.id!,
+                                        choice,
+                                    );
+                                    jumpTo(true);
+                                    plusOne();
+                                    next(false);
+                                }}
+                                aria-label={choice}
+                            >
+                                {choice}
+                            </button>
+                        {/each}
+                    </div>
+                {:else}
+                    {@html currentText}
+                {/if}
             </div>
             <div class="control" style="grid-column: 1 / 3;">
                 <button
@@ -264,10 +343,7 @@
                     onclick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        updateSave(
-                            getSaveInfo("name"),
-                            parseInt(getSaveInfo("current")),
-                        );
+                        updateSave(getSaveInfo("name"), gc());
                     }}
                     aria-label="存档">存档</button
                 >
@@ -343,5 +419,24 @@
     .content {
         padding: 10px;
         color: white;
+    }
+    .choose {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .choice-button {
+        border: none;
+        background-color: #99999955;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+        flex: 1;
+        width: 100%;
+    }
+    .choice-button:hover {
+        background-color: #aaaaaa66;
     }
 </style>
