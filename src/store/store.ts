@@ -210,4 +210,21 @@ export const saveInstance = readable([
     avatar: "",
     message: "Hi，我是小虎！",
   },
+  {
+    name: "小虎",
+    avatar: "",
+    message:
+      "我们可以调整背景图片/比如说目前是纯黑的，我们可以安插一个背景图上去。就用我办公室的模糊图吧！",
+  },
+  {
+    name: "小虎",
+    avatar: "",
+    message:
+      "在执行到我这一句时，背景会以 500ms 的速度加载完毕。随后，我们便可以正常切换背景了。",
+  },
+  {
+    name: "小虎",
+    avatar: "",
+    message: "好了，大概就这么多了。期待我们的成品吧！",
+  },
 ]);

@@ -7,10 +7,11 @@
     import { sleep, router } from "../../../utils/all";
     import { invoke } from "@tauri-apps/api/core";
     import Dragon from "../../../assets/illustration/dragon_dressed.png";
+    import Tiger from "../../../assets/illustration/tiger_dressed.png";
     import html2canvas from "html2canvas";
     import piano from "../../../assets/music/mp3/piano.mp3";
     import experience from "../../../assets/music/ogg/experience.ogg";
-    import MyBlackBoard from "../../../components/board/MyBlackBoard.svelte";
+    import contentback1 from "../../../assets/Home/contentback1.jpg";
     const pianoIns = new Audio(piano);
     const experienceIns = new Audio(experience);
     const { params } = $props();
@@ -21,7 +22,10 @@
     let exitText = $state(false);
     let keyLock = $state(false);
     let quickCurrent = $state(false);
-    let liveStyle = $state("");
+    let liveStyleDragon = $state("");
+    let liveStyleTiger = $state("");
+    let contentback = $state("");
+    let backStyle = $state("");
     function setSaveMeta(key: string, value: string) {
         saveData.set({
             ...$saveData,
@@ -79,27 +83,57 @@
         pianoIns.currentTime = 0;
         experienceIns.pause();
         experienceIns.currentTime = 0;
-        if (current === 5) {
-          liveStyle = "";
+        if (current === 0) {
+            backStyle = "opacity: 0;";
+            liveStyleTiger = "transform: translateX(700px);";
+        } else if (current === 5) {
+            liveStyleDragon = "";
         } else if (current === 6) {
-            liveStyle = "animation: run 2s infinite;";
+            liveStyleDragon = "animation: run 2s infinite;";
         } else if (current === 7) {
-            liveStyle = "transform: rotateY(180deg);";
+            liveStyleDragon = "transform: rotateY(180deg);";
         } else if (current === 8) {
-            liveStyle = "scale: 1.2;";
+            liveStyleDragon = "scale: 1.2;";
         } else if (current === 9) {
-            liveStyle = "animation: vibration 0.2s infinite;";
+            liveStyleDragon = "animation: vibration 0.2s infinite;";
         } else if (current === 10) {
-            unlockGallery(1);
-            liveStyle = "";
+            await unlockGallery(1);
+            liveStyleDragon = "";
         } else if (current === 11) {
             experienceIns.play();
-            liveStyle = "";
+            liveStyleDragon = "";
         } else if (current === 12) {
             pianoIns.play();
-            liveStyle = "";
-        } else if (current === 26) {
-            //liveStyle = "transform: rotateY(180deg);";
+            liveStyleDragon = "";
+        } else if (current === 33) {
+            liveStyleDragon = "";
+            liveStyleTiger = "transform: translateX(700px);";
+        } else if (current === 34) {
+            liveStyleDragon = "animation: runleft 2s;";
+            if (!isQuick) await sleep(2000);
+            liveStyleDragon = "transform: translateX(-200px) rotateY(180deg);";
+            liveStyleTiger = "animation: runleft2 1s";
+            if (!isQuick) await sleep(1000);
+            liveStyleTiger = "transform: translateX(100px)";
+        } else if (current === 35) {
+            backStyle = "opacity: 0;";
+        } else if (current === 36) {
+            backStyle = "animation: opac1 0.5s";
+            if (!isQuick) await sleep(500);
+            backStyle = "opacity: 1";
+        }
+        if (current >= 0 && current < 36) {
+            backStyle = "opacity: 0;";
+            if (current < 34) {
+                liveStyleTiger = "transform: translateX(700px);";
+            }
+        }
+        if (current >= 34) {
+            liveStyleDragon = "transform: translateX(-200px) rotateY(180deg);";
+            liveStyleTiger = "transform: translateX(100px)";
+            if (current >= 36) {
+                backStyle = "opacity: 1";
+            }
         }
     }
     onMount(async () => {
@@ -115,7 +149,7 @@
                 if (
                     (await showMessageBox(
                         "你的名字是",
-                        `你的名字是：${name}，是否确定？`,
+                        `你的名字是：${name}，是否me}，是否确定？`,
                         "info",
                         ["ok", "cancel"],
                     )) === "0"
@@ -125,6 +159,7 @@
             }
             setSaveInfo("name", name);
         }
+        doStyle(gc(), true);
         o1 = true;
         await sleep(500);
         next(false);
@@ -281,10 +316,28 @@
         role="button"
     >
         <img
+            src={contentback1}
+            alt="Background"
+            class="background"
+            style={backStyle}
+        />
+        <!-- <img
+            src={contentback}
+            alt="Background Image"
+            class="background"
+            style={backStyle}
+        /> -->
+        <img
             src={Dragon}
             alt="Dragon Avatar"
             class="dragon"
-            style={liveStyle}
+            style={liveStyleDragon}
+        />
+        <img
+            src={Tiger}
+            alt="Tiger Avatar"
+            class="tiger"
+            style={liveStyleTiger}
         />
         <div class="dialog">
             <div class="avatar" style="grid-row: 1 / 3;"></div>
@@ -375,7 +428,23 @@
         outline: none;
         overflow: hidden;
     }
+    .background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
     .dragon {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        height: 90vh;
+        width: auto;
+    }
+    .tiger {
         position: absolute;
         bottom: 0;
         left: 0;

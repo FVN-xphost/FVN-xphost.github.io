@@ -77,3 +77,30 @@ body {
         transform: translateY(-2px);
     }
 }
+
+@keyframes runleft {
+    0% {
+        transform: rotateY(180deg);
+    }
+    100% {
+        transform: translateX(-200px) rotateY(180deg);
+    }
+}
+
+@keyframes runleft2 {
+    0% {
+        transform: translateX(700px);
+    }
+    100% {
+        transform: translateX(100px);
+    }
+}
+
+@keyframes opac1 {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
