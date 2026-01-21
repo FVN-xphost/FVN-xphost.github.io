@@ -70,11 +70,26 @@ jobs:
       - name: Build the app
         run: npm run tauri build -- --target ${{ matrix.target }}
         
-
       - name: Upload artifact
-        if: inputs.upload_artifacts
+      	if: ${{matrix.platform == 'windows'}}
         uses: actions/upload-artifact@v4
         with:
           name: Bundle-${{matrix.platform}}-${{matrix.arch}}
-          path: "artifacts/*"
-          if-no-files-found: error 
+          path: "src-tauri/target/${{ matrix.target }}/release/awakeofruin.exe"
+          if-no-files-found: error
+
+      - name: Upload artifact linux
+      	if: ${{matrix.platform == 'linux'}}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bundle-${{matrix.platform}}-${{matrix.arch}}
+          path: "src-tauri/target/${{ matrix.target }}/release/awakeofruin"
+          if-no-files-found: error
+          
+      - name: Upload artifact
+      	if: ${{matrix.platform == 'macos'}}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bundle-${{matrix.platform}}-${{matrix.arch}}
+          path: "src-tauri/target/${{ matrix.target }}/release/awakeofruin/bundle/macos"
+          if-no-files-found: error
