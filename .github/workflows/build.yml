@@ -3,7 +3,6 @@ name: Build My Visual Novel
 on:
   push:
     branches: [main]
-    
 
 jobs:
   publish-tauri:
@@ -41,7 +40,7 @@ jobs:
             target: aarch64-unknown-linux-gnu
             platform: linux
             arch: aarch64
-    
+
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -63,15 +62,15 @@ jobs:
           sudo apt-get install -y xdg-utils
           # Additional dependencies for RPM building
           sudo apt-get install -y rpm
-          
+
       - name: install frontend dependencies
         run: npm install
-        
+
       - name: Build the app
         run: npm run tauri build -- --target ${{ matrix.target }}
-        
+
       - name: Upload artifact Windows
-      	if: ${{matrix.platform == 'windows'}}
+        if: ${{matrix.platform == 'windows'}}
         uses: actions/upload-artifact@v4
         with:
           name: Bundle-${{matrix.platform}}-${{matrix.arch}}
@@ -79,15 +78,15 @@ jobs:
           if-no-files-found: error
 
       - name: Upload artifact linux
-      	if: ${{matrix.platform == 'linux'}}
+        if: ${{matrix.platform == 'linux'}}
         uses: actions/upload-artifact@v4
         with:
           name: Bundle-${{matrix.platform}}-${{matrix.arch}}
           path: "src-tauri/target/${{ matrix.target }}/release/awakeofruin"
           if-no-files-found: error
-          
+
       - name: Upload artifact macOS
-      	if: ${{matrix.platform == 'macos'}}
+        if: ${{matrix.platform == 'macos'}}
         uses: actions/upload-artifact@v4
         with:
           name: Bundle-${{matrix.platform}}-${{matrix.arch}}
