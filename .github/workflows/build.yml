@@ -90,5 +90,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Bundle-${{matrix.platform}}-${{matrix.arch}}
-          path: "src-tauri/target/${{ matrix.target }}/release/awakeofruin/bundle/macos"
+          path: "src-tauri/target/${{ matrix.target }}/release/bundle/macos"
           if-no-files-found: error
