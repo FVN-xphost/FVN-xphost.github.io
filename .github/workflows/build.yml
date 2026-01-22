@@ -124,5 +124,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Bundle-${{matrix.platform}}-${{matrix.arch}}
-          path: "src-tauri/gen/android/app/build/output/apk"
+          path: "src-tauri/gen/android/app/build/output/apk/universal/release/app-universal-release-unsigned.apk"
           if-no-files-found: error
