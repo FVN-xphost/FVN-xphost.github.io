@@ -36,6 +36,14 @@ jobs:
             target: x86_64-unknown-linux-gnu
             platform: linux
             arch: x86_64
+          - os: ubuntu-latest
+            target: aarch64-linux-android
+            platform: android
+            arch: aarch64
+          - os: ubuntu-latest
+            target: armv7-linux-androideabi
+            platform: android
+            arch: armv7
           - os: ubuntu-24.04-arm
             target: aarch64-unknown-linux-gnu
             platform: linux
@@ -52,9 +60,19 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
-
+      - name: Install Java toolchain
+        if: ${{ matrix.platform == 'android' }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+      - name: Install Android toolchain
+        if: ${{ matrix.platform == 'android' }}
+        uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: 9477386
       - name: Install Linux dependencies
-        if: ${{matrix.platform == 'linux'}}
+        if: ${{ matrix.platform == 'linux' }}
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
@@ -62,13 +80,22 @@ jobs:
           sudo apt-get install -y xdg-utils
           # Additional dependencies for RPM building
           sudo apt-get install -y rpm
+      - name: Install Rustup Android toolchain
+        if: ${{ matrix.platform == 'android' }}
+        run: |
+          rustup target add ${{ matrix.target }}
 
       - name: install frontend dependencies
         run: npm install
 
       - name: Build the app
+        if: ${{ matrix.platform != 'android' }}
         run: npm run tauri build -- --target ${{ matrix.target }}
-
+      - name: Build Android app
+        if: ${{ matrix.platform == 'android' }}
+        run: |
+          npm run tauri android init
+          npm run tauri android build --release
       - name: Upload artifact Windows
         if: ${{matrix.platform == 'windows'}}
         uses: actions/upload-artifact@v4
@@ -91,4 +118,11 @@ jobs:
         with:
           name: Bundle-${{matrix.platform}}-${{matrix.arch}}
           path: "src-tauri/target/${{ matrix.target }}/release/bundle/macos"
+          if-no-files-found: error
+      - name: Upload artifact android
+        if: ${{matrix.platform == 'android'}}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bundle-${{matrix.platform}}-${{matrix.arch}}
+          path: "src-tauri/gen/android/app/build/output/apk"
           if-no-files-found: error
