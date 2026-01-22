@@ -101,26 +101,10 @@ jobs:
           echo -e "storePassword=${{ secrets.MY_ANDROID_KEYTOOL_PASSWORD }}\nkeyPassword=${{ secrets.MY_ANDROID_KEYTOOL_PASSWORD }}\nkeyAlias=upload\nstoreFile=/home/runner/upload-keystore.jks" >> src-tauri/gen/android/keystore.properties
           # 修改 build.gradle.kts
           cat src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i }' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i }' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i signingConfig = signingConfigs.getByName("release")' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i getByName("release") {' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i buildTypes {' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i }' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i }' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i storePassword = keystoreProperties["storePassword"] as String' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i storeFile = file(keystoreProperties["storeFile"] as String)' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i keyPassword = keystoreProperties["keyPassword"] as String' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i keyAlias = keystoreProperties["keyAlias"] as String' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i }' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i keystoreProperties.load(FileInputStream(keystorePropertiesFile))' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i if (keystorePropertiesFile.exists()) {' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i val keystoreProperties = Properties()' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i val keystorePropertiesFile = rootProject.file("keystore.properties")' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i create("release") {' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i signingConfigs {' src-tauri/gen/android/app/build.gradle.kts
           sed -i '1i import java.io.FileInputStream' src-tauri/gen/android/app/build.gradle.kts
-          sed -i '1i import java.util.Properties' src-tauri/gen/android/app/build.gradle.kts
+          sed -i '/buildType/isigningConfigs {\ncreate("release") {\nval keystorePropertiesFile = rootProject.file("keystore.properties")\nval keystoreProperties = Properties()\nif (keystorePropertiesFile.exists()) {\nkeystoreProperties.load(FileInputStream(keystorePropertiesFile))\n}\nkeyAlias = keystoreProperties["keyAlias"] as String\nkeyPassword = keystoreProperties["keyPassword"] as String\nstoreFile = file(keystoreProperties["storeFile"] as String)\nstorePassword = keystoreProperties["storePassword"] as String\n}\n}' src-tauri/gen/android/app/build.gradle.kts
+          sed -i '/getByName("release")/asigningConfig = signingConfigs.getByName("release")' src-tauri/gen/android/app/build.gradle.kts
+          cat src-tauri/gen/android/app/build.gradle.kts
           npm run tauri android build --release
       - name: Upload artifact Windows
         if: ${{matrix.platform == 'windows'}}
