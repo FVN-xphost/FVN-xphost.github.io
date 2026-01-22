@@ -95,8 +95,12 @@ jobs:
         if: ${{ matrix.platform == 'android' }}
         run: |
           npm run tauri android init
+          # 生成签名
           keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload -storepass ${{ secrets.MY_ANDROID_KEYTOOL_PASSWORD }} -dname "CN=xphost, OU=CandySharkStudio, O=CandySharkStudio, L=BeiJing, ST=BeiJing, C=CN"
+          # 生成配置
           echo -e "storePassword=${{ secrets.MY_ANDROID_KEYTOOL_PASSWORD }}\nkeyPassword=${{ secrets.MY_ANDROID_KEYTOOL_PASSWORD }}\nkeyAlias=upload\nstoreFile=/home/runner/upload-keystore.jks" >> src-tauri/gen/android/keystore.properties
+          # 修改 build.gradle.kts
+          cat src-tauri/gen/android/app/build.gradle.kts
           sed -i '1i }' src-tauri/gen/android/app/build.gradle.kts
           sed -i '1i }' src-tauri/gen/android/app/build.gradle.kts
           sed -i '1i signingConfig = signingConfigs.getByName("release")' src-tauri/gen/android/app/build.gradle.kts
