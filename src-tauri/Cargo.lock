@@ -217,7 +217,6 @@ checksum = "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
 name = "awakeofruin"
 version = "0.1.0"
 dependencies = [
- "dirs",
  "rusqlite",
  "serde",
  "serde_json",

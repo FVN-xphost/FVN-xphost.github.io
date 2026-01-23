@@ -104,7 +104,8 @@ jobs:
           sed -i '1i import java.io.FileInputStream' src-tauri/gen/android/app/build.gradle.kts
           sed -i '/buildType/isigningConfigs {\ncreate("release") {\nval keystorePropertiesFile = rootProject.file("keystore.properties")\nval keystoreProperties = Properties()\nif (keystorePropertiesFile.exists()) {\nkeystoreProperties.load(FileInputStream(keystorePropertiesFile))\n}\nkeyAlias = keystoreProperties["keyAlias"] as String\nkeyPassword = keystoreProperties["keyPassword"] as String\nstoreFile = file(keystoreProperties["storeFile"] as String)\nstorePassword = keystoreProperties["storePassword"] as String\n}\n}' src-tauri/gen/android/app/build.gradle.kts
           sed -i '/getByName("release")/asigningConfig = signingConfigs.getByName("release")' src-tauri/gen/android/app/build.gradle.kts
-          npm run tauri android build --release
+          # 开始构建！！
+          npm run tauri android build -- --target ${{ matrix.arch }}
       - name: Upload artifact Windows
         if: ${{matrix.platform == 'windows'}}
         uses: actions/upload-artifact@v4
