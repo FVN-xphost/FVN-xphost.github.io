@@ -47,8 +47,13 @@
             delay: 0,
             duration: $mounted ? 0 : 1500,
             easing: quadInOut,
-            css: (t: number) =>
-                `opacity: ${t}; transform: translateX(${t * 50 - 50}px)`,
+            css: (t: number) => {
+                if (t < 0.6) {
+                    return `opacity: ${t}; transform: translateY(${t * 100 - 40}px)`;
+                } else {
+                    return `opacity: ${t}; transform: translateY(${-50 * t + 50}px)`;
+                }
+            },
         };
     }
 </script>
@@ -147,21 +152,20 @@
     }
     .titleImage {
         position: absolute;
-        width: 315px;
-        height: 214px;
+        width: 100vw;
         top: 0;
+        left: 0;
         right: 0;
     }
     .main-div {
         position: absolute;
-        width: 315px;
-        height: calc(100% - 214px);
-        right: 0;
+        width: 100vw;
+        height: 100px;
+        left: 0;
         bottom: 0;
         display: flex;
-        flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
-        gap: 30px;
+        gap: 60px;
     }
 </style>

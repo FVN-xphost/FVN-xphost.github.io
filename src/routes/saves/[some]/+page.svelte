@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import MyMessageBox from "../../../components/board/MyMessageBox.svelte";
-    import { saveData, dialogInstance, branchs } from "../../../store/store";
+    import { saveData, dialogInstance } from "../../../store/store";
     import { showMessageBox } from "../../../utils/messagebox";
     import { sleep, router } from "../../../utils/all";
     import { invoke } from "@tauri-apps/api/core";
@@ -83,58 +83,61 @@
         pianoIns.currentTime = 0;
         experienceIns.pause();
         experienceIns.currentTime = 0;
-        if (current === 0) {
-            backStyle = "opacity: 0;";
-            liveStyleTiger = "transform: translateX(1200px);";
-        } else if (current === 5) {
-            liveStyleDragon = "";
-        } else if (current === 6) {
-            liveStyleDragon = "animation: run 2s infinite;";
-        } else if (current === 7) {
-            liveStyleDragon = "transform: rotateY(180deg);";
-        } else if (current === 8) {
-            liveStyleDragon = "scale: 1.2;";
-        } else if (current === 9) {
-            liveStyleDragon = "animation: vibration 0.2s infinite;";
-        } else if (current === 10) {
-            await unlockGallery(1);
-            liveStyleDragon = "";
-        } else if (current === 11) {
-            experienceIns.play();
-            liveStyleDragon = "";
-        } else if (current === 12) {
-            pianoIns.play();
-            liveStyleDragon = "";
-        } else if (current === 35) {
-            liveStyleDragon = "";
-            liveStyleTiger = "transform: translateX(1200px);";
-        } else if (current === 36) {
-            liveStyleDragon = "animation: runleft 2s;";
-            if (!isQuick) await sleep(2000);
-            liveStyleDragon = "transform: translateX(-200px) rotateY(180deg);";
-            liveStyleTiger = "animation: runleft2 1s";
-            if (!isQuick) await sleep(1000);
-            liveStyleTiger = "transform: translateX(100px)";
-        } else if (current === 37) {
-            backStyle = "opacity: 0;";
-        } else if (current === 38) {
-            backStyle = "animation: opac1 0.5s";
-            if (!isQuick) await sleep(500);
-            backStyle = "opacity: 1";
-        }
-        if (current >= 0 && current < 36) {
-            backStyle = "opacity: 0;";
-            if (current < 36) {
-                liveStyleTiger = "transform: translateX(1200px);";
-            }
-        }
-        if (current >= 36) {
-            liveStyleDragon = "transform: translateX(-200px) rotateY(180deg);";
-            liveStyleTiger = "transform: translateX(100px)";
-            if (current >= 38) {
-                backStyle = "opacity: 1";
-            }
-        }
+        liveStyleTiger = "transform: translateX(110vh);";
+        liveStyleDragon = "transform: translateX(-110vh);";
+        backStyle = "opacity: 0;";
+        // if (current === 0) {
+        //     backStyle = "opacity: 0;";
+        //     liveStyleTiger = "transform: translateX(110vh);";
+        // } else if (current === 5) {
+        //     liveStyleDragon = "";
+        // } else if (current === 6) {
+        //     liveStyleDragon = "animation: run 2s infinite;";
+        // } else if (current === 7) {
+        //     liveStyleDragon = "transform: rotateY(180deg);";
+        // } else if (current === 8) {
+        //     liveStyleDragon = "scale: 1.2;";
+        // } else if (current === 9) {
+        //     liveStyleDragon = "animation: vibration 0.2s infinite;";
+        // } else if (current === 10) {
+        //     await unlockGallery(1);
+        //     liveStyleDragon = "";
+        // } else if (current === 11) {
+        //     experienceIns.play();
+        //     liveStyleDragon = "";
+        // } else if (current === 12) {
+        //     pianoIns.play();
+        //     liveStyleDragon = "";
+        // } else if (current === 35) {
+        //     liveStyleDragon = "";
+        //     liveStyleTiger = "transform: translateX(110vh);";
+        // } else if (current === 36) {
+        //     liveStyleDragon = "animation: runleft 2s;";
+        //     if (!isQuick) await sleep(2000);
+        //     liveStyleDragon = "transform: translateX(-10vh) rotateY(180deg);";
+        //     liveStyleTiger = "animation: runleft2 1s";
+        //     if (!isQuick) await sleep(1000);
+        //     liveStyleTiger = "transform: translateX(10vh)";
+        // } else if (current === 37) {
+        //     backStyle = "opacity: 0;";
+        // } else if (current === 38) {
+        //     backStyle = "animation: opac1 0.5s";
+        //     if (!isQuick) await sleep(500);
+        //     backStyle = "opacity: 1";
+        // }
+        // if (current >= 0 && current < 36) {
+        //     backStyle = "opacity: 0;";
+        //     if (current < 36) {
+        //         liveStyleTiger = "transform: translateX(110vh);";
+        //     }
+        // }
+        // if (current >= 36) {
+        //     liveStyleDragon = "transform: translateX(-10vh) rotateY(180deg);";
+        //     liveStyleTiger = "transform: translateX(10vh)";
+        //     if (current >= 38) {
+        //         backStyle = "opacity: 1";
+        //     }
+        // }
     }
     onMount(async () => {
         if (getSaveInfo("name") === "") {
@@ -142,10 +145,10 @@
             while (true) {
                 name = await showMessageBox(
                     "请输入主角名字",
-                    "请在下方输入主角名字，默认：小龙",
+                    "请在下方输入主角名字，默认：乔治",
                     "input",
                 );
-                name = name === "" ? "小龙" : name;
+                name = name === "" ? "乔治" : name;
                 if (
                     (await showMessageBox(
                         "你的名字是",
@@ -210,7 +213,7 @@
         Object.keys(getSaveInfo(undefined))
             .filter((item) => item !== "current")
             .forEach((key) => {
-                text = text!.replace(`%${key}`, getSaveInfo(key) ?? "");
+                text = text!.replaceAll(`%${key}`, getSaveInfo(key) ?? "");
             });
         return text;
     }
@@ -395,7 +398,7 @@
                                 }}
                                 aria-label={choice}
                             >
-                                {choice}
+                                {@html replaceCurrentText(choice)}
                             </button>
                         {/each}
                     </div>

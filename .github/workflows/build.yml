@@ -108,7 +108,6 @@ jobs:
           sed -i '/getByName("release")/asigningConfig = signingConfigs.getByName("release")' src-tauri/gen/android/app/build.gradle.kts
           # 再然后修改 AndroidManifest 进行强制横屏处理！
           sed -i '/android:name=".MainActivity"/aandroid:screenOrientation="landscape"' src-tauri/gen/android/app/src/main/AndroidManifest.xml
-          cat src-tauri/gen/android/app/src/main/AndroidManifest.xml
           # 最后再开始打包 Android。。 开始构建！！
           npm run tauri android build -- --target ${{ matrix.arch }}
       - name: Upload artifact Windows
@@ -116,7 +115,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Bundle-${{matrix.platform}}-${{matrix.arch}}
-          path: "src-tauri/target/${{ matrix.target }}/release/awakeofruin.exe"
+          path: "src-tauri/target/${{ matrix.target }}/release/spaceport.exe"
           if-no-files-found: error
 
       - name: Upload artifact linux
@@ -124,7 +123,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Bundle-${{matrix.platform}}-${{matrix.arch}}
-          path: "src-tauri/target/${{ matrix.target }}/release/awakeofruin"
+          path: "src-tauri/target/${{ matrix.target }}/release/spaceport"
           if-no-files-found: error
 
       - name: Upload artifact macOS

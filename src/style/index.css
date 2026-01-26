@@ -83,16 +83,16 @@ body {
         transform: rotateY(180deg);
     }
     100% {
-        transform: translateX(-200px) rotateY(180deg);
+        transform: translateX(-10vh) rotateY(180deg);
     }
 }
 
 @keyframes runleft2 {
     0% {
-        transform: translateX(1200px);
+        transform: translateX(110vh);
     }
     100% {
-        transform: translateX(100px);
+        transform: translateX(10vh);
     }
 }
 

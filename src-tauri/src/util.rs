@@ -7,7 +7,7 @@ pub fn init_home_dir(app_handle: &tauri::AppHandle) -> Result<(), String> {
         .path()
         .app_local_data_dir()
         .map_err(|_| "Cannot get data dir!".to_string())?;
-    let home_dir = base_dir.join("AWakeOfRuin");
+    let home_dir = base_dir.join("SpacePort");
     HOME_DIR
         .set(home_dir.to_string_lossy().to_string())
         .map_err(|_| "Cannot put all value!".to_string())?;
