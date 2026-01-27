@@ -290,6 +290,9 @@
             }
             jumpTo(false);
             minusOne();
+            if (!$dialogInstance[gc()]?.message) {
+                continue;
+            }
             historyFile.unshift({
                 name: $dialogInstance[gc()]?.name,
                 message: $dialogInstance[gc()]?.message,
