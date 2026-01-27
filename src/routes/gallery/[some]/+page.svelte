@@ -3,7 +3,6 @@
     import { onMount } from "svelte";
     import MyMenuButton from "../../../components/input/MyMenuButton.svelte";
     import { galleryLock } from "../../../store/store";
-    import type { WheelEventHandler } from "svelte/elements";
     const { params } = $props();
     const images = $galleryLock.find(
         (item: any) => item.id === params.some,

@@ -179,6 +179,14 @@
         }
         lockText = true;
         currentText = "";
+        if ($dialogInstance[gc()]?.next && $dialogInstance[gc()]?.if) {
+            const i = $dialogInstance.findIndex(
+                (item: any) => item.id === $dialogInstance[gc()]?.next,
+            );
+            if (i >= 0) {
+                setSaveInfo("current", i);
+            }
+        }
         if (plus) {
             jumpTo(true);
             plusOne();
@@ -220,22 +228,33 @@
     function jumpTo(ps: boolean) {
         while (true) {
             const j = $dialogInstance[gc() + (ps ? 1 : -1)]?.if;
-            if (j) {
-                let count = 0;
-                for (let i = 0; i < j.length; i++) {
+            if (j && j.length > 0) {
+                let result = true;
+                const firstKey = j[0]!.key;
+                const firstValue = j[0]!.value;
+                result =
+                    typeof firstValue === "function"
+                        ? firstValue(getSaveInfo(firstKey))
+                        : getSaveInfo(firstKey) === firstValue;
+                for (let i = 1; i < j.length; i++) {
                     const key = j[i]?.key;
                     const value = j[i]?.value;
-                    if (typeof value === "function") {
-                        if (value(getSaveInfo(key))) {
-                            count++;
-                        }
-                    } else {
-                        if (getSaveInfo(key) === value) {
-                            count++;
-                        }
+                    const next = j[i - 1]?.next;
+                    if (next === "and") {
+                        result =
+                            result &&
+                            (typeof value === "function"
+                                ? value(getSaveInfo(key))
+                                : getSaveInfo(key) === value);
+                    } else if (next === "or") {
+                        result =
+                            result ||
+                            (typeof value === "function"
+                                ? value(getSaveInfo(key))
+                                : getSaveInfo(key) === value);
                     }
                 }
-                if (count >= j.length) {
+                if (result) {
                     break;
                 }
                 setSaveInfo("current", gc() + (ps ? 1 : -1));
@@ -246,16 +265,25 @@
     }
     function prev() {
         if (gc() <= 0) return;
-        jumpTo(false);
-        minusOne();
-        doStyle(gc(), true);
-        let score = $dialogInstance[gc()]?.score;
-        // 下列开始判断 score 分数的回退，仅适用与 score 在 action 的返回值是 return (parseInt(rawValue) || 0 + n).toString();（n=任何数字）这种。。
-        if (score !== undefined) {
-            let choice = getSaveInfo($dialogInstance[gc()]!.id);
-            let rawScore = parseInt(getSaveInfo(score.targetId));
-            let plusScore = parseInt(score.action(choice, "0"));
-            setSaveInfo(score.targetId, (rawScore - plusScore).toString());
+        if ($dialogInstance[gc()]?.prev) {
+            const i = $dialogInstance.findIndex(
+                (item: any) => item.id === $dialogInstance[gc()]?.prev,
+            );
+            if (i >= 0) {
+                setSaveInfo("current", i);
+            }
+        } else {
+            jumpTo(false);
+            minusOne();
+            doStyle(gc(), true);
+            let score = $dialogInstance[gc()]?.score;
+            // 下列开始判断 score 分数的回退，仅适用与 score 在 action 的返回值是 return (parseInt(rawValue) || 0 + n).toString();（n=任何数字）这种。。
+            if (score !== undefined) {
+                let choice = getSaveInfo($dialogInstance[gc()]!.id);
+                let rawScore = parseInt(getSaveInfo(score.targetId));
+                let plusScore = parseInt(score.action(choice, "0"));
+                setSaveInfo(score.targetId, (rawScore - plusScore).toString());
+            }
         }
         currentText = replaceCurrentText($dialogInstance[gc()]?.message);
     }
