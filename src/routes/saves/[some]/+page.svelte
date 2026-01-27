@@ -185,6 +185,7 @@
             );
             if (i >= 0) {
                 setSaveInfo("current", i);
+                plus = false;
             }
         }
         if (plus) {

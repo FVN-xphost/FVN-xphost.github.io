@@ -1,6 +1,6 @@
 # 程序
 
-[xphost](https://github.com/xphost008)，QQ：273020451
+1. [xphost](https://github.com/xphost008)，[Bilibili](https://space.bilibili.com/3546639830616204)，QQ：273020451
 
 # 文案/剧本
 
