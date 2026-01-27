@@ -2,7 +2,8 @@
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import MyMessageBox from "../../../components/board/MyMessageBox.svelte";
-    import { saveData, dialogInstance } from "../../../store/store";
+    import { saveData } from "../../../store/store";
+    import { dialogInstance } from "../../../store/dialog2";
     import { showMessageBox } from "../../../utils/messagebox";
     import { sleep, router } from "../../../utils/all";
     import { invoke } from "@tauri-apps/api/core";
@@ -12,6 +13,7 @@
     import piano from "../../../assets/music/mp3/piano.mp3";
     import experience from "../../../assets/music/ogg/experience.ogg";
     import contentback1 from "../../../assets/Home/contentback1.jpg";
+    import MyMenuButton from "../../../components/input/MyMenuButton.svelte";
     const pianoIns = new Audio(piano);
     const experienceIns = new Audio(experience);
     const { params } = $props();
@@ -26,6 +28,16 @@
     let liveStyleTiger = $state("");
     let contentback = $state("");
     let backStyle = $state("");
+    let isShowHint = $state(false);
+    let hintContent = $state("");
+    let historyFile = $state<any[]>([]);
+    function showHint(hintText: string) {
+        isShowHint = true;
+        hintContent = hintText;
+        setTimeout(() => {
+            isShowHint = false;
+        }, 3000);
+    }
     function setSaveMeta(key: string, value: string) {
         saveData.set({
             ...$saveData,
@@ -83,8 +95,8 @@
         pianoIns.currentTime = 0;
         experienceIns.pause();
         experienceIns.currentTime = 0;
-        liveStyleTiger = "transform: translateX(110vh);";
-        liveStyleDragon = "transform: translateX(-110vh);";
+        liveStyleTiger = "transform: translateX(150vw);";
+        liveStyleDragon = "transform: translateX(-150vw);";
         backStyle = "opacity: 0;";
         // if (current === 0) {
         //     backStyle = "opacity: 0;";
@@ -264,6 +276,27 @@
             }
         }
     }
+    // 使用古法查看历史（ps：逐步往前退，直到退到0。。由于 jumpTo 函数已经帮我们解决了分支问题，因此无需担心历史数据丢失。。）
+    function showHistory() {
+        let loadPrev = [];
+        let current = gc();
+        historyFile.unshift({
+            name: $dialogInstance[gc()]?.name,
+            message: $dialogInstance[gc()]?.message,
+        });
+        while (true) {
+            if (gc() === 0) {
+                break;
+            }
+            jumpTo(false);
+            minusOne();
+            historyFile.unshift({
+                name: $dialogInstance[gc()]?.name,
+                message: $dialogInstance[gc()]?.message,
+            });
+        }
+        setSaveInfo("current", current);
+    }
     function prev() {
         if (gc() <= 0) return;
         if ($dialogInstance[gc()]?.prev) {
@@ -346,7 +379,7 @@
                 getSaveInfo("branch7") ?? "",
             ],
         });
-        console.log($saveData);
+        showHint("存档成功！");
     }
 </script>
 
@@ -363,30 +396,32 @@
         tabindex="0"
         role="button"
     >
-        <img
-            src={contentback1}
-            alt="Background"
-            class="background"
-            style={backStyle}
-        />
-        <!-- <img
-            src={contentback}
-            alt="Background Image"
-            class="background"
-            style={backStyle}
-        /> -->
-        <img
-            src={Dragon}
-            alt="Dragon Avatar"
-            class="dragon"
-            style={liveStyleDragon}
-        />
-        <img
-            src={Tiger}
-            alt="Tiger Avatar"
-            class="tiger"
-            style={liveStyleTiger}
-        />
+        <div class="painting-container">
+            <img
+                src={contentback1}
+                alt="Background"
+                class="background"
+                style={backStyle}
+            />
+            <!-- <img
+                src={contentback}
+                alt="Background Image"
+                class="background"
+                style={backStyle}
+            /> -->
+            <img
+                src={Dragon}
+                alt="Dragon Avatar"
+                class="dragon"
+                style={liveStyleDragon}
+            />
+            <img
+                src={Tiger}
+                alt="Tiger Avatar"
+                class="tiger"
+                style={liveStyleTiger}
+            />
+        </div>
         <div class="dialog">
             <div class="avatar" style="grid-row: 1 / 3;"></div>
             <div class="title">
@@ -462,6 +497,15 @@
                     aria-label="存档">存档</button
                 >
                 <button
+                    style={`color: ${quickCurrent ? "red" : "darkorange"}`}
+                    onclick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        showHistory();
+                    }}
+                    aria-label="历史">历史</button
+                >
+                <button
                     onclick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -471,6 +515,55 @@
                 >
             </div>
         </div>
+        <div class="hint" style={`max-width: ${isShowHint ? "300px" : "0"}`}>
+            <span style="margin: 0 10px; font-size: 10px; color: white;"
+                >{hintContent}</span
+            >
+        </div>
+        {#if historyFile.length !== 0}
+            <div
+                class="history"
+                in:fade={{ duration: 400 }}
+                out:fade={{ duration: 400 }}
+                onclick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
+                onkeydown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
+                onkeyup={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
+                tabindex="0"
+                role="button"
+            >
+                <div class="history-content">
+                    {#each historyFile as history, index}
+                        <div class="history-single">
+                            <div style="font-size: 1.2rem; font-weight: bold;">
+                                {@html replaceCurrentText(history!.name)}
+                            </div>
+                            <div
+                                style="white-space: wrap; word-wrap: break-word; color: white;"
+                            >
+                                {@html replaceCurrentText(history!.message)}
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+                <MyMenuButton
+                    style="position: fixed; bottom: 32px; right: 32px"
+                    onclick={() => historyFile.splice(0)}
+                >
+                    {#snippet children()}
+                        返回
+                    {/snippet}
+                </MyMenuButton>
+            </div>
+        {/if}
     </div>
 {/if}
 <MyMessageBox></MyMessageBox>
@@ -482,8 +575,21 @@
         left: 0;
         right: 0;
         bottom: 0;
+        margin: 0;
+        width: 100vw;
+        height: 100vh;
+        border: none;
+        outline: none;
+        overflow: hidden;
+    }
+    .painting-container {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
         margin: 0 auto;
-        width: 111.5vh;
+        width: 110vh;
         height: 100vh;
         border: none;
         outline: none;
@@ -522,7 +628,7 @@
         height: 30%;
         background-image: linear-gradient(to left bottom, #88888833, #44444433);
         display: grid;
-        grid-template-columns: minmax(0, 0.3fr) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 0.2fr) minmax(0, 1fr);
         grid-template-rows: minmax(0, 0.2fr) minmax(0, 1fr) minmax(0, 0.2fr);
     }
     .control {
@@ -569,11 +675,61 @@
         color: white;
         cursor: pointer;
         border-radius: 5px;
-        height: 30px;
+        min-height: 30px;
         flex-shrink: 0;
         width: 100%;
     }
     .choice-button:hover {
         background-color: #aaaaaa66;
+    }
+    .hint {
+        position: fixed;
+        top: 30px;
+        left: 0;
+        display: flex;
+        align-items: center;
+        background-color: #333333;
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
+        box-shadow: 0 0 10px #33333333;
+        width: auto;
+        max-width: 0;
+        height: 24px;
+        transition: max-width 0.2s;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .history {
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        backdrop-filter: blur(12px);
+        background-color: #00000033;
+    }
+    .history-content {
+        height: auto;
+        max-height: 100vh;
+        width: 120vh;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+    .history-content::-webkit-scrollbar {
+        display: none;
+    }
+    .history-single {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: space-around;
+        padding: 0 20px;
+        min-height: 20vh;
+        flex-shrink: 0;
+        width: 100%;
     }
 </style>
