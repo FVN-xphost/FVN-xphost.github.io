@@ -5,7 +5,7 @@ export const messagebox = writable({
   content: "",
   type: "info",
   result: "",
-  buttons: [],
+  buttons: <string[]>[],
   show: false,
 });
 export function showMessageBox(

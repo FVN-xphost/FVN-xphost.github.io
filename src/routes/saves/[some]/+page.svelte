@@ -1,19 +1,19 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
-    import MyMessageBox from "../../../components/board/MyMessageBox.svelte";
+    import "../../../components/board/MyMessageBox";
     import { saveData } from "../../../store/store";
     import { dialogInstance } from "../../../store/dialog2";
-    import { showMessageBox } from "../../../utils/messagebox";
-    import { sleep, router } from "../../../utils/all";
-    import { invoke } from "@tauri-apps/api/core";
+    import { showMessageBox, messagebox } from "../../../utils/messagebox";
+    import { sleep, router, branchCount } from "../../../utils/all";
+    import { save, unlockGallery } from "../../../utils/backend-tauri";
     import Dragon from "../../../assets/illustration/dragon_dressed.png";
     import Tiger from "../../../assets/illustration/tiger_dressed.png";
     import html2canvas from "html2canvas";
     import piano from "../../../assets/music/mp3/piano.mp3";
     import experience from "../../../assets/music/ogg/experience.ogg";
     import contentback1 from "../../../assets/Home/contentback1.jpg";
-    import MyMenuButton from "../../../components/input/MyMenuButton.svelte";
+    import "../../../components/input/MyMenuButton";
     const pianoIns = new Audio(piano);
     const experienceIns = new Audio(experience);
     const { params } = $props();
@@ -71,8 +71,8 @@
             },
         });
     }
-    async function unlockGallery(id: number) {
-        await invoke("update_gallery", { id });
+    async function ug(id: number) {
+        await unlockGallery(id);
         setGalleryMeta(id);
     }
     function getSaveInfo(key: string | undefined) {
@@ -366,29 +366,42 @@
         setSaveMeta("image", image);
         setSaveMeta("remark", "");
         setSaveMeta("updateTime", updateTime);
-        await invoke("update_save", {
-            id: params.some,
-            updateTime,
-            image,
-            name,
-            current,
-            branches: [
-                getSaveInfo("branch1") ?? "",
-                getSaveInfo("branch2") ?? "",
-                getSaveInfo("branch3") ?? "",
-                getSaveInfo("branch4") ?? "",
-                getSaveInfo("branch5") ?? "",
-                getSaveInfo("branch6") ?? "",
-                getSaveInfo("branch7") ?? "",
-            ],
-        });
-        showHint("存档成功！");
+        try {
+            await save(
+                params.some,
+                updateTime,
+                image,
+                name,
+                current,
+                new Array(branchCount)
+                    .fill(null)
+                    .map(
+                        (_, index: number) =>
+                            getSaveInfo(`branch${index + 1}`) ?? "",
+                    ),
+            );
+            showHint("存档成功！");
+        } catch (e: any) {
+            showHint("存档失败，错误信息：" + e.message);
+        }
+        // await invoke("update_save", {
+        //     id: params.some,
+        //     updateTime,
+        //     image,
+        //     name,
+        //     current,
+        //     branches: new Array(branchCount)
+        //         .fill(null)
+        //         .map((_, index: number) => {
+        //             return getSaveInfo(`branch${index + 1}`) ?? "";
+        //         }),
+        // });
     }
 </script>
 
 {#if o1}
     <div
-        class="container2"
+        class="fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden"
         in:fade={{ duration: 500 }}
         onclick={() => {
             if (quickCurrent) quickCurrent = false;
@@ -399,11 +412,13 @@
         tabindex="0"
         role="button"
     >
-        <div class="painting-container">
+        <div
+            class="fixed top-0 bottom-0 left-0 m-[0_auto] w-[110vh] h-screen border-none outline-none overflow-hidden"
+        >
             <img
                 src={contentback1}
                 alt="Background"
-                class="background"
+                class="absolute top-0 left-0 w-full h-full"
                 style={backStyle}
             />
             <!-- <img
@@ -415,17 +430,17 @@
             <img
                 src={Dragon}
                 alt="Dragon Avatar"
-                class="dragon"
+                class="absolute bottom-0 left-0 right-0 m-[0_auto] h-[90vh] w-auto"
                 style={liveStyleDragon}
             />
             <img
                 src={Tiger}
                 alt="Tiger Avatar"
-                class="tiger"
+                class="absolute bottom-0 left-0 right-0 m-[0_auto] h-[90vh] w-auto"
                 style={liveStyleTiger}
             />
         </div>
-        <div class="dialog">
+        <div class="absolute bottom-0 left-0">
             <div class="avatar" style="grid-row: 1 / 3;"></div>
             <div class="title">
                 {@html $dialogInstance[gc()]?.name?.replace(
@@ -557,72 +572,40 @@
                         </div>
                     {/each}
                 </div>
-                <MyMenuButton
+                <my-menu-button
                     style="position: fixed; bottom: 32px; right: 32px"
-                    onclick={() => historyFile.splice(0)}
+                    click={() => historyFile.splice(0)}
                 >
-                    {#snippet children()}
-                        返回
-                    {/snippet}
-                </MyMenuButton>
+                    返回
+                </my-menu-button>
             </div>
         {/if}
     </div>
 {/if}
-<MyMessageBox></MyMessageBox>
+{#if $messagebox.show}
+    <my-message-box
+        in:fade={{ duration: 300 }}
+        out:fade={{ duration: 300 }}
+        title={$messagebox.title}
+        content={$messagebox.content}
+        buttons={$messagebox.buttons}
+        type={$messagebox.type}
+        result={(result: string) => {
+            messagebox.set({
+                show: false,
+                title: "",
+                content: "",
+                type: "info",
+                buttons: [],
+                result: result,
+            });
+        }}
+    ></my-message-box>
+{/if}
+
+<!-- <MyMessageBox></MyMessageBox> -->
 
 <style>
-    .container2 {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        margin: 0;
-        width: 100vw;
-        height: 100vh;
-        border: none;
-        outline: none;
-        overflow: hidden;
-    }
-    .painting-container {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        margin: 0 auto;
-        width: 110vh;
-        height: 100vh;
-        border: none;
-        outline: none;
-        overflow: hidden;
-    }
-    .background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-    .dragon {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        margin: 0 auto;
-        height: 90vh;
-        width: auto;
-    }
-    .tiger {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        margin: 0 auto;
-        height: 90vh;
-        width: auto;
-    }
     .dialog {
         position: absolute;
         bottom: 0;

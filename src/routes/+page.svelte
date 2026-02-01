@@ -1,15 +1,16 @@
 <script lang="ts">
     import "../style/index.css";
+    import "../style/tailwind.css";
     import { onMount } from "svelte";
-    import MyMenuButton from "../components/input/MyMenuButton.svelte";
-    import { sleep, init } from "../utils/all";
-    import { boardText, mounted, saveData } from "../store/store";
+    import { sleep } from "../utils/all";
+    import { init } from "../utils/backend-tauri";
+    import { boardText, mounted } from "../store/store";
     import { window } from "@tauri-apps/api";
-    import MyBlackBoard from "../components/board/MyBlackBoard.svelte";
-    import { quadInOut } from "svelte/easing";
+    // import MyBlackBoard from "../components/board/MyBlackBoard.svelte";
+    import "../components/board/MyBlackBoard";
+    // import { quadInOut } from "svelte/easing";
     import { fade } from "svelte/transition";
-    import { showMessageBox } from "../utils/messagebox";
-    import MyTitleImg from "../assets/Home/title.png";
+    // import MyTitleImg from "../assets/Home/title.png";
     import { router } from "../utils/all";
     let o1 = $state(false);
     let o2 = $state(false);
@@ -17,93 +18,113 @@
     let o4 = $state(false);
     let o5 = $state(false);
     let o6 = $state(false);
+    let isStart = $state<boolean | null>(null);
     onMount(async () => {
         if ($mounted) {
+            isStart = false;
             o1 = true;
             o2 = true;
             o3 = true;
             o4 = true;
             o5 = true;
             o6 = true;
-        } else {
-            init();
-            o1 = true;
-            await sleep(1500);
-            o2 = true;
-            await sleep(1500);
-            o3 = true;
-            await sleep(300);
-            o4 = true;
-            await sleep(300);
-            o5 = true;
-            await sleep(300);
-            o6 = true;
-            await sleep(300);
-            mounted.set(true);
+            return;
         }
+        mounted.set(true);
+        init();
+        o1 = true;
+        await sleep(1500);
+        o2 = true;
+        await sleep(1500);
+        isStart = false;
     });
-    function fadeHomeButton(node: HTMLElement) {
-        return {
-            delay: 0,
-            duration: $mounted ? 0 : 1500,
-            easing: quadInOut,
-            css: (t: number) => {
-                if (t < 0.6) {
-                    return `opacity: ${t}; transform: translateY(${t * 100 - 40}px)`;
-                } else {
-                    return `opacity: ${t}; transform: translateY(${-50 * t + 50}px)`;
-                }
-            },
-        };
+    async function showStart() {
+        if (isStart === false) {
+            isStart = true;
+            await sleep(300);
+            o3 = true;
+            await sleep(300);
+            o4 = true;
+            await sleep(300);
+            o5 = true;
+            await sleep(300);
+            o6 = true;
+        }
     }
 </script>
 
 {#if o1}
-    <main class="container bg-img-full" in:fade={{ duration: 1500 }}>
+    <div
+        class="all fixed w-screen h-screen overflow-hidden bg-img-full"
+        in:fade={{ duration: 1500 }}
+        onclick={showStart}
+        onkeydown={showStart}
+        onkeyup={showStart}
+        tabindex="0"
+        role="button"
+    >
         {#if o2}
-            <img
-                src={MyTitleImg}
-                class="titleImage"
-                alt="标题文字"
-                in:fade={{ duration: $mounted ? 0 : 1500 }}
-            />
-        {/if}
-        <div class="main-div">
-            {#if o3}
-                <div in:fadeHomeButton>
-                    <MyMenuButton
-                        onclick={() => {
-                            router.push("/saves");
-                        }}
+            <div
+                in:fade={{ duration: 1500 }}
+                class="absolute w-screen h-[30vh] bg-yellow-300 top-[20vh] left-0 right-0 flex flex-col items-center"
+            >
+                <div class="flex-1 w-auto flex flex-col">
+                    <div class="text-black font-bold" style="font-size: 16vh">
+                        第一次离别
+                    </div>
+                    <div
+                        class="flex-1 self-stretch bg-black text-yellow-300 mb-2.5 flex items-center justify-center"
                     >
-                        {#snippet children()}
-                            开始游戏
-                        {/snippet}
-                    </MyMenuButton>
+                        V0.1.0
+                    </div>
                 </div>
-            {:else}
-                <div style="width: 120px; height: 35px;"></div>
-            {/if}
-            {#if o4}
-                <div in:fadeHomeButton>
-                    <MyMenuButton
-                        onclick={() => {
-                            router.push("/gallery");
-                        }}
-                    >
-                        {#snippet children()}
-                            画廊
-                        {/snippet}
-                    </MyMenuButton>
-                </div>
-            {:else}
-                <div style="width: 120px; height: 35px;"></div>
-            {/if}
-            {#if o5}
-                <div in:fadeHomeButton>
-                    <MyMenuButton
-                        onclick={() => {
-                            boardText.set(`
+            </div>
+            {#if isStart === true}
+                <div
+                    in:fade={{ duration: 1500 }}
+                    out:fade={{ duration: 300 }}
+                    class="flex flex-col absolute border-white border border-solid bottom-[10vh] h-auto p-1.5 gap-1.5 left-0 right-0 w-[20vw] mx-auto"
+                >
+                    {#if o3}
+                        <div
+                            in:fade={{ duration: 1500 }}
+                            class="flex-1 w-full flex items-center justify-center"
+                        >
+                            <button
+                                aria-label="开始游戏"
+                                class="w-[calc(20vw-0.75rem)] h-8.75 bg-yellow-300 text-black hover:bg-white cursor-pointer"
+                                onclick={() => router.push("/saves")}
+                                >开始游戏</button
+                            >
+                        </div>
+                    {:else}
+                        <div class="w-30 h-8.75"></div>
+                    {/if}
+                    {#if o4}
+                        <div
+                            in:fade={{ duration: 1500 }}
+                            class="flex-1 w-full flex items-center justify-center"
+                        >
+                            <button
+                                aria-label="画廊"
+                                class="w-[calc(20vw-0.75rem)] h-8.75 bg-yellow-300 text-black hover:bg-white cursor-pointer"
+                                onclick={() => router.push("/gallery")}
+                                >画廊</button
+                            >
+                        </div>
+                    {:else}
+                        <div class="w-30 h-8.75"></div>
+                    {/if}
+                    {#if o5}
+                        <div
+                            in:fade={{ duration: 1500 }}
+                            class="flex-1 w-full flex items-center justify-center"
+                        >
+                            <button
+                                aria-label="鸣谢"
+                                class="w-[calc(20vw-0.75rem)] h-8.75 bg-yellow-300 text-black hover:bg-white cursor-pointer"
+                                onclick={() => {
+                                    boardText.set(`
         <div style="color: #B22222;"><center style="font-size: 2rem;">关于与鸣谢：</center>
         非常感谢每一位支持我的玩家！在这里着重感谢：<br>
         <!-- <span style="color: red;">秋风残叶</span> 谢谢你的陪伴，让我在游戏生涯中少走了很多弯路。<br>
@@ -112,60 +133,52 @@
         <span style="color: yellow"></span> -->
         </div>
         `);
-                        }}
-                    >
-                        {#snippet children()}
-                            关于与鸣谢
-                        {/snippet}
-                    </MyMenuButton>
+                                }}>鸣谢</button
+                            >
+                        </div>
+                    {:else}
+                        <div class="w-30 h-8.75"></div>
+                    {/if}
+                    {#if o6}
+                        <div
+                            in:fade={{ duration: 1500 }}
+                            class="flex-1 w-full flex items-center justify-center"
+                        >
+                            <button
+                                aria-label="退出游戏"
+                                class="w-[calc(20vw-0.75rem)] h-8.75 bg-yellow-300 text-black hover:bg-white cursor-pointer"
+                                onclick={() =>
+                                    window.getCurrentWindow().close()}
+                                >退出游戏</button
+                            >
+                        </div>
+                    {:else}
+                        <div class="w-30 h-8.75"></div>
+                    {/if}
                 </div>
-            {:else}
-                <div style="width: 120px; height: 35px;"></div>
-            {/if}
-            {#if o6}
-                <div in:fadeHomeButton>
-                    <MyMenuButton
-                        onclick={() => {
-                            window.getCurrentWindow().close();
-                        }}
-                    >
-                        {#snippet children()}
-                            退出游戏
-                        {/snippet}
-                    </MyMenuButton>
+            {:else if isStart === false}
+                <div
+                    in:fade={{ duration: 1500 }}
+                    out:fade={{ duration: 300 }}
+                    class="animate-bounce text-yellow-300 absolute bottom-[40vh] w-screen flex items-center justify-center"
+                >
+                    单击以继续
                 </div>
-            {:else}
-                <div style="width: 120px; height: 35px;"></div>
             {/if}
-        </div>
-    </main>
+        {/if}
+    </div>
 {/if}
-<MyBlackBoard></MyBlackBoard>
+{#if $boardText !== ""}
+    <my-black-board
+        in:fade={{ duration: 400 }}
+        out:fade={{ duration: 400 }}
+        boardText={$boardText}
+        close={() => boardText.set("")}
+    ></my-black-board>
+{/if}
 
 <style>
-    .container {
-        position: fixed;
-        width: 100vw;
-        height: 100vh;
+    .all {
         background-image: url(/src/assets/Home/back.png);
-        overflow: hidden;
-    }
-    .titleImage {
-        position: absolute;
-        width: 100vw;
-        top: 0;
-        left: 0;
-        right: 0;
-    }
-    .main-div {
-        position: absolute;
-        width: 100vw;
-        height: 100px;
-        left: 0;
-        bottom: 0;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        gap: 60px;
     }
 </style>

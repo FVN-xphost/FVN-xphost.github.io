@@ -2,7 +2,7 @@
     import { fade } from "svelte/transition";
     import { sleep } from "../../utils/all";
     import { galleryLock, galleryPage, saveData } from "../../store/store";
-    import MyMenuButton from "../../components/input/MyMenuButton.svelte";
+    import "../../components/input/MyMenuButton";
     import { quadInOut } from "svelte/easing";
     import { onMount } from "svelte";
     import { router } from "../../utils/all";
@@ -110,37 +110,31 @@
         >
             页码：{page} / {galleryPageLength}
         </div>
-        <MyMenuButton
-            onclick={() => {
+        <my-menu-button
+            click={() => {
                 changePages(true);
             }}
             style="position: fixed; bottom: 10px; right: 296px; z-index: 10000;"
         >
-            {#snippet children()}
-                上一页
-            {/snippet}
-        </MyMenuButton>
-        <MyMenuButton
-            onclick={() => {
+            上一页
+        </my-menu-button>
+        <my-menu-button
+            click={() => {
                 changePages(false);
             }}
             style="position: fixed; bottom: 10px; right: 156px; z-index: 10000;"
         >
-            {#snippet children()}
-                下一页
-            {/snippet}
-        </MyMenuButton>
-        <MyMenuButton
-            onclick={() => {
+            下一页
+        </my-menu-button>
+        <my-menu-button
+            click={() => {
                 galleryPage.set(1);
                 router.push("/");
             }}
             style="position: fixed; bottom: 10px; right: 16px; z-index: 10000;"
         >
-            {#snippet children()}
-                返回
-            {/snippet}
-        </MyMenuButton>
+            返回
+        </my-menu-button>
     </div>
 {/if}
 

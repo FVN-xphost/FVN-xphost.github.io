@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
-    import MyMenuButton from "../../../components/input/MyMenuButton.svelte";
+    import "../../components/input/MyMenuButton";
     import { galleryLock } from "../../../store/store";
     const { params } = $props();
     const images = $galleryLock.find(
@@ -31,16 +31,14 @@
             style="flex-shrink: 0; position: relative; width: 100vw; height: 100vh;"
         />
     {/each}
-    <MyMenuButton
+    <my-menu-button
         style="position: fixed; bottom: 10px; right: 10px;"
-        onclick={() => {
+        click={() => {
             goto("/gallery");
         }}
     >
-        {#snippet children()}
-            返回
-        {/snippet}
-    </MyMenuButton>
+        返回
+    </my-menu-button>
 </div>
 
 <style>

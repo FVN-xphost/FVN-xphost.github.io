@@ -4,7 +4,7 @@
     import { router } from "../../utils/all";
     import { saveData } from "../../store/store";
     import { quadInOut } from "svelte/easing";
-    import MyMenuButton from "../../components/input/MyMenuButton.svelte";
+    import "../../components/input/MyMenuButton";
     import { onMount } from "svelte";
     const saveLength = 4;
     let o1 = $state(false);
@@ -50,14 +50,12 @@
 
 {#if o1}
     <div class="allsave" in:fade={{ duration: 1500 }}>
-        <MyMenuButton
-            onclick={() => router.push("/")}
+        <my-menu-button
+            click={() => router.push("/")}
             style="position: fixed; right: 10px; bottom: 10px; z-index: 2;"
         >
-            {#snippet children()}
-                返回主菜单
-            {/snippet}
-        </MyMenuButton>
+            返回主菜单
+        </my-menu-button>
         <div class="flex">
             {#if no}
                 <div class="grid" in:slideIn out:slideOut>
