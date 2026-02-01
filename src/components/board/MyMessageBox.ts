@@ -30,7 +30,7 @@ export class MyMessageBox extends LitElement {
           <input
             type="text"
             placeholder="请输入内容"
-            class="text-white border-none outline-none bg-gray-300 w-[90%] h-7.5 rounded-[5px] p-1.25 mt-2.5"
+            class="text-white border-none outline-none bg-gray-600 w-[90%] h-7.5 rounded-[5px] p-1.25 mt-2.5"
             .value=${this.value}
             @input=${this._onInput}
           />

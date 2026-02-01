@@ -21,12 +21,14 @@ interface DialogInterface {
   prev?: string;
 }
 function Normal(
-  name: string = "",
-  avatar: string = "",
+  id: string = "",
+  name: string,
+  avatar: string,
   message: string,
   ifbranch: IfInterface[] | undefined = undefined,
 ): DialogInterface {
   return {
+    id: id,
     name: name,
     avatar: avatar,
     message: message,
@@ -36,14 +38,17 @@ function Normal(
 function Aside(
   message: string,
   ifbranch: IfInterface[] | undefined = undefined,
+  id: string = "",
 ) {
-  return Normal("", "", message, ifbranch);
+  return Normal(id, "", "", message, ifbranch);
 }
 function George(
   message: string,
   ifbranch: IfInterface[] | undefined = undefined,
+  id: string = "",
 ) {
   return Normal(
+    id,
     `<span style="color: skyblue;">%name</span>`,
     "",
     message,
@@ -53,16 +58,23 @@ function George(
 function Admin(
   message: string,
   ifbranch: IfInterface[] | undefined = undefined,
+  id: string = "",
 ) {
   return Normal(
+    id,
     `<span style="color: lightgreen;">管理员</span>`,
     "",
     message,
     ifbranch,
   );
 }
-function Qm(message: string, ifbranch: IfInterface[] | undefined = undefined) {
+function Qm(
+  message: string,
+  ifbranch: IfInterface[] | undefined = undefined,
+  id: string = "",
+) {
   return Normal(
+    id,
     `<span style="color: darkgray">??</span>`,
     "",
     message,
@@ -72,8 +84,10 @@ function Qm(message: string, ifbranch: IfInterface[] | undefined = undefined) {
 function Tony(
   message: string,
   ifbranch: IfInterface[] | undefined = undefined,
+  id: string = "",
 ) {
   return Normal(
+    id,
     `<span style="color: orange">托尼</span>`,
     "",
     message,
@@ -83,8 +97,10 @@ function Tony(
 function Wildebeest(
   message: string,
   ifbranch: IfInterface[] | undefined = undefined,
+  id: string = "",
 ) {
   return Normal(
+    id,
     `<span style="color: lightcoral">角马</span>`,
     "",
     message,
@@ -153,7 +169,7 @@ export const dialogInstance = readable<DialogInterface[]>([
   Aside(
     "冷色的日光灯照在管理员的鬃毛上，在桌面上投下了巨大的阴影。这会离开门已经过去了几秒，他停笔，抬头看了看，稍稍坐直，身下的折叠椅发出不堪重负的噪音。",
   ),
-  Admin("姓名？"),
+  Admin("姓名？", [], "start1"),
   Choice("branch1", ["直接告诉他", "或者你先告诉我，你的名字？"]),
   ...(() => {
     const ifbranch: IfInterface[] = [

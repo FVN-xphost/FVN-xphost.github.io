@@ -25,7 +25,7 @@ export async function init() {
   saveData.set(savedata);
   localStorage.set("get_all_data", JSON.stringify(savedata));
 }
-export function save(
+export async function save(
   id: string,
   updateTime: string,
   image: string,
@@ -45,7 +45,7 @@ export function save(
   }
   localStorage.setItem("get_all_data", JSON.stringify(savedata));
 }
-export function unlockGallery(id: number) {
+export async function unlockGallery(id: number) {
   let savedata = JSON.parse(localStorage.getItem("get_all_data") ?? "{}");
   savedata.gallery[`gallery${id}`] = true;
   localStorage.setItem("get_all_data", JSON.stringify(savedata));

@@ -2,32 +2,44 @@
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import "../../../components/board/MyMessageBox";
-    import { saveData } from "../../../store/store";
-    import { dialogInstance } from "../../../store/dialog2";
+    import { mounted, saveData } from "../../../store/store";
+    import { dialogInstance } from "../../../store/dialog";
     import { showMessageBox, messagebox } from "../../../utils/messagebox";
     import { sleep, router, branchCount } from "../../../utils/all";
-    import { save, unlockGallery } from "../../../utils/backend-tauri";
+    import { init, save, unlockGallery } from "../../../utils/backend-tauri";
     import Dragon from "../../../assets/illustration/dragon_dressed.png";
     import Tiger from "../../../assets/illustration/tiger_dressed.png";
     import html2canvas from "html2canvas";
     import piano from "../../../assets/music/mp3/piano.mp3";
     import experience from "../../../assets/music/ogg/experience.ogg";
-    import contentback1 from "../../../assets/Home/contentback1.jpg";
+    import Scene1 from "../../../assets/scene/scene1.png";
     import "../../../components/input/MyMenuButton";
+    // 钢琴音乐
     const pianoIns = new Audio(piano);
+    // 获得经验
     const experienceIns = new Audio(experience);
     const { params } = $props();
+    // 当前存档名称
     const thisname = (() => `save${params.some}`)();
+    // 临时变量：控制主屏幕显示。
     let o1 = $state(false);
+    /// 以下为一组：当前文本
     let currentText = $state("");
+    // 锁住文本（用于 next 时是否控制文本点击时自动显示完整。）
     let lockText = $state(false);
+    /// 退出文本（同上用于判断）
     let exitText = $state(false);
+    // 控制 空格键 锁定
     let keyLock = $state(false);
+    // 是否点击了快进
     let quickCurrent = $state(false);
+    // 龙立绘样式
     let liveStyleDragon = $state("");
+    // 虎立绘样式
     let liveStyleTiger = $state("");
-    let contentback = $state("");
+    // 背景样式
     let backStyle = $state("");
+    let backImage = $state("");
     let isShowHint = $state(false);
     let hintContent = $state("");
     let historyFile = $state<any[]>([]);
@@ -84,6 +96,9 @@
     function gc(): number {
         return parseInt(getSaveInfo("current"));
     }
+    function gd(index: number): object {
+        return $dialogInstance[index] ?? {};
+    }
     function plusOne() {
         setSaveInfo("current", gc() + 1);
     }
@@ -91,13 +106,21 @@
         setSaveInfo("current", gc() - 1);
     }
     async function doStyle(current: number, isQuick: boolean = false) {
-        pianoIns.pause();
-        pianoIns.currentTime = 0;
-        experienceIns.pause();
-        experienceIns.currentTime = 0;
-        liveStyleTiger = "transform: translateX(150vw);";
-        liveStyleDragon = "transform: translateX(-150vw);";
-        backStyle = "opacity: 0;";
+        if (current === 0) {
+            pianoIns.pause();
+            pianoIns.currentTime = 0;
+            experienceIns.pause();
+            experienceIns.currentTime = 0;
+            liveStyleTiger = "transform: translateX(150vw);";
+            liveStyleDragon = "transform: translateX(-150vw);";
+            backStyle = `opacity: 0;`;
+            backImage = "";
+        }
+        if (gd(current).id === "start1") {
+            backStyle = `opacity: 1;`;
+            backImage = Scene1;
+            if (!isQuick) await sleep(500);
+        }
         // if (current === 0) {
         //     backStyle = "opacity: 0;";
         //     liveStyleTiger = "transform: translateX(110vh);";
@@ -183,17 +206,17 @@
         if (gc() >= $dialogInstance.length) {
             return;
         }
-        if (!$dialogInstance[gc()]?.message) return;
+        if (!gd(gc()).message) return;
         if (lockText) {
             exitText = true;
-            currentText = replaceCurrentText($dialogInstance[gc()]?.message);
+            currentText = replaceCurrentText(gd(gc()).message);
             return;
         }
         lockText = true;
         currentText = "";
-        if ($dialogInstance[gc()]?.next && $dialogInstance[gc()]?.if) {
+        if (gd(gc()).next && gd(gc()).if) {
             const i = $dialogInstance.findIndex(
-                (item: any) => item.id === $dialogInstance[gc()]?.next,
+                (item: any) => item.id === gd(gc()).next,
             );
             if (i >= 0) {
                 setSaveInfo("current", i);
@@ -205,7 +228,7 @@
             plusOne();
         }
         await doStyle(gc());
-        let ct = replaceCurrentText($dialogInstance[gc()]?.message);
+        let ct = replaceCurrentText(gd(gc()).message);
         let isLt = false;
         for (let i = 0; i < (ct?.length ?? 0); i++) {
             if (exitText) {
@@ -240,7 +263,7 @@
     }
     function jumpTo(ps: boolean) {
         while (true) {
-            const j = $dialogInstance[gc() + (ps ? 1 : -1)]?.if;
+            const j = gd(gc() + (ps ? 1 : -1)).if;
             if (j && j.length > 0) {
                 let result = true;
                 const firstKey = j[0]!.key;
@@ -281,8 +304,8 @@
         let loadPrev = [];
         let current = gc();
         historyFile.unshift({
-            name: $dialogInstance[gc()]?.name,
-            message: $dialogInstance[gc()]?.message,
+            name: gd(gc()).name,
+            message: gd(gc()).message,
         });
         while (true) {
             if (gc() === 0) {
@@ -290,21 +313,29 @@
             }
             jumpTo(false);
             minusOne();
-            if (!$dialogInstance[gc()]?.message) {
+            if (!gd(gc()).message) {
                 continue;
             }
+            let score = gd(gc()).score;
+            // 下列开始判断 score 分数的回退，仅适用与 score 在 action 的返回值是 return (parseInt(rawValue) || 0 + n).toString();（n=任何数字）这种。。
+            if (score !== undefined) {
+                let choice = getSaveInfo(gd(gc()).id);
+                let rawScore = parseInt(getSaveInfo(score.targetId));
+                let plusScore = parseInt(score.action(choice, "0"));
+                setSaveInfo(score.targetId, (rawScore - plusScore).toString());
+            }
             historyFile.unshift({
-                name: $dialogInstance[gc()]?.name,
-                message: $dialogInstance[gc()]?.message,
+                name: gd(gc()).name,
+                message: gd(gc()).message,
             });
         }
         setSaveInfo("current", current);
     }
     function prev() {
         if (gc() <= 0) return;
-        if ($dialogInstance[gc()]?.prev) {
+        if (gd(gc()).prev) {
             const i = $dialogInstance.findIndex(
-                (item: any) => item.id === $dialogInstance[gc()]?.prev,
+                (item: any) => item.id === gd(gc()).prev,
             );
             if (i >= 0) {
                 setSaveInfo("current", i);
@@ -313,16 +344,16 @@
             jumpTo(false);
             minusOne();
             doStyle(gc(), true);
-            let score = $dialogInstance[gc()]?.score;
+            let score = gd(gc()).score;
             // 下列开始判断 score 分数的回退，仅适用与 score 在 action 的返回值是 return (parseInt(rawValue) || 0 + n).toString();（n=任何数字）这种。。
             if (score !== undefined) {
-                let choice = getSaveInfo($dialogInstance[gc()]!.id);
+                let choice = getSaveInfo(gd(gc()).id);
                 let rawScore = parseInt(getSaveInfo(score.targetId));
                 let plusScore = parseInt(score.action(choice, "0"));
                 setSaveInfo(score.targetId, (rawScore - plusScore).toString());
             }
         }
-        currentText = replaceCurrentText($dialogInstance[gc()]?.message);
+        currentText = replaceCurrentText(gd(gc()).message);
     }
     async function quick() {
         quickCurrent = !quickCurrent;
@@ -330,14 +361,14 @@
             if (
                 !quickCurrent ||
                 gc() >= $dialogInstance.length ||
-                !$dialogInstance[gc()]?.message
+                !gd(gc()).message
             )
                 break;
             jumpTo(true);
             await sleep(50);
             plusOne();
             await doStyle(gc(), true);
-            currentText = replaceCurrentText($dialogInstance[gc()]?.message);
+            currentText = replaceCurrentText(gd(gc()).message);
         }
     }
     function spaceDown(e: KeyboardEvent) {
@@ -401,7 +432,7 @@
 
 {#if o1}
     <div
-        class="fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden"
+        class="bg1 bg-img-full fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden flex items-center"
         in:fade={{ duration: 500 }}
         onclick={() => {
             if (quickCurrent) quickCurrent = false;
@@ -412,174 +443,73 @@
         tabindex="0"
         role="button"
     >
-        <div
-            class="fixed top-0 bottom-0 left-0 m-[0_auto] w-[110vh] h-screen border-none outline-none overflow-hidden"
-        >
-            <img
-                src={contentback1}
-                alt="Background"
-                class="absolute top-0 left-0 w-full h-full"
-                style={backStyle}
-            />
-            <!-- <img
-                src={contentback}
-                alt="Background Image"
-                class="background"
-                style={backStyle}
-            /> -->
-            <img
-                src={Dragon}
-                alt="Dragon Avatar"
-                class="absolute bottom-0 left-0 right-0 m-[0_auto] h-[90vh] w-auto"
-                style={liveStyleDragon}
-            />
-            <img
-                src={Tiger}
-                alt="Tiger Avatar"
-                class="absolute bottom-0 left-0 right-0 m-[0_auto] h-[90vh] w-auto"
-                style={liveStyleTiger}
-            />
-        </div>
-        <div class="absolute bottom-0 left-0">
-            <div class="avatar" style="grid-row: 1 / 3;"></div>
-            <div class="title">
-                {@html $dialogInstance[gc()]?.name?.replace(
-                    "%name",
-                    getSaveInfo("name"),
-                )}
-            </div>
-            <div class="content">
-                {#if $dialogInstance[gc()]?.type === "choice"}
-                    <div class="choose">
-                        {#each $dialogInstance[gc()]?.choice as choice}
-                            <button
-                                class="choice-button"
-                                onclick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setSaveInfo(
-                                        $dialogInstance[gc()]?.id!,
-                                        choice,
-                                    );
-                                    let score = $dialogInstance[gc()]?.score;
-                                    if (score !== undefined) {
-                                        setSaveInfo(
-                                            score.targetId!,
-                                            score.action(
-                                                choice,
-                                                getSaveInfo(score.targetId),
-                                            ),
-                                        );
-                                        console.log(
-                                            getSaveInfo(score.targetId),
-                                        );
-                                    }
-                                    jumpTo(true);
-                                    plusOne();
-                                    next(false);
-                                }}
-                                aria-label={choice}
-                            >
-                                {@html replaceCurrentText(choice)}
-                            </button>
-                        {/each}
-                    </div>
-                {:else}
-                    {@html currentText}
-                {/if}
-            </div>
-            <div class="control" style="grid-column: 1 / 3;">
-                <button
-                    onclick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        prev();
-                    }}
-                    aria-label="后退">后退</button
-                >
-                <button
-                    style={`color: ${quickCurrent ? "red" : "darkorange"}`}
-                    onclick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        quick();
-                    }}
-                    aria-label="快进">快进</button
-                >
-                <button
-                    onclick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        updateSave(getSaveInfo("name"), gc());
-                    }}
-                    aria-label="存档">存档</button
-                >
-                <button
-                    style={`color: ${quickCurrent ? "red" : "darkorange"}`}
-                    onclick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        showHistory();
-                    }}
-                    aria-label="历史">历史</button
-                >
-                <button
-                    onclick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        router.back();
-                    }}
-                    aria-label="返回">返回</button
-                >
-            </div>
-        </div>
-        <div class="hint" style={`max-width: ${isShowHint ? "300px" : "0"}`}>
-            <span style="margin: 0 10px; font-size: 10px; color: white;"
-                >{hintContent}</span
-            >
-        </div>
-        {#if historyFile.length !== 0}
+        <div class="w-screen h-[95vh] flex border-white border items-center">
             <div
-                class="history"
-                in:fade={{ duration: 400 }}
-                out:fade={{ duration: 400 }}
-                onclick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }}
-                onkeydown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }}
-                onkeyup={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }}
-                tabindex="0"
-                role="button"
+                class="w-screen h-[93vh] border-gray-300 border flex items-center"
             >
-                <div class="history-content">
-                    {#each historyFile as history, index}
-                        <div class="history-single">
-                            <div style="font-size: 1.2rem; font-weight: bold;">
-                                {@html replaceCurrentText(history!.name)}
-                            </div>
-                            <div
-                                style="white-space: wrap; word-wrap: break-word; color: white;"
-                            >
-                                {@html replaceCurrentText(history!.message)}
-                            </div>
-                        </div>
-                    {/each}
+                <div class="w-[50vw] h-full relative">
+                    <img
+                        src={backImage}
+                        alt="背景图片"
+                        class="absolute top-[50%] left-[50%] translate-[-50%] w-full aspect-video transition-opacity duration-500"
+                        style={backStyle}
+                    />
                 </div>
-                <my-menu-button
-                    style="position: fixed; bottom: 32px; right: 32px"
-                    click={() => historyFile.splice(0)}
-                >
-                    返回
-                </my-menu-button>
+                <div class="flex-1 h-full border-l-gray-300 border"></div>
+                <div class="relative w-[5vw] h-full border-l-gray-300 border">
+                    <div
+                        class="absolute flex flex-col items-center gap-[3vw] bottom-0 left-0 right-0 w-full h-auto mx-auto my-0"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="text-sky-300 w-[4vw] h-[4vw]"
+                            viewBox="0 0 24 24"
+                            ><path
+                                fill="currentColor"
+                                d="M8.539 19.192v-5H5.325q-.379 0-.55-.348t.09-.646L11.399 5.7q.243-.279.602-.279t.602.279l6.533 7.498q.261.298.09.646t-.55.348h-3.213v5q0 .349-.23.578t-.578.23H9.346q-.348 0-.578-.23t-.23-.578"
+                            /></svg
+                        >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="w-[4vw] h-[4vw]"
+                            viewBox="0 0 64 64"
+                            ><path
+                                fill="#3e4347"
+                                d="m61.3 9.3l-6.6-6.6c-.4-.4-1.2-.7-1.7-.7H9v4H5V2H3c-.5 0-1 .5-1 1v58c0 .5.5 1 1 1h58c.5 0 1-.5 1-1V11c0-.6-.3-1.3-.7-1.7"
+                            /><path
+                                fill="#fff"
+                                d="M12 62V34c0-1.1.9-2 2-2h36c1.1 0 2 .9 2 2v28z"
+                            /><path
+                                fill="#e8e8e8"
+                                d="M18 2v20c0 1.1.9 2 2 2h30c1.1 0 2-.9 2-2V2z"
+                            /><path fill="#3e4347" d="M36 6h10v16H36z" /><path
+                                fill="#fff"
+                                d="M59 56c0-.6-.5-1-1-1h-2c-.5 0-1 .4-1 1v2c0 .5.5 1 1 1h2c.5 0 1-.5 1-1z"
+                            /><path
+                                fill="#f15744"
+                                d="M12 54h40v8H12zm5-18h30v2H17zm0 6h30v2H17zm0 6h30v2H17z"
+                            /></svg
+                        ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="text-sky-300 w-[4vw] h-[4vw]"
+                            width="32"
+                            height="32"
+                            viewBox="0 0 24 24"
+                            ><g
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                ><path d="M12 22l-7 -7M12 22l7 -7" /><path
+                                    d="M12 16l-7 -7M12 16l7 -7"
+                                /><path d="M12 10l-7 -7M12 10l7 -7" /></g
+                            ></svg
+                        >
+                    </div>
+                </div>
             </div>
-        {/if}
+        </div>
     </div>
 {/if}
 {#if $messagebox.show}
@@ -606,116 +536,7 @@
 <!-- <MyMessageBox></MyMessageBox> -->
 
 <style>
-    .dialog {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 30%;
-        background-image: linear-gradient(to left bottom, #88888833, #44444433);
-        display: grid;
-        grid-template-columns: minmax(0, 0.2fr) minmax(0, 1fr);
-        grid-template-rows: minmax(0, 0.2fr) minmax(0, 1fr) minmax(0, 0.2fr);
-    }
-    .control {
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-    }
-    .control button {
-        border: none;
-        background-color: transparent;
-        color: darkorange;
-        cursor: pointer;
-        border: none;
-        outline: none;
-    }
-    .title {
-        display: flex;
-        align-items: center;
-        padding-left: 10px;
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: white;
-    }
-    .content {
-        padding: 10px;
-        color: white;
-        white-space: wrap;
-        overflow-y: auto;
-        word-wrap: break-word;
-    }
-    .content::-webkit-scrollbar {
-        display: none;
-    }
-    .choose {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-    }
-    .choice-button {
-        border: none;
-        background-color: #99999955;
-        color: white;
-        cursor: pointer;
-        border-radius: 5px;
-        min-height: 30px;
-        flex-shrink: 0;
-        width: 100%;
-    }
-    .choice-button:hover {
-        background-color: #aaaaaa66;
-    }
-    .hint {
-        position: fixed;
-        top: 30px;
-        left: 0;
-        display: flex;
-        align-items: center;
-        background-color: #333333;
-        border-top-right-radius: 3px;
-        border-bottom-right-radius: 3px;
-        box-shadow: 0 0 10px #33333333;
-        width: auto;
-        max-width: 0;
-        height: 24px;
-        transition: max-width 0.2s;
-        overflow: hidden;
-        white-space: nowrap;
-    }
-    .history {
-        position: fixed;
-        width: 100vw;
-        height: 100vh;
-        top: 0;
-        left: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        backdrop-filter: blur(12px);
-        background-color: #00000033;
-    }
-    .history-content {
-        height: auto;
-        max-height: 100vh;
-        width: 120vh;
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-    }
-    .history-content::-webkit-scrollbar {
-        display: none;
-    }
-    .history-single {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: space-around;
-        padding: 0 20px;
-        min-height: 20vh;
-        flex-shrink: 0;
-        width: 100%;
+    .bg1 {
+        background-image: url(../../../assets/Home/back.png);
     }
 </style>
