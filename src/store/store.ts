@@ -3,11 +3,11 @@ import Gallery1 from "../assets/gallery/gallery1.png";
 import Gallery2 from "../assets/gallery/gallery2.png";
 import Gallery3 from "../assets/gallery/gallery3.png";
 import Gallery4 from "../assets/gallery/gallery4.png";
-export const saveData = writable({});
+export const saveData = writable<any>({});
 export const boardText = writable("");
 export const mounted = writable(false);
 export const galleryPage = writable(1);
-export const galleryLock = readable([
+export const galleryLock = readable<{ id: string, images: string[] }[]>([
   {
     id: "1",
     images: [Gallery1, Gallery2, Gallery3, Gallery4],

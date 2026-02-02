@@ -2,34 +2,47 @@
     font-family: Silver;
     src: url(../assets/fonts/Silver.ttf);
 }
+
 @font-face {
     font-family: AlibabaPuHuiTi;
     src: url(../assets/fonts/Alibaba_PuHuiTi_2.0_65_Medium_65_Medium.ttf);
 }
+
 .bg-img-full {
     background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;
 }
-*:not(span) {
+
+* {
     font-size: 1rem;
     image-rendering: pixelated;
     user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
     box-sizing: border-box;
+}
+
+*:not(.button-span) {
     font-family: AlibabaPuHuiTi;
 }
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
 @keyframes ash {
     0% {
         opacity: 0;
         box-shadow: none;
         transform: translateY(0vh);
     }
+
     50% {
         opacity: 1;
         box-shadow: 0 0 10px 5px darkgray;
     }
+
     100% {
         opacity: 0;
         box-shadow: none;

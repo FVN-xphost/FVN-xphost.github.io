@@ -49,22 +49,31 @@
 </script>
 
 {#if o1}
-    <div class="allsave" in:fade={{ duration: 1500 }}>
+    <div
+        class="allsave fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-[linear-gradient(to_bottom,gray,black)]"
+        in:fade={{ duration: 1500 }}
+    >
         <my-menu-button
             click={() => router.push("/")}
             style="position: fixed; right: 10px; bottom: 10px; z-index: 2;"
         >
             返回主菜单
         </my-menu-button>
-        <div class="flex">
+        <div
+            class="fixed top-0 left-0 right-0 bottom-0 m-auto flex flex-col w-100 h-75 gap-2.5 z-2"
+        >
             {#if no}
-                <div class="grid" in:slideIn out:slideOut>
+                <div
+                    class="flex-1 w-full grid grid-cols-2 grid-rows-2 gap-[5rem,2.5rem]"
+                    in:slideIn
+                    out:slideOut
+                >
                     {#each Object.keys($saveData.saveObject).filter( (_, index) => {
                             const pm = page - 1;
                             return index >= pm * saveLength && index < pm * saveLength + saveLength;
                         }, ) as item}
                         <div
-                            class="save bg-img-full"
+                            class="w-48.75 h-30 bg-[#303030] text-white flex items-center justify-center font-bold cursor-pointer duration-200 transition-[background-color] bg-img-full hover:bg-[#202020]"
                             style={$saveData.saveObject[item].image
                                 ? `background-image: url(${$saveData.saveObject[item].image})`
                                 : ""}
@@ -85,9 +94,10 @@
                     {/each}
                 </div>
             {/if}
-            <div class="pages">
+            <div class="h-7.5 flex items-center justify-between">
                 {#each Array(Math.ceil(Object.keys($saveData.saveObject).length / 4)) as _, index}
                     <button
+                        class="h-full w-auto aspect-square rounded-[50%] border-none cursor-pointer bg-[#303030] text-white flex items-center justify-center hover:bg-[#202020]"
                         aria-label={`第${index + 1}页`}
                         style={page === index + 1
                             ? "background-color: #101010"
@@ -104,77 +114,3 @@
         </div>
     </div>
 {/if}
-
-<style>
-    .allsave {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-image: linear-gradient(to bottom, gray, black);
-    }
-    .save {
-        width: 195px;
-        height: 120px;
-        background-color: #303030;
-        color: #101010;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        cursor: pointer;
-        color: white;
-        transition: background-color 0.2s;
-    }
-    .save:hover {
-        background-color: #202020;
-    }
-    .flex {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        margin: auto;
-        display: flex;
-        flex-direction: column;
-        width: 400px;
-        height: 300px;
-        gap: 10px;
-        z-index: 2;
-    }
-    .grid {
-        flex: 1;
-        width: 100%;
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 20px 10px;
-    }
-    .pages {
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    .pages > button {
-        height: 100%;
-        width: auto;
-        aspect-ratio: 1 / 1;
-        border-radius: 50%;
-        border: none;
-        cursor: pointer;
-        background-color: #303030;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .pages > button:hover {
-        background-color: #202020;
-    }
-</style>

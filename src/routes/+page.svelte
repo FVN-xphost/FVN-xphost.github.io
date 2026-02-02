@@ -55,7 +55,7 @@
 
 {#if o1}
     <div
-        class="all fixed w-screen h-screen overflow-hidden bg-img-full"
+        class="fixed w-screen h-screen overflow-hidden bg-img-full bg-[url(/src/assets/Home/back.png)]"
         in:fade={{ duration: 1500 }}
         onclick={showStart}
         onkeydown={showStart}
@@ -176,9 +176,3 @@
         close={() => boardText.set("")}
     ></my-black-board>
 {/if}
-
-<style>
-    .all {
-        background-image: url(/src/assets/Home/back.png);
-    }
-</style>

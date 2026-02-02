@@ -64,47 +64,40 @@
 </script>
 
 {#if o1}
-    <div style="width: 100vw; height: 100vh;" in:fade={{ duration: 1500 }}>
-        <div class="back bg-img-full">
-            {#each $galleryLock.filter((_, index) => {
-                const pm = page - 1;
-                return index >= pm * pageLength && index < pm * pageLength + pageLength;
-            }) as item, index}
-                <div style="position: relative;">
-                    {#if galleryTrans2[index]}
-                        <button
-                            in:rot2
-                            class="trans trans2 bg-img-full"
-                            style={`background-image: url(${($saveData?.gallery ?? {})[`gallery${item.id}`] ? (item.images[0] ?? GalleryBack) : GalleryBack})`}
-                            onclick={() => {
-                                if (
-                                    ($saveData?.gallery ?? {})[
-                                        `gallery${item.id}`
-                                    ]
-                                )
-                                    router.push(`/gallery/${item.id}`);
-                            }}
-                            aria-labelledby="Click me!"
-                        ></button>
-                    {/if}
-                    {#if galleryTrans1[index]}
-                        <button
-                            in:rot1
-                            class="trans"
-                            onclick={() => {
-                                if (
-                                    ($saveData?.gallery ?? {})[
-                                        `gallery${item.id}`
-                                    ]
-                                )
-                                    router.push(`/gallery/${item.id}`);
-                            }}
-                            aria-labelledby="Click me!"
-                        ></button>
-                    {/if}
-                </div>
-            {/each}
-        </div>
+    <div
+        in:fade={{ duration: 1500 }}
+        class="back bg-[url(/src/assets/Home/paper2.png)] fixed overflow-hidden left-0 top-0 w-screen h-screen grid grid-cols-3 grid-rows-2 bg-img-full"
+    >
+        {#each $galleryLock.filter((_, index) => {
+            const pm = page - 1;
+            return index >= pm * pageLength && index < pm * pageLength + pageLength;
+        }) as item, index}
+            <div class="relative">
+                {#if galleryTrans2[index]}
+                    <button
+                        in:rot2
+                        class="trans trans2 bg-img-full"
+                        style={`background-image: url(${($saveData?.gallery ?? {})[`gallery${item.id}`] ? (item.images[0] ?? GalleryBack) : GalleryBack})`}
+                        onclick={() => {
+                            if (($saveData?.gallery ?? {})[`gallery${item.id}`])
+                                router.push(`/gallery/${item.id}`);
+                        }}
+                        aria-labelledby="Click me!"
+                    ></button>
+                {/if}
+                {#if galleryTrans1[index]}
+                    <button
+                        in:rot1
+                        class="trans"
+                        onclick={() => {
+                            if (($saveData?.gallery ?? {})[`gallery${item.id}`])
+                                router.push(`/gallery/${item.id}`);
+                        }}
+                        aria-labelledby="Click me!"
+                    ></button>
+                {/if}
+            </div>
+        {/each}
         <div
             style="position: fixed; bottom: 20px; right: 466px; z-index: 10000; font-size: 20px; font-weight: bold"
         >
@@ -139,18 +132,6 @@
 {/if}
 
 <style>
-    .back {
-        position: fixed;
-        overflow: hidden;
-        left: 0;
-        top: 0;
-        width: 100vw;
-        height: 100vh;
-        background-image: url("../../assets/Home/paper2.png");
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        grid-template-rows: repeat(2, minmax(0, 1fr));
-    }
     .trans {
         width: 20vw;
         height: 30vh;

@@ -25,6 +25,8 @@
     let o1 = $state(false);
     /// 以下为一组：当前文本
     let currentText = $state("");
+    // 上一个文本：
+    let upText = $state("");
     // 锁住文本（用于 next 时是否控制文本点击时自动显示完整。）
     let lockText = $state(false);
     /// 退出文本（同上用于判断）
@@ -96,7 +98,7 @@
     function gc(): number {
         return parseInt(getSaveInfo("current"));
     }
-    function gd(index: number): object {
+    function gd(index: number): any {
         return $dialogInstance[index] ?? {};
     }
     function plusOne() {
@@ -117,8 +119,8 @@
             backImage = "";
         }
         if (gd(current).id === "start1") {
-            backStyle = `opacity: 1;`;
             backImage = Scene1;
+            backStyle = `opacity: 1;`;
             if (!isQuick) await sleep(500);
         }
         // if (current === 0) {
@@ -197,10 +199,10 @@
             }
             setSaveInfo("name", name);
         }
-        doStyle(gc(), true);
+        await doStyle(gc(), true);
         o1 = true;
         await sleep(500);
-        next(false);
+        await next(false);
     });
     async function next(plus: boolean = true) {
         if (gc() >= $dialogInstance.length) {
@@ -252,7 +254,7 @@
         exitText = false;
         lockText = false;
     }
-    function replaceCurrentText(text: string | undefined) {
+    function replaceCurrentText(text: string | undefined): string {
         if (text === undefined) return "";
         Object.keys(getSaveInfo(undefined))
             .filter((item) => item !== "current")
@@ -261,6 +263,7 @@
             });
         return text;
     }
+    // 跳过剧情。ps 代表着是前进还是后退。（自动判断分支跳过！需要在每一个 next 之前都要调用一遍！）
     function jumpTo(ps: boolean) {
         while (true) {
             const j = gd(gc() + (ps ? 1 : -1)).if;
@@ -299,9 +302,8 @@
             }
         }
     }
-    // 使用古法查看历史（ps：逐步往前退，直到退到0。。由于 jumpTo 函数已经帮我们解决了分支问题，因此无需担心历史数据丢失。。）
+    // 使用古法查看历史（ps：逐步往前退，直到退到0。。由于 jumpTo 函数已经帮我们解决了分支问题，因此无需担心历史数据丢失或者起冲突。。）
     function showHistory() {
-        let loadPrev = [];
         let current = gc();
         historyFile.unshift({
             name: gd(gc()).name,
@@ -432,7 +434,7 @@
 
 {#if o1}
     <div
-        class="bg1 bg-img-full fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden flex items-center"
+        class="bg-img-full bg-[url(/src/assets/Home/back.png)] fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden flex items-center"
         in:fade={{ duration: 500 }}
         onclick={() => {
             if (quickCurrent) quickCurrent = false;
@@ -447,6 +449,7 @@
             <div
                 class="w-screen h-[93vh] border-gray-300 border flex items-center"
             >
+                <!-- 立绘区域 -->
                 <div class="w-[50vw] h-full relative">
                     <img
                         src={backImage}
@@ -455,7 +458,78 @@
                         style={backStyle}
                     />
                 </div>
-                <div class="flex-1 h-full border-l-gray-300 border"></div>
+                <div
+                    class="flex flex-col flex-1 h-full border-l-gray-300 border"
+                >
+                    <!-- 对话区域 -->
+                    <div class="flex-1 w-full flex flex-col"></div>
+                    <!-- 选项区域 -->
+                    <div
+                        class="flex flex-col h-[30vh] border-t-gray-300 border"
+                    >
+                        {#if gd(gc()).type === "choice"}
+                            <div
+                                in:fade={{ duration: 200 }}
+                                out:fade={{ duration: 200 }}
+                                class="flex flex-col w-full h-full p-2.5 overflow-y-auto gap-2.5"
+                            >
+                                {#each gd(gc()).choice as choice, index}
+                                    <button
+                                        class="border-none outline-none w-full h-auto shrink-0 text-white hover:text-yellow-300 cursor-pointer"
+                                        aria-labelledby={choice}
+                                        onclick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setSaveInfo(
+                                                $dialogInstance[gc()]?.id!,
+                                                choice,
+                                            );
+                                            let score =
+                                                $dialogInstance[gc()]?.score;
+                                            if (score !== undefined) {
+                                                setSaveInfo(
+                                                    score.targetId!,
+                                                    score.action(
+                                                        choice,
+                                                        getSaveInfo(
+                                                            score.targetId,
+                                                        ),
+                                                    ),
+                                                );
+                                            }
+                                            jumpTo(true);
+                                            plusOne();
+                                            next(false);
+                                        }}
+                                        ><span class="text-yellow-400"
+                                            >{index + 1}.</span
+                                        >
+                                        {choice}</button
+                                    >
+                                {/each}
+                            </div>
+                        {:else}
+                            <div
+                                in:fade={{ duration: 200 }}
+                                out:fade={{ duration: 200 }}
+                                class="flex shrink-0 h-[10vh] w-full items-center justify-center"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="text-yellow-400 w-[3vh] h-[3vh] animate-bounce"
+                                    width="32"
+                                    height="32"
+                                    viewBox="0 0 16 16"
+                                    ><path
+                                        fill="currentColor"
+                                        d="M10.164 13.756c-.962 1.665-3.366 1.665-4.329 0L.918 5.251C-.045 3.584 1.158 1.5 3.083 1.5h9.834c1.925 0 3.128 2.084 2.164 3.751z"
+                                    /></svg
+                                >
+                            </div>
+                            <div class="flex-1"></div>
+                        {/if}
+                    </div>
+                </div>
                 <div class="relative w-[5vw] h-full border-l-gray-300 border">
                     <div
                         class="absolute flex flex-col items-center gap-[3vw] bottom-0 left-0 right-0 w-full h-auto mx-auto my-0"
@@ -468,8 +542,7 @@
                                 fill="currentColor"
                                 d="M8.539 19.192v-5H5.325q-.379 0-.55-.348t.09-.646L11.399 5.7q.243-.279.602-.279t.602.279l6.533 7.498q.261.298.09.646t-.55.348h-3.213v5q0 .349-.23.578t-.578.23H9.346q-.348 0-.578-.23t-.23-.578"
                             /></svg
-                        >
-                        <svg
+                        ><svg
                             xmlns="http://www.w3.org/2000/svg"
                             class="w-[4vw] h-[4vw]"
                             viewBox="0 0 64 64"
@@ -495,16 +568,42 @@
                             width="32"
                             height="32"
                             viewBox="0 0 24 24"
-                            ><g
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                ><path d="M12 22l-7 -7M12 22l7 -7" /><path
-                                    d="M12 16l-7 -7M12 16l7 -7"
-                                /><path d="M12 10l-7 -7M12 10l7 -7" /></g
-                            ></svg
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            ><path d="M12 22l-7 -7M12 22l7 -7" /><path
+                                d="M12 16l-7 -7M12 16l7 -7"
+                            /><path d="M12 10l-7 -7M12 10l7 -7" /></svg
+                        ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="32"
+                            height="32"
+                            class="text-sky-300 w-[4vw] h-[4vw]"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            ><path
+                                d="M3 12a9 9 0 1 0 9-9a9.75 9.75 0 0 0-6.74 2.74L3 8"
+                            /><path d="M3 3v5h5m4-1v5l4 2" /></svg
+                        ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="text-sky-300 w-[4vw] h-[4vw]"
+                            width="32"
+                            height="32"
+                            viewBox="0 0 48 48"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="4"
+                            ><path d="m13 8l-7 6l7 7" /><path
+                                d="M6 14h22.994c6.883 0 12.728 5.62 12.996 12.5c.284 7.27-5.723 13.5-12.996 13.5H11.998"
+                            /></svg
                         >
                     </div>
                 </div>
@@ -532,11 +631,3 @@
         }}
     ></my-message-box>
 {/if}
-
-<!-- <MyMessageBox></MyMessageBox> -->
-
-<style>
-    .bg1 {
-        background-image: url(../../../assets/Home/back.png);
-    }
-</style>

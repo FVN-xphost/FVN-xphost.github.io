@@ -23,12 +23,12 @@
     });
 </script>
 
-<div class="gallery">
+<div class="fixed top-0 left-0 w-screen h-screen flex overflow-x-auto gallery">
     {#each images as item, index}
         <img
             src={item}
             alt={`图片${index}`}
-            style="flex-shrink: 0; position: relative; width: 100vw; height: 100vh;"
+            class="shrink-0 relative w-screen h-screen"
         />
     {/each}
     <my-menu-button
@@ -40,18 +40,3 @@
         返回
     </my-menu-button>
 </div>
-
-<style>
-    .gallery {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        overflow-x: auto;
-    }
-    .gallery::-webkit-scrollbar {
-        display: none;
-    }
-</style>
