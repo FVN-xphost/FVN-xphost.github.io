@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
-    import "../../components/input/MyMenuButton";
+    import "../../../components/input/MyMenuButton";
     import { galleryLock } from "../../../store/store";
     const { params } = $props();
     const images = $galleryLock.find(
