@@ -89,7 +89,7 @@
         await unlockGallery(id);
         setGalleryMeta(id);
     }
-    function getSaveInfo(key: string | undefined) {
+    function getSaveInfo(key: string | undefined = undefined) {
         if (key === undefined) {
             return $saveData.saveInstance[thisname];
         }
@@ -100,6 +100,9 @@
     }
     function gd(index: number): any {
         return $dialogInstance[index] ?? {};
+    }
+    function setc(current: number) {
+        setSaveInfo("current", current);
     }
     function plusOne() {
         setSaveInfo("current", gc() + 1);
@@ -176,6 +179,59 @@
         //     }
         // }
     }
+    // 会根据 对话内容 进行下一步处理！
+    function nextOne(index: number, plus: boolean): number {
+        let resNum = index;
+        console.log(1);
+        if (index >= $dialogInstance.length) return -10;
+        console.log(2);
+        if (!gd(index).message) return -11;
+        console.log(3);
+        if (gd(index).next && gd(index).if) {
+            console.log(4);
+            const i = $dialogInstance.findIndex(
+                (item: any) => item.id === gd(index).next,
+            );
+            console.log(5);
+            if (i >= 0) {
+                console.log(6);
+                resNum = i;
+            }
+            console.log(7);
+        }
+        console.log(8);
+        if (resNum === index && plus) {
+            console.log(9);
+            resNum = jumpTo(true, resNum);
+            console.log(10);
+            resNum = index + 1;
+            console.log(11);
+        }
+        console.log(resNum, 999999);
+        return resNum;
+    }
+    function prevOne(index: number): number {
+        let resNum = index;
+        if (resNum <= 0) return -10;
+        if (gd(resNum).prev) {
+            const i = $dialogInstance.findIndex(
+                (item: any) => item.id === gd(resNum).prev,
+            );
+            if (i >= 0) resNum = i;
+        } else {
+            resNum = jumpTo(false, resNum);
+            resNum--;
+        }
+        // 下列开始判断 score 分数的回退，仅适用与 score 在 action 的返回值是 return (parseInt(rawValue) || 0 + n).toString();（n=任何数字）这种。。
+        let score = gd(index).score;
+        if (score) {
+            let choice = getSaveInfo(gd(gc()).id);
+            let rawScore = parseInt(getSaveInfo(score.targetId));
+            let plusScore = parseInt(score.action(choice, "0"));
+            setSaveInfo(score.targetId, (rawScore - plusScore).toString());
+        }
+        return resNum;
+    }
     onMount(async () => {
         if (getSaveInfo("name") === "") {
             let name = "";
@@ -199,16 +255,17 @@
             }
             setSaveInfo("name", name);
         }
-        await doStyle(gc(), true);
+        // for (let i = 0; i <= gc(); i++) {
+        let m = 0;
+        while (m++ < gc()) {
+            m = nextOne(m, true);
+            await doStyle(m, true);
+        }
         o1 = true;
         await sleep(500);
         await next(false);
     });
     async function next(plus: boolean = true) {
-        if (gc() >= $dialogInstance.length) {
-            return;
-        }
-        if (!gd(gc()).message) return;
         if (lockText) {
             exitText = true;
             currentText = replaceCurrentText(gd(gc()).message);
@@ -216,19 +273,9 @@
         }
         lockText = true;
         currentText = "";
-        if (gd(gc()).next && gd(gc()).if) {
-            const i = $dialogInstance.findIndex(
-                (item: any) => item.id === gd(gc()).next,
-            );
-            if (i >= 0) {
-                setSaveInfo("current", i);
-                plus = false;
-            }
-        }
-        if (plus) {
-            jumpTo(true);
-            plusOne();
-        }
+        let n = nextOne(gc(), plus);
+        if (n === -10 || n === -11) return;
+        setc(n);
         await doStyle(gc());
         let ct = replaceCurrentText(gd(gc()).message);
         let isLt = false;
@@ -256,17 +303,18 @@
     }
     function replaceCurrentText(text: string | undefined): string {
         if (text === undefined) return "";
-        Object.keys(getSaveInfo(undefined))
+        Object.keys(getSaveInfo())
             .filter((item) => item !== "current")
             .forEach((key) => {
                 text = text!.replaceAll(`%${key}`, getSaveInfo(key) ?? "");
             });
         return text;
     }
-    // 跳过剧情。ps 代表着是前进还是后退。（自动判断分支跳过！需要在每一个 next 之前都要调用一遍！）
-    function jumpTo(ps: boolean) {
+    // 跳过部分分支剧情。ps 代表着是前进还是后退。（自动判断分支跳过！需要在每一个 next 之前都要调用一遍！）
+    function jumpTo(ps: boolean, index: number = gc()): number {
+        let resNum = index;
         while (true) {
-            const j = gd(gc() + (ps ? 1 : -1)).if;
+            const j = gd(resNum + (ps ? 1 : -1)).if;
             if (j && j.length > 0) {
                 let result = true;
                 const firstKey = j[0]!.key;
@@ -296,11 +344,12 @@
                 if (result) {
                     break;
                 }
-                setSaveInfo("current", gc() + (ps ? 1 : -1));
+                resNum = j;
             } else {
                 break;
             }
         }
+        return resNum;
     }
     // 使用古法查看历史（ps：逐步往前退，直到退到0。。由于 jumpTo 函数已经帮我们解决了分支问题，因此无需担心历史数据丢失或者起冲突。。）
     function showHistory() {
@@ -310,14 +359,9 @@
             message: gd(gc()).message,
         });
         while (true) {
-            if (gc() === 0) {
-                break;
-            }
-            jumpTo(false);
-            minusOne();
-            if (!gd(gc()).message) {
-                continue;
-            }
+            let p = prevOne(gc());
+            if (p === -10 || p === -11) break;
+            setc(p);
             let score = gd(gc()).score;
             // 下列开始判断 score 分数的回退，仅适用与 score 在 action 的返回值是 return (parseInt(rawValue) || 0 + n).toString();（n=任何数字）这种。。
             if (score !== undefined) {
@@ -331,30 +375,10 @@
                 message: gd(gc()).message,
             });
         }
-        setSaveInfo("current", current);
+        setc(current);
     }
     function prev() {
-        if (gc() <= 0) return;
-        if (gd(gc()).prev) {
-            const i = $dialogInstance.findIndex(
-                (item: any) => item.id === gd(gc()).prev,
-            );
-            if (i >= 0) {
-                setSaveInfo("current", i);
-            }
-        } else {
-            jumpTo(false);
-            minusOne();
-            doStyle(gc(), true);
-            let score = gd(gc()).score;
-            // 下列开始判断 score 分数的回退，仅适用与 score 在 action 的返回值是 return (parseInt(rawValue) || 0 + n).toString();（n=任何数字）这种。。
-            if (score !== undefined) {
-                let choice = getSaveInfo(gd(gc()).id);
-                let rawScore = parseInt(getSaveInfo(score.targetId));
-                let plusScore = parseInt(score.action(choice, "0"));
-                setSaveInfo(score.targetId, (rawScore - plusScore).toString());
-            }
-        }
+        setc(prevOne(gc()));
         currentText = replaceCurrentText(gd(gc()).message);
     }
     async function quick() {
@@ -366,7 +390,7 @@
                 !gd(gc()).message
             )
                 break;
-            jumpTo(true);
+            setc(jumpTo(true));
             await sleep(50);
             plusOne();
             await doStyle(gc(), true);
@@ -462,7 +486,19 @@
                     class="flex flex-col flex-1 h-full border-l-gray-300 border"
                 >
                     <!-- 对话区域 -->
-                    <div class="flex-1 w-full flex flex-col"></div>
+                    <div class="flex-1 w-full relative">
+                        <div
+                            class="text-white absolute bottom-2.5 left-2.5 right-2.5 h-auto w-[calc(100%-1.25rem)]"
+                        >
+                            {@html replaceCurrentText(
+                                gd(gc()).name === "" ||
+                                    gd(gc()).name === undefined
+                                    ? ""
+                                    : gd(gc()).name + "：",
+                            )}
+                            {@html currentText}
+                        </div>
+                    </div>
                     <!-- 选项区域 -->
                     <div
                         class="flex flex-col h-[30vh] border-t-gray-300 border"
@@ -497,7 +533,7 @@
                                                     ),
                                                 );
                                             }
-                                            jumpTo(true);
+                                            setc(jumpTo(true));
                                             plusOne();
                                             next(false);
                                         }}
@@ -536,16 +572,46 @@
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="text-sky-300 w-[4vw] h-[4vw]"
+                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer"
                             viewBox="0 0 24 24"
+                            onclick={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                prev();
+                            }}
+                            onkeydown={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                            onkeyup={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                            tabindex="0"
+                            role="button"
                             ><path
                                 fill="currentColor"
                                 d="M8.539 19.192v-5H5.325q-.379 0-.55-.348t.09-.646L11.399 5.7q.243-.279.602-.279t.602.279l6.533 7.498q.261.298.09.646t-.55.348h-3.213v5q0 .349-.23.578t-.578.23H9.346q-.348 0-.578-.23t-.23-.578"
                             /></svg
                         ><svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="w-[4vw] h-[4vw]"
+                            class="w-[4vw] h-[4vw] border-none outline-none cursor-pointer"
                             viewBox="0 0 64 64"
+                            onclick={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                updateSave(getSaveInfo("name"), gc());
+                            }}
+                            onkeydown={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                            onkeyup={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                            tabindex="0"
+                            role="button"
                             ><path
                                 fill="#3e4347"
                                 d="m61.3 9.3l-6.6-6.6c-.4-.4-1.2-.7-1.7-.7H9v4H5V2H3c-.5 0-1 .5-1 1v58c0 .5.5 1 1 1h58c.5 0 1-.5 1-1V11c0-.6-.3-1.3-.7-1.7"
@@ -564,10 +630,25 @@
                             /></svg
                         ><svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="text-sky-300 w-[4vw] h-[4vw]"
+                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer"
                             width="32"
                             height="32"
                             viewBox="0 0 24 24"
+                            onclick={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                quick();
+                            }}
+                            onkeydown={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                            onkeyup={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                            tabindex="0"
+                            role="button"
                             fill="none"
                             stroke="currentColor"
                             stroke-linecap="round"
@@ -580,8 +661,23 @@
                             xmlns="http://www.w3.org/2000/svg"
                             width="32"
                             height="32"
-                            class="text-sky-300 w-[4vw] h-[4vw]"
+                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer"
                             viewBox="0 0 24 24"
+                            onclick={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                showHistory();
+                            }}
+                            onkeydown={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                            onkeyup={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                            tabindex="0"
+                            role="button"
                             fill="none"
                             stroke="currentColor"
                             stroke-linecap="round"
@@ -592,10 +688,25 @@
                             /><path d="M3 3v5h5m4-1v5l4 2" /></svg
                         ><svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="text-sky-300 w-[4vw] h-[4vw]"
+                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer"
                             width="32"
                             height="32"
                             viewBox="0 0 48 48"
+                            onclick={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                router.back();
+                            }}
+                            onkeydown={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                            onkeyup={(e: Event) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                            tabindex="0"
+                            role="button"
                             fill="none"
                             stroke="currentColor"
                             stroke-linecap="round"
