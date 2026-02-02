@@ -9,7 +9,7 @@
     import { init, save, unlockGallery } from "../../../utils/backend-tauri";
     import Dragon from "../../../assets/illustration/dragon_dressed.png";
     import Tiger from "../../../assets/illustration/tiger_dressed.png";
-    import html2canvas from "html2canvas";
+    import html2canvas from "html2canvas-oklch";
     import piano from "../../../assets/sounds/mp3/piano.mp3";
     import experience from "../../../assets/sounds/ogg/experience.ogg";
     import Scene1 from "../../../assets/scene/scene1.png";
@@ -111,6 +111,7 @@
         setSaveInfo("current", gc() - 1);
     }
     async function doStyle(current: number, isQuick: boolean = false) {
+        console.log(current, gd(current).id);
         if (current === 0) {
             pianoIns.pause();
             pianoIns.currentTime = 0;
@@ -180,12 +181,13 @@
         // }
     }
     // 会根据 对话内容 进行下一步处理！
+    // 返回 -10 代表已经走到末尾，返回 -11 代表这可能是一个选项。。
     function nextOne(index: number, plus: boolean): number {
         let resNum = index;
-        if (index >= $dialogInstance.length) return -10;
-        if (gd(index).next && gd(index).if) {
+        if (resNum >= $dialogInstance.length) return -10;
+        if (gd(resNum).next && gd(resNum).if) {
             const i = $dialogInstance.findIndex(
-                (item: any) => item.id === gd(index).next,
+                (item: any) => item.id === gd(resNum).next,
             );
             if (i >= 0) {
                 resNum = i;
@@ -195,12 +197,12 @@
             resNum = jumpTo(true, resNum);
             resNum = index + 1;
         }
-        if (!gd(index).message) return -11;
+        if (!gd(resNum).message) return -11;
         return resNum;
     }
     function prevOne(index: number): number {
         let resNum = index;
-        if (resNum <= 0) return -10;
+        if (resNum <= 0) return resNum;
         if (gd(resNum).prev) {
             const i = $dialogInstance.findIndex(
                 (item: any) => item.id === gd(resNum).prev,
@@ -245,9 +247,14 @@
         }
         // for (let i = 0; i <= gc(); i++) {
         let m = 0;
-        while (m++ < gc()) {
-            m = nextOne(m, true);
-            await doStyle(m, true);
+        while (m < gc()) {
+            let n = nextOne(m, false);
+            if (n != -10 && n != -11) {
+                m = n;
+                jumpTo(true, m);
+                await doStyle(m, true);
+            }
+            m++;
         }
         o1 = true;
         await sleep(500);
@@ -459,7 +466,7 @@
     >
         <div class="w-screen h-[95vh] flex border-white border items-center">
             <div
-                class="w-screen h-[93vh] border-[#e0e0e0] border flex items-center"
+                class="w-screen h-[93vh] border-gray-300 border flex items-center"
             >
                 <!-- 立绘区域 -->
                 <div class="w-[50vw] h-full relative">
@@ -471,7 +478,7 @@
                     />
                 </div>
                 <div
-                    class="flex flex-col flex-1 h-full border-[#e0e0e0] border"
+                    class="flex flex-col flex-1 h-full border-l-gray-300 border"
                 >
                     <!-- 对话区域 -->
                     <div class="flex-1 w-full relative">
@@ -488,7 +495,9 @@
                         </div>
                     </div>
                     <!-- 选项区域 -->
-                    <div class="flex flex-col h-[30vh] border-[#e0e0e0] border">
+                    <div
+                        class="flex flex-col h-[30vh] border-t-gray-300 border"
+                    >
                         {#if gd(gc()).type === "choice"}
                             <div
                                 in:fade={{ duration: 200 }}
@@ -497,7 +506,7 @@
                             >
                                 {#each gd(gc()).choice as choice, index}
                                     <button
-                                        class="border-none outline-none w-full h-auto shrink-0 text-white hover:text-[#FFcc00] cursor-pointer"
+                                        class="border-none outline-none w-full h-auto shrink-0 text-white hover:text-yellow-300 cursor-pointer"
                                         aria-labelledby={choice}
                                         onclick={(e) => {
                                             e.preventDefault();
@@ -520,11 +529,10 @@
                                                 );
                                             }
                                             setc(jumpTo(true));
-                                            console.log(gc());
                                             plusOne();
                                             next(false);
                                         }}
-                                        ><span class="text-[#FFAA00]"
+                                        ><span class="text-yellow-400"
                                             >{index + 1}.</span
                                         >
                                         {replaceCurrentText(choice)}</button
@@ -539,7 +547,7 @@
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    class="text-[#FFCC00] w-[3vh] h-[3vh] animate-bounce"
+                                    class="text-yellow-400 w-[3vh] h-[3vh] animate-bounce"
                                     width="32"
                                     height="32"
                                     viewBox="0 0 16 16"
@@ -553,13 +561,13 @@
                         {/if}
                     </div>
                 </div>
-                <div class="relative w-[5vw] h-full border-[#e0e0e0] border">
+                <div class="relative w-[5vw] h-full border-l-gray-300 border">
                     <div
                         class="absolute flex flex-col items-center gap-[3vw] bottom-0 left-0 right-0 w-full h-auto mx-auto my-0"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="text-[#33ccFF] w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-[#eeaa00]"
+                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-orange-300"
                             viewBox="0 0 24 24"
                             onclick={(e: Event) => {
                                 e.preventDefault();
@@ -617,7 +625,7 @@
                             /></svg
                         ><svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="text-[#33ccFF] w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-[#eeaa00]"
+                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-orange-300"
                             style={quickCurrent
                                 ? "color: rgb(257.48, 161.84, 162.27)"
                                 : ""}
@@ -651,7 +659,7 @@
                             xmlns="http://www.w3.org/2000/svg"
                             width="32"
                             height="32"
-                            class="text-[#33ccFF] w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-[#eeaa00]"
+                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-orange-300"
                             viewBox="0 0 24 24"
                             onclick={(e: Event) => {
                                 e.preventDefault();
@@ -678,7 +686,7 @@
                             /><path d="M3 3v5h5m4-1v5l4 2" /></svg
                         ><svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="text-[#33ccFF] w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-[#eeaa00]"
+                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-orange-300"
                             width="32"
                             height="32"
                             viewBox="0 0 48 48"
