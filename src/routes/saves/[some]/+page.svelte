@@ -10,8 +10,8 @@
     import Dragon from "../../../assets/illustration/dragon_dressed.png";
     import Tiger from "../../../assets/illustration/tiger_dressed.png";
     import html2canvas from "html2canvas";
-    import piano from "../../../assets/music/mp3/piano.mp3";
-    import experience from "../../../assets/music/ogg/experience.ogg";
+    import piano from "../../../assets/sounds/mp3/piano.mp3";
+    import experience from "../../../assets/sounds/ogg/experience.ogg";
     import Scene1 from "../../../assets/scene/scene1.png";
     import "../../../components/input/MyMenuButton";
     // 钢琴音乐
@@ -182,32 +182,20 @@
     // 会根据 对话内容 进行下一步处理！
     function nextOne(index: number, plus: boolean): number {
         let resNum = index;
-        console.log(1);
         if (index >= $dialogInstance.length) return -10;
-        console.log(2);
-        if (!gd(index).message) return -11;
-        console.log(3);
         if (gd(index).next && gd(index).if) {
-            console.log(4);
             const i = $dialogInstance.findIndex(
                 (item: any) => item.id === gd(index).next,
             );
-            console.log(5);
             if (i >= 0) {
-                console.log(6);
                 resNum = i;
             }
-            console.log(7);
         }
-        console.log(8);
         if (resNum === index && plus) {
-            console.log(9);
             resNum = jumpTo(true, resNum);
-            console.log(10);
             resNum = index + 1;
-            console.log(11);
         }
-        console.log(resNum, 999999);
+        if (!gd(index).message) return -11;
         return resNum;
     }
     function prevOne(index: number): number {
@@ -344,7 +332,7 @@
                 if (result) {
                     break;
                 }
-                resNum = j;
+                resNum++;
             } else {
                 break;
             }
@@ -458,7 +446,7 @@
 
 {#if o1}
     <div
-        class="bg-img-full bg-[url(/src/assets/Home/back.png)] fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden flex items-center"
+        class="container2 bg-img-full bg-[url(/src/assets/Home/back.png)] fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden flex items-center"
         in:fade={{ duration: 500 }}
         onclick={() => {
             if (quickCurrent) quickCurrent = false;
@@ -471,7 +459,7 @@
     >
         <div class="w-screen h-[95vh] flex border-white border items-center">
             <div
-                class="w-screen h-[93vh] border-gray-300 border flex items-center"
+                class="w-screen h-[93vh] border-[#e0e0e0] border flex items-center"
             >
                 <!-- 立绘区域 -->
                 <div class="w-[50vw] h-full relative">
@@ -483,7 +471,7 @@
                     />
                 </div>
                 <div
-                    class="flex flex-col flex-1 h-full border-l-gray-300 border"
+                    class="flex flex-col flex-1 h-full border-[#e0e0e0] border"
                 >
                     <!-- 对话区域 -->
                     <div class="flex-1 w-full relative">
@@ -500,9 +488,7 @@
                         </div>
                     </div>
                     <!-- 选项区域 -->
-                    <div
-                        class="flex flex-col h-[30vh] border-t-gray-300 border"
-                    >
+                    <div class="flex flex-col h-[30vh] border-[#e0e0e0] border">
                         {#if gd(gc()).type === "choice"}
                             <div
                                 in:fade={{ duration: 200 }}
@@ -511,7 +497,7 @@
                             >
                                 {#each gd(gc()).choice as choice, index}
                                     <button
-                                        class="border-none outline-none w-full h-auto shrink-0 text-white hover:text-yellow-300 cursor-pointer"
+                                        class="border-none outline-none w-full h-auto shrink-0 text-white hover:text-[#FFcc00] cursor-pointer"
                                         aria-labelledby={choice}
                                         onclick={(e) => {
                                             e.preventDefault();
@@ -534,13 +520,14 @@
                                                 );
                                             }
                                             setc(jumpTo(true));
+                                            console.log(gc());
                                             plusOne();
                                             next(false);
                                         }}
-                                        ><span class="text-yellow-400"
+                                        ><span class="text-[#FFAA00]"
                                             >{index + 1}.</span
                                         >
-                                        {choice}</button
+                                        {replaceCurrentText(choice)}</button
                                     >
                                 {/each}
                             </div>
@@ -552,7 +539,7 @@
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    class="text-yellow-400 w-[3vh] h-[3vh] animate-bounce"
+                                    class="text-[#FFCC00] w-[3vh] h-[3vh] animate-bounce"
                                     width="32"
                                     height="32"
                                     viewBox="0 0 16 16"
@@ -566,13 +553,13 @@
                         {/if}
                     </div>
                 </div>
-                <div class="relative w-[5vw] h-full border-l-gray-300 border">
+                <div class="relative w-[5vw] h-full border-[#e0e0e0] border">
                     <div
                         class="absolute flex flex-col items-center gap-[3vw] bottom-0 left-0 right-0 w-full h-auto mx-auto my-0"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer"
+                            class="text-[#33ccFF] w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-[#eeaa00]"
                             viewBox="0 0 24 24"
                             onclick={(e: Event) => {
                                 e.preventDefault();
@@ -630,7 +617,10 @@
                             /></svg
                         ><svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer"
+                            class="text-[#33ccFF] w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-[#eeaa00]"
+                            style={quickCurrent
+                                ? "color: rgb(257.48, 161.84, 162.27)"
+                                : ""}
                             width="32"
                             height="32"
                             viewBox="0 0 24 24"
@@ -661,7 +651,7 @@
                             xmlns="http://www.w3.org/2000/svg"
                             width="32"
                             height="32"
-                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer"
+                            class="text-[#33ccFF] w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-[#eeaa00]"
                             viewBox="0 0 24 24"
                             onclick={(e: Event) => {
                                 e.preventDefault();
@@ -688,7 +678,7 @@
                             /><path d="M3 3v5h5m4-1v5l4 2" /></svg
                         ><svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer"
+                            class="text-[#33ccFF] w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-[#eeaa00]"
                             width="32"
                             height="32"
                             viewBox="0 0 48 48"
