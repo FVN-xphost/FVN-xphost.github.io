@@ -10,12 +10,13 @@
 
 # UI/界面设计
 
-1. 糖圆
+1. 阿瓜
 
 # 绘画/美术
 
 1. 太阳饼，[Bilibili](https://space.bilibili.com/1098179208)
 2. 南司，[Bilibili](https://space.bilibili.com/403254009)
+3. 糖圆
 
 # 音乐
 
