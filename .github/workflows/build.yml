@@ -141,7 +141,8 @@ jobs:
           if-no-files-found: error
   publish-pages:
     permissions:
-      contents: write
+      contents: read
+      pages: write
       id-token: write
     runs-on: ubuntu-latest
     environment:
