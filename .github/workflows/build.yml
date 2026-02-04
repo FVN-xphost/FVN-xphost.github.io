@@ -2,6 +2,8 @@ name: Build My Visual Novel
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
 
 jobs:
   publish-tauri:
