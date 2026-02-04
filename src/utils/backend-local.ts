@@ -23,7 +23,7 @@ export async function init() {
   }
   console.log(savedata);
   saveData.set(savedata);
-  localStorage.set("get_all_data", JSON.stringify(savedata));
+  localStorage.setItem("get_all_data", JSON.stringify(savedata));
 }
 export async function save(
   id: string,
