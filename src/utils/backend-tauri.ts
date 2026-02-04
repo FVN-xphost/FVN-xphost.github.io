@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { saveData } from "../store/store";
+import { window } from "@tauri-apps/api";
 import { branchCount, galleryCount, saveCount } from "./all";
 
 export async function init() {
@@ -32,4 +33,8 @@ export async function save(
 }
 export async function unlockGallery(id: number) {
   await invoke("update_gallery", { id });
+}
+
+export function closeWindow() {
+  window.getCurrentWindow().close();
 }

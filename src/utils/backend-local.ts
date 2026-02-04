@@ -50,3 +50,4 @@ export async function unlockGallery(id: number) {
   savedata.gallery[`gallery${id}`] = true;
   localStorage.setItem("get_all_data", JSON.stringify(savedata));
 }
+export function closeWindow() {}

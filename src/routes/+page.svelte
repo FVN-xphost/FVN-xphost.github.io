@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { window } from "@tauri-apps/api";
     import "../style/index.css";
     import "../style/tailwind.css";
     import { onMount } from "svelte";
     import { sleep } from "../utils/all";
-    import { init } from "../utils/backend-tauri";
+    import { init, closeWindow } from "../utils/backend-tauri";
     import { boardText, mounted } from "../store/store";
     // import MyBlackBoard from "../components/board/MyBlackBoard.svelte";
     import "../components/board/MyBlackBoard";
@@ -148,9 +147,7 @@
                                 aria-label="退出游戏"
                                 class="w-[calc(20vw-0.75rem)] h-8.75 bg-yellow-300 text-black hover:bg-white cursor-pointer"
                                 onclick={() => {
-                                    if (window.getCurrentWindow) {
-                                        window.getCurrentWindow().close();
-                                    }
+                                    closeWindow();
                                 }}>退出游戏</button
                             >
                         </div>
