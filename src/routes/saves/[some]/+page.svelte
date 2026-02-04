@@ -1,4 +1,5 @@
 <script lang="ts">
+    import html2canvas from "html2canvas-oklch";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import "../../../components/board/MyMessageBox";
@@ -9,16 +10,15 @@
     import { init, save, unlockGallery } from "../../../utils/backend-tauri";
     import Dragon from "../../../assets/illustration/dragon_dressed.png";
     import Tiger from "../../../assets/illustration/tiger_dressed.png";
-    import html2canvas from "html2canvas-oklch";
     import piano from "../../../assets/sounds/mp3/piano.mp3";
     import experience from "../../../assets/sounds/ogg/experience.ogg";
     import Scene1 from "../../../assets/scene/scene1.png";
     import "../../../components/input/MyMenuButton";
+    const { params } = $props();
     // 钢琴音乐
     const pianoIns = new Audio(piano);
     // 获得经验
     const experienceIns = new Audio(experience);
-    const { params } = $props();
     // 当前存档名称
     const thisname = (() => `save${params.some}`)();
     // 临时变量：控制主屏幕显示。
@@ -42,8 +42,11 @@
     // 背景样式
     let backStyle = $state("");
     let backImage = $state("");
+    // 展示提示
     let isShowHint = $state(false);
+    // 提示内容
     let hintContent = $state("");
+    // 历史
     let historyFile = $state<any[]>([]);
     function showHint(hintText: string) {
         isShowHint = true;
@@ -89,7 +92,7 @@
         await unlockGallery(id);
         setGalleryMeta(id);
     }
-    function getSaveInfo(key: string | undefined = undefined) {
+    function getSaveInfo(key: string | undefined = undefined): any {
         if (key === undefined) {
             return $saveData.saveInstance[thisname];
         }
@@ -109,6 +112,56 @@
     }
     function minusOne() {
         setSaveInfo("current", gc() - 1);
+    }
+    function replaceCurrentText(text: string | undefined): string {
+        if (text === undefined) return "";
+        Object.keys(getSaveInfo())
+            .filter((item) => item !== "current")
+            .forEach((key) => {
+                text = text!.replaceAll(`%${key}`, getSaveInfo(key) ?? "");
+            });
+        return text;
+    }
+    // 跳过部分分支剧情。ps 代表着是前进还是后退。（自动判断分支跳过！需要在每一个 next 之前都要调用一遍！）
+    function jumpTo(ps: boolean, index: number = gc()): number {
+        let resNum = index;
+        while (true) {
+            const j = gd(resNum + (ps ? 1 : -1)).if;
+            if (j && j.length > 0) {
+                let result = true;
+                const firstKey = j[0]!.key;
+                const firstValue = j[0]!.value;
+                result =
+                    typeof firstValue === "function"
+                        ? firstValue(getSaveInfo(firstKey))
+                        : getSaveInfo(firstKey) === firstValue;
+                for (let i = 1; i < j.length; i++) {
+                    const key = j[i]?.key;
+                    const value = j[i]?.value;
+                    const next = j[i - 1]?.next;
+                    if (next === "and") {
+                        result =
+                            result &&
+                            (typeof value === "function"
+                                ? value(getSaveInfo(key))
+                                : getSaveInfo(key) === value);
+                    } else if (next === "or") {
+                        result =
+                            result ||
+                            (typeof value === "function"
+                                ? value(getSaveInfo(key))
+                                : getSaveInfo(key) === value);
+                    }
+                }
+                if (result) {
+                    break;
+                }
+                resNum++;
+            } else {
+                break;
+            }
+        }
+        return resNum;
     }
     async function doStyle(current: number, isQuick: boolean = false) {
         console.log(current, gd(current).id);
@@ -181,7 +234,7 @@
         // }
     }
     // 会根据 对话内容 进行下一步处理！
-    // 返回 -10 代表已经走到末尾，返回 -11 代表这可能是一个选项。。
+    // 返回 -10 代表已经走到末尾，返回 -11 代表这可能是一个选项。。因为没有 message 键值！
     function nextOne(index: number, plus: boolean): number {
         let resNum = index;
         if (resNum >= $dialogInstance.length) return -10;
@@ -202,7 +255,7 @@
     }
     function prevOne(index: number): number {
         let resNum = index;
-        if (resNum <= 0) return resNum;
+        if (resNum <= 0) return -10;
         if (gd(resNum).prev) {
             const i = $dialogInstance.findIndex(
                 (item: any) => item.id === gd(resNum).prev,
@@ -213,7 +266,7 @@
             resNum--;
         }
         // 下列开始判断 score 分数的回退，仅适用与 score 在 action 的返回值是 return (parseInt(rawValue) || 0 + n).toString();（n=任何数字）这种。。
-        let score = gd(index).score;
+        let score = gd(resNum).score;
         if (score) {
             let choice = getSaveInfo(gd(gc()).id);
             let rawScore = parseInt(getSaveInfo(score.targetId));
@@ -223,6 +276,7 @@
         return resNum;
     }
     onMount(async () => {
+        // 输入名字
         if (getSaveInfo("name") === "") {
             let name = "";
             while (true) {
@@ -245,13 +299,26 @@
             }
             setSaveInfo("name", name);
         }
-        // for (let i = 0; i <= gc(); i++) {
         let m = 0;
+        // 回朔历史
+        // 直接在初始化里面显示【历史】！（不直接用按钮显示了。。）
         while (m < gc()) {
             let n = nextOne(m, false);
-            if (n != -10 && n != -11) {
+            console.log(m);
+            if (n !== -10 && n !== -11) {
                 m = n;
-                jumpTo(true, m);
+                m = jumpTo(true, m);
+                await doStyle(m, true);
+                historyFile.push({
+                    name: gd(m).name,
+                    text: gd(m).message,
+                });
+            } else if (n == -11) {
+                historyFile.push({
+                    name: '<span style="color: blue">选项</span>',
+                    text: getSaveInfo(gd(m).id),
+                });
+                m = jumpTo(true, m);
                 await doStyle(m, true);
             }
             m++;
@@ -263,14 +330,24 @@
     async function next(plus: boolean = true) {
         if (lockText) {
             exitText = true;
-            currentText = replaceCurrentText(gd(gc()).message);
+            historyFile[historyFile.length - 1].text = replaceCurrentText(
+                gd(gc()).message,
+            );
             return;
         }
-        lockText = true;
-        currentText = "";
+        if (!gd(gc()).message) return;
         let n = nextOne(gc(), plus);
-        if (n === -10 || n === -11) return;
+        if (n === -10) return;
+        if (n === -11) {
+            plusOne();
+            return;
+        }
         setc(n);
+        historyFile.push({
+            name: replaceCurrentText(gd(gc()).name),
+            text: "",
+        });
+        lockText = true;
         await doStyle(gc());
         let ct = replaceCurrentText(gd(gc()).message);
         let isLt = false;
@@ -288,7 +365,7 @@
             if (exitText) {
                 break;
             }
-            currentText += ct[i];
+            historyFile[historyFile.length - 1].text += ct[i];
             if (exitText) {
                 break;
             }
@@ -296,58 +373,14 @@
         exitText = false;
         lockText = false;
     }
-    function replaceCurrentText(text: string | undefined): string {
-        if (text === undefined) return "";
-        Object.keys(getSaveInfo())
-            .filter((item) => item !== "current")
-            .forEach((key) => {
-                text = text!.replaceAll(`%${key}`, getSaveInfo(key) ?? "");
-            });
-        return text;
-    }
-    // 跳过部分分支剧情。ps 代表着是前进还是后退。（自动判断分支跳过！需要在每一个 next 之前都要调用一遍！）
-    function jumpTo(ps: boolean, index: number = gc()): number {
-        let resNum = index;
-        while (true) {
-            const j = gd(resNum + (ps ? 1 : -1)).if;
-            if (j && j.length > 0) {
-                let result = true;
-                const firstKey = j[0]!.key;
-                const firstValue = j[0]!.value;
-                result =
-                    typeof firstValue === "function"
-                        ? firstValue(getSaveInfo(firstKey))
-                        : getSaveInfo(firstKey) === firstValue;
-                for (let i = 1; i < j.length; i++) {
-                    const key = j[i]?.key;
-                    const value = j[i]?.value;
-                    const next = j[i - 1]?.next;
-                    if (next === "and") {
-                        result =
-                            result &&
-                            (typeof value === "function"
-                                ? value(getSaveInfo(key))
-                                : getSaveInfo(key) === value);
-                    } else if (next === "or") {
-                        result =
-                            result ||
-                            (typeof value === "function"
-                                ? value(getSaveInfo(key))
-                                : getSaveInfo(key) === value);
-                    }
-                }
-                if (result) {
-                    break;
-                }
-                resNum++;
-            } else {
-                break;
-            }
-        }
-        return resNum;
-    }
-    // 使用古法查看历史（ps：逐步往前退，直到退到0。。由于 jumpTo 函数已经帮我们解决了分支问题，因此无需担心历史数据丢失或者起冲突。。）
+    /**
+     * 使用古法查看历史（ps：逐步往前退，直到退到0。。由于 jumpTo 函数已经帮我们解决了分支问题，因此无需担心历史数据丢失或者起冲突。。）
+     * @deprecated 自 v4 版本已被弃用！因为现在是直接显示历史！
+     */
     function showHistory() {
+        console.warn(
+            "请不要使用该函数了！！因为现在是直接显示历史，因此移除了按钮！",
+        );
         let current = gc();
         historyFile.unshift({
             name: gd(gc()).name,
@@ -372,9 +405,13 @@
         }
         setc(current);
     }
+    /**
+     * 回退一句对话
+     * @deprecated 自 v4 版本已被弃用！因为现在直接显示历史，因此无需回退，在进行重大决策时会有提示存档！！
+     */
     function prev() {
         setc(prevOne(gc()));
-        currentText = replaceCurrentText(gd(gc()).message);
+        historyFile.pop();
     }
     async function quick() {
         quickCurrent = !quickCurrent;
@@ -436,18 +473,6 @@
         } catch (e: any) {
             showHint("存档失败，错误信息：" + e.message);
         }
-        // await invoke("update_save", {
-        //     id: params.some,
-        //     updateTime,
-        //     image,
-        //     name,
-        //     current,
-        //     branches: new Array(branchCount)
-        //         .fill(null)
-        //         .map((_, index: number) => {
-        //             return getSaveInfo(`branch${index + 1}`) ?? "";
-        //         }),
-        // });
     }
 </script>
 
@@ -481,18 +506,22 @@
                     class="flex flex-col flex-1 h-full border-l-gray-300 border"
                 >
                     <!-- 对话区域 -->
-                    <div class="flex-1 w-full relative">
-                        <div
-                            class="text-white absolute bottom-2.5 left-2.5 right-2.5 h-auto w-[calc(100%-1.25rem)]"
-                        >
-                            {@html replaceCurrentText(
-                                gd(gc()).name === "" ||
-                                    gd(gc()).name === undefined
-                                    ? ""
-                                    : gd(gc()).name + "：",
-                            )}
-                            {@html currentText}
-                        </div>
+                    <div
+                        class="flex-1 w-full flex flex-col items-center justify-end gap-2.5 overflow-auto"
+                    >
+                        {#each historyFile as item, index}
+                            <div
+                                class="shrink-0 text-white h-auto w-[calc(100%-1.25rem)] text-left transition-[filter] duration-400"
+                                style={`filter: brightness(${index === historyFile.length - 1 ? "1" : "0.5"})`}
+                            >
+                                {@html replaceCurrentText(
+                                    item.name === "" || item.name === undefined
+                                        ? ""
+                                        : item.name + "：",
+                                )}
+                                {@html replaceCurrentText(item.text)}
+                            </div>
+                        {/each}
                     </div>
                     <!-- 选项区域 -->
                     <div
@@ -500,8 +529,8 @@
                     >
                         {#if gd(gc()).type === "choice"}
                             <div
-                                in:fade={{ duration: 200 }}
-                                out:fade={{ duration: 200 }}
+                                in:fade={{ duration: 400 }}
+                                out:fade={{ duration: 400 }}
                                 class="flex flex-col w-full h-full p-2.5 overflow-y-auto gap-2.5"
                             >
                                 {#each gd(gc()).choice as choice, index}
@@ -511,10 +540,7 @@
                                         onclick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
-                                            setSaveInfo(
-                                                $dialogInstance[gc()]?.id!,
-                                                choice,
-                                            );
+                                            setSaveInfo(gd(gc()).id!, choice);
                                             let score =
                                                 $dialogInstance[gc()]?.score;
                                             if (score !== undefined) {
@@ -528,6 +554,10 @@
                                                     ),
                                                 );
                                             }
+                                            historyFile.push({
+                                                name: `<span style="color: blue">选项</span>`,
+                                                text: choice,
+                                            });
                                             setc(jumpTo(true));
                                             plusOne();
                                             next(false);
@@ -541,8 +571,8 @@
                             </div>
                         {:else}
                             <div
-                                in:fade={{ duration: 200 }}
-                                out:fade={{ duration: 200 }}
+                                in:fade={{ duration: 400 }}
+                                out:fade={{ duration: 400 }}
                                 class="flex shrink-0 h-[10vh] w-full items-center justify-center"
                             >
                                 <svg
@@ -566,29 +596,6 @@
                         class="absolute flex flex-col items-center gap-[3vw] bottom-0 left-0 right-0 w-full h-auto mx-auto my-0"
                     >
                         <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-orange-300"
-                            viewBox="0 0 24 24"
-                            onclick={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                prev();
-                            }}
-                            onkeydown={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }}
-                            onkeyup={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }}
-                            tabindex="0"
-                            role="button"
-                            ><path
-                                fill="currentColor"
-                                d="M8.539 19.192v-5H5.325q-.379 0-.55-.348t.09-.646L11.399 5.7q.243-.279.602-.279t.602.279l6.533 7.498q.261.298.09.646t-.55.348h-3.213v5q0 .349-.23.578t-.578.23H9.346q-.348 0-.578-.23t-.23-.578"
-                            /></svg
-                        ><svg
                             xmlns="http://www.w3.org/2000/svg"
                             class="w-[4vw] h-[4vw] border-none outline-none cursor-pointer"
                             viewBox="0 0 64 64"
@@ -655,35 +662,6 @@
                             ><path d="M12 22l-7 -7M12 22l7 -7" /><path
                                 d="M12 16l-7 -7M12 16l7 -7"
                             /><path d="M12 10l-7 -7M12 10l7 -7" /></svg
-                        ><svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="32"
-                            height="32"
-                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-orange-300"
-                            viewBox="0 0 24 24"
-                            onclick={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                showHistory();
-                            }}
-                            onkeydown={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }}
-                            onkeyup={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }}
-                            tabindex="0"
-                            role="button"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            ><path
-                                d="M3 12a9 9 0 1 0 9-9a9.75 9.75 0 0 0-6.74 2.74L3 8"
-                            /><path d="M3 3v5h5m4-1v5l4 2" /></svg
                         ><svg
                             xmlns="http://www.w3.org/2000/svg"
                             class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-orange-300"

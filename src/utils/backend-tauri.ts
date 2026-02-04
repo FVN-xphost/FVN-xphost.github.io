@@ -29,7 +29,6 @@ export async function save(
     current,
     branches,
   });
-  return true;
 }
 export async function unlockGallery(id: number) {
   await invoke("update_gallery", { id });

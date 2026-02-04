@@ -1,8 +1,7 @@
 name: Build My Visual Novel
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   publish-tauri:
@@ -140,3 +139,34 @@ jobs:
           name: Bundle-${{matrix.platform}}-${{matrix.arch}}
           path: "src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk"
           if-no-files-found: error
+  publish-pages:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: remove tauri code
+        run: |
+          sed -i '/tauri/d' package.json
+          sed -i 's/backend-tauri/backend-local/g' src/routes/+page.svelte
+          sed -i 's/backend-tauri/backend-local/g' src/routes/saves/[some]/+page.svelte
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: install
+        run: |
+          npm install
+          npm run build
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "dist"
+      - name: Deploy to Github Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

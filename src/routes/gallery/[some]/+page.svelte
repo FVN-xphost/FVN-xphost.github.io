@@ -7,13 +7,6 @@
     const images = $galleryLock.find(
         (item: any) => item.id === params.some,
     )!.images;
-    // function onDivWhell(e: WheelEvent) {
-    //     e.preventDefault();
-    //     const scrollAmount = e.deltaY || e.detail || -e.wheelDelta;
-    //     div.scrollLeft += scrollAmount;
-    // }
-    // /** @type {HTMLDivElement} */
-    // let div;
     onMount(() => {
         const c = document.querySelector(".gallery");
         c?.addEventListener("wheel", (e: Event) => {
