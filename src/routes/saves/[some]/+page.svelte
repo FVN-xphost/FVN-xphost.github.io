@@ -412,9 +412,19 @@
     }
     async function quick() {
         quickCurrent = !quickCurrent;
+        if (!quickCurrent) return;
+        if (lockText) {
+            exitText = true;
+            historyFile[historyFile.length - 1].text = replaceCurrentText(
+                gd(gc()).message,
+            );
+        }
+        exitText = false;
+        lockText = false;
         while (true) {
+            if (!gd(gc()).message) break;
             let n = nextOne(gc(), true);
-            if (n === -10 || n === -12) break;
+            if (n === -10 || n === -12 || !quickCurrent) break;
             if (n === -11) {
                 plusOne();
                 break;
