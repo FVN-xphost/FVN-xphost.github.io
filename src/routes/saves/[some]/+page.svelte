@@ -105,10 +105,10 @@
         setSaveInfo("current", current);
     }
     function plusOne() {
-        setSaveInfo("current", gc() + 1);
+        setc(gc() + 1);
     }
     function minusOne() {
-        setSaveInfo("current", gc() - 1);
+        setc(gc() - 1);
     }
     function replaceCurrentText(text: string | undefined): string {
         if (text === undefined) return "";
@@ -161,7 +161,6 @@
         return resNum;
     }
     async function doStyle(current: number, isQuick: boolean = false) {
-        console.log(current, gd(current).id);
         if (current === 0) {
             pianoIns.pause();
             pianoIns.currentTime = 0;
@@ -231,7 +230,7 @@
         // }
     }
     // 会根据 对话内容 进行下一步处理！
-    // 返回 -10 代表已经走到末尾，返回 -11 代表这可能是一个选项。。因为没有 message 键值！
+    // 返回 -10 代表已经走到末尾，返回 -11 代表这是一个选项。返回 -12 代表已经到末尾！
     function nextOne(index: number, plus: boolean): number {
         let resNum = index;
         if (resNum >= $dialogInstance.length) return -10;
@@ -245,9 +244,10 @@
         }
         if (resNum === index && plus) {
             resNum = jumpTo(true, resNum);
-            resNum = index + 1;
+            resNum++;
         }
-        if (!gd(resNum).message) return -11;
+        if (gd(resNum).type === "choice") return -11;
+        if (!gd(resNum).message) return -12;
         return resNum;
     }
     function prevOne(index: number): number {
@@ -301,7 +301,6 @@
         // 直接在初始化里面显示【历史】！（不直接用按钮显示了。。）
         while (m < gc()) {
             let n = nextOne(m, false);
-            console.log(m);
             if (n !== -10 && n !== -11) {
                 m = n;
                 m = jumpTo(true, m);
@@ -310,6 +309,7 @@
                     name: gd(m).name,
                     text: gd(m).message,
                 });
+                if (n === -12) break;
             } else if (n == -11) {
                 historyFile.push({
                     name: '<span style="color: blue">选项</span>',
@@ -334,7 +334,7 @@
         }
         if (!gd(gc()).message) return;
         let n = nextOne(gc(), plus);
-        if (n === -10) return;
+        if (n === -10 || n === -12) return;
         if (n === -11) {
             plusOne();
             return;
@@ -385,7 +385,7 @@
         });
         while (true) {
             let p = prevOne(gc());
-            if (p === -10 || p === -11) break;
+            if (p === -10 || p === -11 || p === -12) break;
             setc(p);
             let score = gd(gc()).score;
             // 下列开始判断 score 分数的回退，仅适用与 score 在 action 的返回值是 return (parseInt(rawValue) || 0 + n).toString();（n=任何数字）这种。。
@@ -413,15 +413,14 @@
     async function quick() {
         quickCurrent = !quickCurrent;
         while (true) {
-            if (
-                !quickCurrent ||
-                gc() >= $dialogInstance.length ||
-                !gd(gc()).message
-            )
+            let n = nextOne(gc(), true);
+            if (n === -10 || n === -12) break;
+            if (n === -11) {
+                plusOne();
                 break;
-            setc(jumpTo(true));
+            }
+            setc(n);
             await sleep(50);
-            plusOne();
             await doStyle(gc(), true);
             historyFile.push({
                 name: gd(gc()).name,
@@ -529,8 +528,7 @@
                     >
                         {#if gd(gc()).type === "choice"}
                             <div
-                                in:fade={{ duration: 400 }}
-                                out:fade={{ duration: 400 }}
+                                transition:fade={{ duration: 400 }}
                                 class="flex flex-col w-full h-full p-2.5 overflow-y-auto gap-2.5"
                             >
                                 {#each gd(gc()).choice as choice, index}
@@ -571,8 +569,7 @@
                             </div>
                         {:else}
                             <div
-                                in:fade={{ duration: 400 }}
-                                out:fade={{ duration: 400 }}
+                                transition:fade={{ duration: 400 }}
                                 class="flex shrink-0 h-[10vh] w-full items-center justify-center"
                             >
                                 <svg
