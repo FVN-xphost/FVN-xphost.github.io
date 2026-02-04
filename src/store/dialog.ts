@@ -184,7 +184,7 @@ export const dialogInstance = readable<DialogInterface[]>([
       Admin("没有这个流程，你到底办不办这个手续？", ifbranch),
       Qm("办。我只是……突然想关心你？", ifbranch),
       Admin("关心我？", ifbranch),
-      Qm("他皱着眉，好像你说了什么高深的难以理解的术语", ifbranch),
+      Aside("他皱着眉，好像你说了什么高深的难以理解的术语", ifbranch),
       Admin("我只需要你回答问题。", ifbranch),
       Qm("好的。", ifbranch),
       Admin("名字？", ifbranch),

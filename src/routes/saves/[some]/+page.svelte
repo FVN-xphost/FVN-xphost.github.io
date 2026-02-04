@@ -23,10 +23,7 @@
     const thisname = (() => `save${params.some}`)();
     // 临时变量：控制主屏幕显示。
     let o1 = $state(false);
-    /// 以下为一组：当前文本
-    let currentText = $state("");
-    // 上一个文本：
-    let upText = $state("");
+    /// 以下为一组：
     // 锁住文本（用于 next 时是否控制文本点击时自动显示完整。）
     let lockText = $state(false);
     /// 退出文本（同上用于判断）
@@ -426,7 +423,10 @@
             await sleep(50);
             plusOne();
             await doStyle(gc(), true);
-            currentText = replaceCurrentText(gd(gc()).message);
+            historyFile.push({
+                name: gd(gc()).name,
+                text: gd(gc()).message,
+            });
         }
     }
     function spaceDown(e: KeyboardEvent) {
@@ -507,11 +507,11 @@
                 >
                     <!-- 对话区域 -->
                     <div
-                        class="flex-1 w-full flex flex-col items-center justify-end gap-2.5 overflow-auto"
+                        class="flex-1 w-full flex flex-col justify-end gap-2.5 overflow-y-auto p-4"
                     >
                         {#each historyFile as item, index}
                             <div
-                                class="shrink-0 text-white h-auto w-[calc(100%-1.25rem)] text-left transition-[filter] duration-400"
+                                class="shrink-0 text-white h-auto w-full text-left transition-[filter] duration-400"
                                 style={`filter: brightness(${index === historyFile.length - 1 ? "1" : "0.5"})`}
                             >
                                 {@html replaceCurrentText(
@@ -695,6 +695,12 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div
+            class="fixed top-10 left-0 flex items-center bg-gray-200 rounded-r-sm shadow-[0_0_10px_#333333] w-auto transition-[max-width] duration-200 overflow-hidden whitespace-nowrap"
+            style={`max-width: ${isShowHint ? "300px" : "0"}`}
+        >
+            <span class="mx-2.5 text-2.5 text-black">{hintContent}</span>
         </div>
     </div>
 {/if}

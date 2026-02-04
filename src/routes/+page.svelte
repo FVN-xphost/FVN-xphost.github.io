@@ -87,41 +87,41 @@
                     {#if o3}
                         <div
                             in:fade={{ duration: 1500 }}
-                            class="flex-1 w-full flex items-center justify-center"
+                            class="flex-1 w-full h-[8vh] flexd items-center justify-center"
                         >
                             <button
                                 aria-label="开始游戏"
-                                class="w-[calc(20vw-0.75rem)] h-8.75 bg-yellow-300 text-black hover:bg-white cursor-pointer"
+                                class="w-[calc(20vw-0.75rem)] h-[8vh] bg-yellow-300 text-black hover:bg-white cursor-pointer"
                                 onclick={() => router.push("/saves")}
                                 >开始游戏</button
                             >
                         </div>
                     {:else}
-                        <div class="w-30 h-8.75"></div>
+                        <div class="w-30 h-[8vh]"></div>
                     {/if}
                     {#if o4}
                         <div
                             in:fade={{ duration: 1500 }}
-                            class="flex-1 w-full flex items-center justify-center"
+                            class="flex-1 w-full h-[8vh] flexd items-center justify-center"
                         >
                             <button
                                 aria-label="画廊"
-                                class="w-[calc(20vw-0.75rem)] h-8.75 bg-yellow-300 text-black hover:bg-white cursor-pointer"
+                                class="w-[calc(20vw-0.75rem)] h-[8vh] bg-yellow-300 text-black hover:bg-white cursor-pointer"
                                 onclick={() => router.push("/gallery")}
                                 >画廊</button
                             >
                         </div>
                     {:else}
-                        <div class="w-30 h-8.75"></div>
+                        <div class="w-30 h-[8vh]"></div>
                     {/if}
                     {#if o5}
                         <div
                             in:fade={{ duration: 1500 }}
-                            class="flex-1 w-full flex items-center justify-center"
+                            class="flex-1 w-full h-[8vh] flexd items-center justify-center"
                         >
                             <button
                                 aria-label="鸣谢"
-                                class="w-[calc(20vw-0.75rem)] h-8.75 bg-yellow-300 text-black hover:bg-white cursor-pointer"
+                                class="w-[calc(20vw-0.75rem)] h-[8vh] bg-yellow-300 text-black hover:bg-white cursor-pointer"
                                 onclick={() => {
                                     boardText.set(`
         <div style="color: #B22222;"><center style="font-size: 2rem;">关于与鸣谢：</center>
@@ -136,23 +136,23 @@
                             >
                         </div>
                     {:else}
-                        <div class="w-30 h-8.75"></div>
+                        <div class="w-30 h-[8vh]"></div>
                     {/if}
                     {#if o6}
                         <div
                             in:fade={{ duration: 1500 }}
-                            class="flex-1 w-full flex items-center justify-center"
+                            class="flex-1 w-full h-[8vh] flexd items-center justify-center"
                         >
                             <button
                                 aria-label="退出游戏"
-                                class="w-[calc(20vw-0.75rem)] h-8.75 bg-yellow-300 text-black hover:bg-white cursor-pointer"
+                                class="w-[calc(20vw-0.75rem)] h-[8vh] bg-yellow-300 text-black hover:bg-white cursor-pointer"
                                 onclick={() => {
                                     closeWindow();
                                 }}>退出游戏</button
                             >
                         </div>
                     {:else}
-                        <div class="w-30 h-8.75"></div>
+                        <div class="w-30 h-[8vh]"></div>
                     {/if}
                 </div>
             {:else if isStart === false}
