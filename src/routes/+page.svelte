@@ -67,14 +67,21 @@
                 in:fade={{ duration: 1500 }}
                 class="absolute w-screen h-[30vh] bg-yellow-300 top-[20vh] left-0 right-0 flex flex-col items-center"
             >
-                <div class="flex-1 w-auto flex flex-col">
-                    <div class="text-black font-bold" style="font-size: 16vh">
+                <div
+                    class="flex-1 w-auto flex flex-col relative before:absolute before:bottom-2 before:-right-12 before:content-['v0.1.0']"
+                >
+                    <div
+                        class="text-black font-bold whitespace-nowrap"
+                        style="font-size: 16vh"
+                    >
                         第一次离别
                     </div>
                     <div
-                        class="flex-1 self-stretch bg-black text-yellow-300 mb-2.5 flex items-center justify-center"
+                        class="flex-1 self-stretch px-2.5 bg-black text-yellow-300 mb-2.5 flex items-center justify-center"
                     >
-                        V0.1.0
+                        <div
+                            class="w-full h-px border border-t-gray-700 border-dashed"
+                        ></div>
                     </div>
                 </div>
             </div>
@@ -82,78 +89,44 @@
                 <div
                     in:fade={{ duration: 1500 }}
                     out:fade={{ duration: 300 }}
-                    class="flex flex-col absolute border-white border border-solid bottom-[10vh] h-auto p-1.5 gap-1.5 left-0 right-0 w-[20vw] mx-auto"
+                    class="flex flex-col absolute border-white border border-solid bottom-[10vh] h-[30vh] p-1.5 gap-1.5 left-0 right-0 w-[20vw] mx-auto
+                    before:content-['主选单/'] before:absolute before:text-[0.75rem] before:text-yellow-300 before:-top-6 before:left-0"
                 >
-                    {#if o3}
-                        <div
-                            in:fade={{ duration: 1500 }}
-                            class="flex-1 w-full h-[8vh] flexd items-center justify-center"
-                        >
-                            <button
-                                aria-label="开始游戏"
-                                class="w-[calc(20vw-0.75rem)] h-[8vh] bg-yellow-300 text-black hover:bg-white cursor-pointer"
-                                onclick={() => router.push("/saves")}
-                                >开始游戏</button
-                            >
-                        </div>
-                    {:else}
-                        <div class="w-30 h-[8vh]"></div>
-                    {/if}
-                    {#if o4}
-                        <div
-                            in:fade={{ duration: 1500 }}
-                            class="flex-1 w-full h-[8vh] flexd items-center justify-center"
-                        >
-                            <button
-                                aria-label="画廊"
-                                class="w-[calc(20vw-0.75rem)] h-[8vh] bg-yellow-300 text-black hover:bg-white cursor-pointer"
-                                onclick={() => router.push("/gallery")}
-                                >画廊</button
-                            >
-                        </div>
-                    {:else}
-                        <div class="w-30 h-[8vh]"></div>
-                    {/if}
-                    {#if o5}
-                        <div
-                            in:fade={{ duration: 1500 }}
-                            class="flex-1 w-full h-[8vh] flexd items-center justify-center"
-                        >
-                            <button
-                                aria-label="鸣谢"
-                                class="w-[calc(20vw-0.75rem)] h-[8vh] bg-yellow-300 text-black hover:bg-white cursor-pointer"
-                                onclick={() => {
-                                    boardText.set(`
-        <div style="color: #B22222;"><center style="font-size: 2rem;">关于与鸣谢：</center>
-        非常感谢每一位支持我的玩家！在这里着重感谢：<br>
-        <!-- <span style="color: red;">秋风残叶</span> 谢谢你的陪伴，让我在游戏生涯中少走了很多弯路。<br>
-        <span style="color: orange">迟暮の夜莺</span> 也同样感谢你的陪伴！<br>
-        如果没有上述两位，我可能无法制作出这款游戏！接下来是游戏设计、美术和编程的各位。<br>
-        <span style="color: yellow"></span> -->
-        </div>
-        `);
-                                }}>鸣谢</button
-                            >
-                        </div>
-                    {:else}
-                        <div class="w-30 h-[8vh]"></div>
-                    {/if}
-                    {#if o6}
-                        <div
-                            in:fade={{ duration: 1500 }}
-                            class="flex-1 w-full h-[8vh] flexd items-center justify-center"
-                        >
-                            <button
-                                aria-label="退出游戏"
-                                class="w-[calc(20vw-0.75rem)] h-[8vh] bg-yellow-300 text-black hover:bg-white cursor-pointer"
-                                onclick={() => {
-                                    closeWindow();
-                                }}>退出游戏</button
-                            >
-                        </div>
-                    {:else}
-                        <div class="w-30 h-[8vh]"></div>
-                    {/if}
+                    <button
+                        aria-label="开始游戏"
+                        class="w-full flex-1 bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white cursor-pointer transition-opacity duration-400"
+                        style={`opacity: ${o3 ? "1" : "0"}`}
+                        onclick={async () => {
+                            isStart = false;
+                            await sleep(300);
+                            router.push("/saves");
+                        }}>开始游戏</button
+                    >
+                    <button
+                        aria-label="画廊"
+                        class="w-full flex-1 bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white cursor-pointer transition-opacity duration-400"
+                        style={`opacity: ${o4 ? "1" : "0"}`}
+                        onclick={() => router.push("/gallery")}>画廊</button
+                    >
+                    <button
+                        aria-label="退出游戏"
+                        class="w-full flex-1 bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white cursor-pointer transition-opacity duration-400"
+                        style={`opacity: ${o5 ? "1" : "0"}`}
+                        onclick={() => {
+                            closeWindow();
+                        }}>退出游戏</button
+                    >
+                </div>
+                <div
+                    in:fade={{ duration: 1500 }}
+                    out:fade={{ duration: 300 }}
+                    class="absolute border border-yellow-300 border-solid p-1.5 bottom-[10vh] h-[30vh] left-[50vw] right-0 w-[20vw] mx-auto
+                    before:content-['制作成员/'] before:absolute before:text-[0.75rem] before:text-yellow-300 before:-top-6 before:left-0"
+                >
+                    <div
+                        class="w-full h-full flex flex-col gap-1.5 bg-gray-600 transition-opacity duration-400 *:shrink-0 *:text-white overflow-auto"
+                        style={`opacity: ${o3 ? "1" : "0"}`}
+                    ></div>
                 </div>
             {:else if isStart === false}
                 <div
