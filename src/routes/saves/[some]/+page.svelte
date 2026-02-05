@@ -272,6 +272,7 @@
         }
         return resNum;
     }
+    let dialogDom: HTMLDivElement;
     onMount(async () => {
         // 输入名字
         if (getSaveInfo("name") === "") {
@@ -322,6 +323,8 @@
         }
         o1 = true;
         await sleep(500);
+        dialogDom = document.querySelector(".dialog-by") as HTMLDivElement
+        dialogDom.scrollTop = dialogDom.scrollHeight
         await next(false);
     });
     async function next(plus: boolean = true) {
@@ -330,6 +333,7 @@
             historyFile[historyFile.length - 1].text = replaceCurrentText(
                 gd(gc()).message,
             );
+            dialogDom.scrollTop = dialogDom.scrollHeight
             return;
         }
         if (!gd(gc()).message) return;
@@ -363,10 +367,12 @@
                 break;
             }
             historyFile[historyFile.length - 1].text += ct[i];
+            dialogDom.scrollTop = dialogDom.scrollHeight
             if (exitText) {
                 break;
             }
         }
+        dialogDom.scrollTop = dialogDom.scrollHeight
         exitText = false;
         lockText = false;
     }
@@ -436,7 +442,9 @@
                 name: gd(gc()).name,
                 text: gd(gc()).message,
             });
+            dialogDom.scrollTop = dialogDom.scrollHeight
         }
+        dialogDom.scrollTop = dialogDom.scrollHeight
     }
     function spaceDown(e: KeyboardEvent) {
         e.preventDefault();
@@ -516,12 +524,12 @@
                 >
                     <!-- 对话区域 -->
                     <div
-                        class="flex-1 w-full flex flex-col justify-end gap-2.5 overflow-y-auto p-4"
+                        class="dialog-by flex-1 w-full flex flex-col before:content-[''] gap-2.5 overflow-y-auto p-4"
                     >
                         {#each historyFile as item, index}
                             <div
-                                class="shrink-0 text-white h-auto w-full text-left transition-[filter] duration-400 min-h-0"
-                                style={`filter: brightness(${index === historyFile.length - 1 ? "1" : "0.5"})`}
+                                class="shrink-0 text-white h-auto w-full text-left transition-[filter] duration-400"
+                                style={`filter: brightness(${index === historyFile.length - 1 ? "1" : "0.5"}); ${index === 0 ? 'margin-top: auto;': ''}`}
                             >
                                 {@html replaceCurrentText(
                                     item.name === "" || item.name === undefined
