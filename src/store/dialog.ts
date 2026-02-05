@@ -35,6 +35,7 @@ function Normal(
     if: ifbranch,
   };
 }
+const publicCss = `color: white; background-color: transparent; font-size: 0.8rem; padding: 2px; border-radius: 2px;`;
 function Aside(
   message: string,
   ifbranch: IfInterface[] | undefined = undefined,
@@ -49,7 +50,7 @@ function George(
 ) {
   return Normal(
     id,
-    `<span style="color: skyblue;">%name</span>`,
+    `<span style="${publicCss} background-color: #2B7FFF;">%name</span>`,
     "",
     message,
     ifbranch,
@@ -62,7 +63,7 @@ function Admin(
 ) {
   return Normal(
     id,
-    `<span style="color: lightgreen;">管理员</span>`,
+    `<span style="${publicCss} background-color: #31C950;">管理员</span>`,
     "",
     message,
     ifbranch,
@@ -75,7 +76,7 @@ function Qm(
 ) {
   return Normal(
     id,
-    `<span style="color: darkgray">??</span>`,
+    `<span style="${publicCss} background-color: darkgray;">??</span>`,
     "",
     message,
     ifbranch,
@@ -88,7 +89,7 @@ function Tony(
 ) {
   return Normal(
     id,
-    `<span style="color: orange">托尼</span>`,
+    `<span style="${publicCss} background-color: orange;">托尼</span>`,
     "",
     message,
     ifbranch,
@@ -101,12 +102,13 @@ function Wildebeest(
 ) {
   return Normal(
     id,
-    `<span style="color: lightcoral">角马</span>`,
+    `<span style="${publicCss} background-color: lightcoral;">角马</span>`,
     "",
     message,
     ifbranch,
   );
 }
+export const choiceTitle = `<span style="${publicCss} background-color: blue;">选项</span>`;
 function Choice(
   id: string,
   choice: string[],

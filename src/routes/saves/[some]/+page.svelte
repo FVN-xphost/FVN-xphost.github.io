@@ -4,7 +4,7 @@
     import { fade } from "svelte/transition";
     import "../../../components/board/MyMessageBox";
     import { mounted, saveData } from "../../../store/store";
-    import { dialogInstance } from "../../../store/dialog";
+    import { choiceTitle, dialogInstance } from "../../../store/dialog";
     import { showMessageBox, messagebox } from "../../../utils/messagebox";
     import { sleep, router, branchCount } from "../../../utils/all";
     import { init, save, unlockGallery } from "../../../utils/backend-tauri";
@@ -312,7 +312,7 @@
                 if (n === -12) break;
             } else if (n == -11) {
                 historyFile.push({
-                    name: '<span style="color: blue">选项</span>',
+                    name: choiceTitle,
                     text: getSaveInfo(gd(m).id),
                 });
                 m = jumpTo(true, m);
@@ -520,7 +520,7 @@
                     >
                         {#each historyFile as item, index}
                             <div
-                                class="shrink-0 text-white h-auto w-full text-left transition-[filter] duration-400"
+                                class="shrink-0 text-white h-auto w-full text-left transition-[filter] duration-400 min-h-0"
                                 style={`filter: brightness(${index === historyFile.length - 1 ? "1" : "0.5"})`}
                             >
                                 {@html replaceCurrentText(
@@ -563,7 +563,7 @@
                                                 );
                                             }
                                             historyFile.push({
-                                                name: `<span style="color: blue">选项</span>`,
+                                                name: choiceTitle,
                                                 text: choice,
                                             });
                                             setc(jumpTo(true));
