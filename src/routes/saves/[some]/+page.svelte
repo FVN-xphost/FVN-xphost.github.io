@@ -7,7 +7,7 @@
     import { choiceTitle, dialogInstance } from "../../../store/dialog";
     import { showMessageBox, messagebox } from "../../../utils/messagebox";
     import { sleep, router, branchCount } from "../../../utils/all";
-    import { init, save, unlockGallery } from "../../../utils/backend-tauri";
+    import { save, unlockGallery } from "../../../utils/backend-tauri";
     import Dragon from "../../../assets/illustration/dragon_dressed.png";
     import Tiger from "../../../assets/illustration/tiger_dressed.png";
     import piano from "../../../assets/sounds/mp3/piano.mp3";
@@ -323,8 +323,8 @@
         }
         o1 = true;
         await sleep(500);
-        dialogDom = document.querySelector(".dialog-by") as HTMLDivElement
-        dialogDom.scrollTop = dialogDom.scrollHeight
+        dialogDom = document.querySelector(".dialog-by") as HTMLDivElement;
+        dialogDom.scrollTop = dialogDom.scrollHeight;
         await next(false);
     });
     async function next(plus: boolean = true) {
@@ -333,7 +333,7 @@
             historyFile[historyFile.length - 1].text = replaceCurrentText(
                 gd(gc()).message,
             );
-            dialogDom.scrollTop = dialogDom.scrollHeight
+            dialogDom.scrollTop = dialogDom.scrollHeight;
             return;
         }
         if (!gd(gc()).message) return;
@@ -367,12 +367,12 @@
                 break;
             }
             historyFile[historyFile.length - 1].text += ct[i];
-            dialogDom.scrollTop = dialogDom.scrollHeight
+            dialogDom.scrollTop = dialogDom.scrollHeight;
             if (exitText) {
                 break;
             }
         }
-        dialogDom.scrollTop = dialogDom.scrollHeight
+        dialogDom.scrollTop = dialogDom.scrollHeight;
         exitText = false;
         lockText = false;
     }
@@ -442,9 +442,9 @@
                 name: gd(gc()).name,
                 text: gd(gc()).message,
             });
-            dialogDom.scrollTop = dialogDom.scrollHeight
+            dialogDom.scrollTop = dialogDom.scrollHeight;
         }
-        dialogDom.scrollTop = dialogDom.scrollHeight
+        dialogDom.scrollTop = dialogDom.scrollHeight;
     }
     function spaceDown(e: KeyboardEvent) {
         e.preventDefault();
@@ -529,7 +529,7 @@
                         {#each historyFile as item, index}
                             <div
                                 class="shrink-0 text-white h-auto w-full text-left transition-[filter] duration-400"
-                                style={`filter: brightness(${index === historyFile.length - 1 ? "1" : "0.5"}); ${index === 0 ? 'margin-top: auto;': ''}`}
+                                style={`filter: brightness(${index === historyFile.length - 1 ? "1" : "0.5"}); ${index === 0 ? "margin-top: auto;" : ""}`}
                             >
                                 {@html replaceCurrentText(
                                     item.name === "" || item.name === undefined
