@@ -2,14 +2,10 @@
     import "../style/index.css";
     import "../style/tailwind.css";
     import { onMount } from "svelte";
-    import { sleep } from "../utils/all";
+    import { saveCount, sleep } from "../utils/all";
     import { init, closeWindow } from "../utils/backend-tauri";
-    import { boardText, mounted } from "../store/store";
-    // import MyBlackBoard from "../components/board/MyBlackBoard.svelte";
-    import "../components/board/MyBlackBoard";
-    // import { quadInOut } from "svelte/easing";
+    import { mounted, saveData } from "../store/store";
     import { fade } from "svelte/transition";
-    // import MyTitleImg from "../assets/Home/title.png";
     import { router } from "../utils/all";
     let o1 = $state(false);
     let o2 = $state(false);
@@ -17,10 +13,10 @@
     let o4 = $state(false);
     let o5 = $state(false);
     let o6 = $state(false);
-    let isStart = $state<boolean | null>(null);
+    let isStart = $state<number>(-1);
     onMount(async () => {
         if ($mounted) {
-            isStart = false;
+            isStart = 0;
             o1 = true;
             o2 = true;
             o3 = true;
@@ -35,11 +31,11 @@
         await sleep(1500);
         o2 = true;
         await sleep(1500);
-        isStart = false;
+        isStart = 0;
     });
     async function showStart() {
-        if (isStart === false) {
-            isStart = true;
+        if (isStart === 0) {
+            isStart = 1;
             await sleep(300);
             o3 = true;
             await sleep(300);
@@ -85,7 +81,40 @@
                     </div>
                 </div>
             </div>
-            {#if isStart === true}
+            {#if isStart === 2}
+                <div
+                    in:fade={{ duration: 1500 }}
+                    out:fade={{ duration: 300 }}
+                    class="flex flex-col absolute bottom-[10vh] h-[30vh] gap-1.5 left-0 right-0 w-[30vw] mx-auto
+                    before:content-['主选单/存档'] before:absolute before:text-[0.75rem] before:text-yellow-300 before:-top-6 before:left-0"
+                >
+                    <div class="flex-3 flex flex-col overflow-auto gap-[1vh]">
+                        {#each new Array(saveCount).fill(null) as _, index}
+                            <button
+                                aria-label="存档"
+                                class="text-left px-2 w-full h-[6vh] shrink-0 bg-white text-black hover:bg-yellow-300 active:bg-black active:text-white cursor-pointer transition-opacity duration-400"
+                                style={$saveData.saveInstance[
+                                    `save${index + 1}`
+                                ].name
+                                    ? `display: flex; align-items: center; justify-content: space-between;`
+                                    : ``}
+                                onclick={() => {
+                                    router.push("/saves/" + (index + 1));
+                                }}
+                                >{@html `<div>${$saveData.saveInstance["save" + (index + 1)].name ? index + 1 + ". " + $saveData.saveInstance["save" + (index + 1)].name + "</div><div>" + $saveData.saveObject["save" + (index + 1)].updateTime : index + 1 + ". 空存档"}</div>`}</button
+                            >
+                        {/each}
+                    </div>
+                    <button
+                        aria-label="返回"
+                        class="w-full flex-1 bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white cursor-pointer transition-opacity duration-400"
+                        style={`opacity: ${o5 ? "1" : "0"}`}
+                        onclick={() => {
+                            isStart = 1;
+                        }}>返回</button
+                    >
+                </div>
+            {:else if isStart === 1}
                 <div
                     in:fade={{ duration: 1500 }}
                     out:fade={{ duration: 300 }}
@@ -97,9 +126,7 @@
                         class="w-full flex-1 bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white cursor-pointer transition-opacity duration-400"
                         style={`opacity: ${o3 ? "1" : "0"}`}
                         onclick={async () => {
-                            isStart = false;
-                            await sleep(300);
-                            router.push("/saves");
+                            isStart = 2;
                         }}>开始游戏</button
                     >
                     <button
@@ -128,7 +155,7 @@
                         style={`opacity: ${o3 ? "1" : "0"}`}
                     ></div>
                 </div>
-            {:else if isStart === false}
+            {:else if isStart === 0}
                 <div
                     in:fade={{ duration: 1500 }}
                     out:fade={{ duration: 300 }}
@@ -139,12 +166,4 @@
             {/if}
         {/if}
     </div>
-{/if}
-{#if $boardText !== ""}
-    <my-black-board
-        in:fade={{ duration: 400 }}
-        out:fade={{ duration: 400 }}
-        boardText={$boardText}
-        close={() => boardText.set("")}
-    ></my-black-board>
 {/if}

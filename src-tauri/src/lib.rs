@@ -55,7 +55,6 @@ CREATE TABLE IF NOT EXISTS galleryLock(
 CREATE TABLE IF NOT EXISTS saveObject(
     id INTEGER PRIMARY KEY,
     saved INTEGER NOT NULL,
-    image TEXT,
     update_time TEXT,
     remark TEXT
 )
@@ -85,16 +84,14 @@ CREATE TABLE IF NOT EXISTS saveObject(
                     row.get::<_, i32>(1)?,
                     row.get::<_, Option<String>>(2)?,
                     row.get::<_, Option<String>>(3)?,
-                    row.get::<_, Option<String>>(4)?,
                 ))
             })
             .ok()?;
         let mut saves = serde_json::Map::new();
         for row in rows {
-            let (id, saved, image, update_time, remark) = row.ok()?;
+            let (id, saved, update_time, remark) = row.ok()?;
             if saved == 1 {
                 let mut save = serde_json::Map::new();
-                save.insert("image".to_string(), serde_json::json!(image.unwrap()));
                 save.insert(
                     "updateTime".to_string(),
                     serde_json::json!(update_time.unwrap()),
@@ -216,15 +213,15 @@ CREATE TABLE IF NOT EXISTS saveInstance(
 fn update_save(
     id: String,
     update_time: String,
-    image: String,
+    // image: String,
     name: String,
     current: i32,
     branches: Vec<String>,
 ) -> Option<()> {
     let conn = Connection::open(path_join!(HOME_DIR.get().unwrap(), "data.db")).ok()?;
     conn.execute(
-        "UPDATE saveObject SET update_time = ?1, image = ?2, saved = 1, remark = '' WHERE id = ?3",
-        params![&update_time, &image, &id],
+        "UPDATE saveObject SET update_time = ?1, saved = 1, remark = '' WHERE id = ?2",
+        params![&update_time, &id],
     )
     .ok()?;
     let mut branch_temp = String::new();

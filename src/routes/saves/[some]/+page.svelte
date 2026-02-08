@@ -2,10 +2,10 @@
     import html2canvas from "html2canvas-oklch";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
-    import "../../../components/board/MyMessageBox";
-    import { mounted, saveData } from "../../../store/store";
+    import "./MyInputName";
+    import { saveData } from "../../../store/store";
     import { choiceTitle, dialogInstance } from "../../../store/dialog";
-    import { showMessageBox, messagebox } from "../../../utils/messagebox";
+    import { showInputName, messagebox } from "../../../utils/messagebox";
     import { sleep, router, branchCount } from "../../../utils/all";
     import { save, unlockGallery } from "../../../utils/backend-tauri";
     import Dragon from "../../../assets/illustration/dragon_dressed.png";
@@ -276,25 +276,8 @@
     onMount(async () => {
         // 输入名字
         if (getSaveInfo("name") === "") {
-            let name = "";
-            while (true) {
-                name = await showMessageBox(
-                    "请输入主角名字",
-                    "请在下方输入主角名字，默认：乔治",
-                    "input",
-                );
-                name = name === "" ? "乔治" : name;
-                if (
-                    (await showMessageBox(
-                        "你的名字是",
-                        `你的名字是：${name}，是否确定？`,
-                        "info",
-                        ["ok", "cancel"],
-                    )) === "0"
-                ) {
-                    break;
-                }
-            }
+            let name = await showInputName();
+            name = name === "" ? "乔治" : name;
             setSaveInfo("name", name);
         }
         let m = 0;
@@ -465,18 +448,24 @@
     }
     async function updateSave(name: string, current: number) {
         const date = new Date();
-        const image = (
-            await html2canvas(document.querySelector(".container2")!)
-        ).toDataURL("image/png");
-        const updateTime = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-        setSaveMeta("image", image);
+        const updateTime = `${date.getFullYear()}-${
+            date.getMonth() + 1 < 10
+                ? "0" + (date.getMonth() + 1)
+                : date.getMonth() + 1
+        }-${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()} ${
+            date.getHours() < 10 ? "0" + date.getHours() : date.getHours()
+        }:${
+            date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()
+        }:${
+            date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds()
+        }`;
         setSaveMeta("remark", "");
         setSaveMeta("updateTime", updateTime);
         try {
             await save(
                 params.some,
                 updateTime,
-                image,
+                "",
                 name,
                 current,
                 new Array(branchCount)
@@ -720,22 +709,14 @@
     </div>
 {/if}
 {#if $messagebox.show}
-    <my-message-box
+    <my-input-name
         in:fade={{ duration: 300 }}
         out:fade={{ duration: 300 }}
-        title={$messagebox.title}
-        content={$messagebox.content}
-        buttons={$messagebox.buttons}
-        type={$messagebox.type}
         result={(result: string) => {
             messagebox.set({
                 show: false,
-                title: "",
-                content: "",
-                type: "info",
-                buttons: [],
                 result: result,
             });
         }}
-    ></my-message-box>
+    ></my-input-name>
 {/if}

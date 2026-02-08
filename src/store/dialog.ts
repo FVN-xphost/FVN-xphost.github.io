@@ -76,7 +76,7 @@ function Qm(
 ) {
   return Normal(
     id,
-    `<span style="${publicCss} background-color: darkgray;">??</span>`,
+    `<span style="${publicCss} background-color: darkgray;">？？</span>`,
     "",
     message,
     ifbranch,
@@ -604,16 +604,16 @@ export const dialogInstance = readable<DialogInterface[]>([
   Aside("时间一分一秒的过去。", ifbranch3a4a5),
   Normal(
     "",
-    `<span style="color: darkred;">犹豫之心</span>`,
+    `<span style="${publicCss} background-color: darkred;">犹豫之心</span>`,
     "",
-    "乔治？乔治！你在干什么，你就像过去无数次做蠢事一样做你这辈子最蠢的决定吗？你得再想想，动动脑子，深思熟虑，衡量自身利弊。快叫托尼回来，快点，你不能在这种事上犯蠢。",
+    "%name？%name！你在干什么，你就像过去无数次做蠢事一样做你这辈子最蠢的决定吗？你得再想想，动动脑子，深思熟虑，衡量自身利弊。快叫托尼回来，快点，你不能在这种事上犯蠢。",
     ifbranch3a4a5,
   ),
   George("我已经做出决定，滚吧。", ifbranch3a4a5),
   Aside("时间一分一秒的过去。", ifbranch3a4a5),
   Normal(
     "",
-    `<span style="color: darkblue;">怀疑之心</span>`,
+    `<span style="${publicCss} background-color: darkblue;">怀疑之心</span>`,
     "",
     "仅此一次的机会，被你浪费掉了。你犯了世上最愚蠢的错误，最难以宽恕的错误，最不可理喻的错误。你就是一只活在垃圾堆里的蠢狗，一辈子在垃圾堆刨食的废物，一步都不敢迈出的懦夫、胆小鬼！你辜负了查理送你最后的礼物。",
     ifbranch3a4a5,
@@ -625,7 +625,7 @@ export const dialogInstance = readable<DialogInterface[]>([
   Aside("时间一分一秒的过去。", ifbranch3a4a5),
   Normal(
     "",
-    `<span style="color: rebeccapurple;">恐惧之心</span>`,
+    `<span style="${publicCss} background-color: rebeccapurple;">恐惧之心</span>`,
     "",
     "啧啧，看看你干了什么好事。看看已经过去了多长时间？托尼在干嘛？他在安排另一具身体，他在转移自己的数据，他在花你的钱。再等一会你面前的屏幕就会熄灭，保安会冲进来把你按在地上“你个小偷！”然后查理留下的休息区被收回，你被流放到宇宙真空中，不穿宇航服的那种。",
     ifbranch3a4a5,
