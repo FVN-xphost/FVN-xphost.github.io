@@ -1,10 +1,8 @@
 import { LitElement, html, css, unsafeCSS } from "lit";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { customElement, property } from "lit/decorators.js";
 import "../../../components/input/MyMenuButton";
 import tailwindcss from "../../../style/tailwind.css?inline";
 import indexcss from "../../../style/index.css?inline";
-import messageBack from "../../../assets/Home/messageback.png";
 import George from "../../../assets/illustration/george.png";
 
 @customElement("my-input-name")
@@ -12,9 +10,6 @@ export class MyInputName extends LitElement {
   static styles = css`
     ${unsafeCSS(tailwindcss)}
     ${unsafeCSS(indexcss)}
-    .message {
-      background-image: url(${unsafeCSS(messageBack)});
-    }
   `;
   @property({ type: Function }) result: (res: string) => void = (_) => {};
   value = "";

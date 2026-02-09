@@ -43,13 +43,20 @@
     let hintContent = $state("");
     // 历史
     let historyFile = $state<any[]>([]);
+    // 展示开头的信息框
     let showInput = $state(false);
     let resultInput = $state("");
+    let pedding = $state(undefined);
+    $effect(() => {
+        if (!showInput && pedding) {
+            pedding(resultInput);
+            pedding = undefined;
+        }
+    });
     function showInputName(): Promise<string> {
+        showInput = true;
         return new Promise((resolve) => {
-            if (!showInput) {
-                resolve(resultInput);
-            }
+            pedding = resolve;
         });
     }
     function showHint(hintText: string) {
@@ -284,6 +291,7 @@
         // 输入名字
         if (getSaveInfo("name") === "") {
             let name = await showInputName();
+            console.log(name);
             name = name === "" ? "乔治" : name;
             setSaveInfo("name", name);
         }
@@ -719,9 +727,9 @@
     <my-input-name
         in:fade={{ duration: 300 }}
         out:fade={{ duration: 300 }}
-        result={(result: string) => {
+        result={(res: string) => {
             showInput = false;
-            resultInput = result;
+            resultInput = res;
         }}
     ></my-input-name>
 {/if}
