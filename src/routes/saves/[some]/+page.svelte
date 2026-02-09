@@ -1,11 +1,9 @@
 <script lang="ts">
-    import html2canvas from "html2canvas-oklch";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import "./MyInputName";
     import { saveData } from "../../../store/store";
     import { choiceTitle, dialogInstance } from "../../../store/dialog";
-    import { showInputName, messagebox } from "../../../utils/messagebox";
     import { sleep, router, branchCount } from "../../../utils/all";
     import { save, unlockGallery } from "../../../utils/backend-tauri";
     import Dragon from "../../../assets/illustration/dragon_dressed.png";
@@ -45,6 +43,15 @@
     let hintContent = $state("");
     // 历史
     let historyFile = $state<any[]>([]);
+    let showInput = $state(false);
+    let resultInput = $state("");
+    function showInputName(): Promise<string> {
+        return new Promise((resolve) => {
+            if (!showInput) {
+                resolve(resultInput);
+            }
+        });
+    }
     function showHint(hintText: string) {
         isShowHint = true;
         hintContent = hintText;
@@ -708,15 +715,13 @@
         </div>
     </div>
 {/if}
-{#if $messagebox.show}
+{#if showInput}
     <my-input-name
         in:fade={{ duration: 300 }}
         out:fade={{ duration: 300 }}
         result={(result: string) => {
-            messagebox.set({
-                show: false,
-                result: result,
-            });
+            showInput = false;
+            resultInput = result;
         }}
     ></my-input-name>
 {/if}
