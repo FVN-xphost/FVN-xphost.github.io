@@ -66,18 +66,6 @@
             isShowHint = false;
         }, 3000);
     }
-    function setSaveMeta(key: string, value: string) {
-        saveData.set({
-            ...$saveData,
-            saveObject: {
-                ...$saveData.saveObject,
-                [thisname]: {
-                    ...$saveData.saveObject[thisname],
-                    [key]: value,
-                },
-            },
-        });
-    }
     function setGalleryMeta(id: number) {
         saveData.set({
             ...$saveData,
@@ -474,8 +462,8 @@
         }:${
             date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds()
         }`;
-        setSaveMeta("remark", "");
-        setSaveMeta("updateTime", updateTime);
+        setSaveInfo("remark", "");
+        setSaveInfo("updateTime", updateTime);
         try {
             await save(
                 params.some,

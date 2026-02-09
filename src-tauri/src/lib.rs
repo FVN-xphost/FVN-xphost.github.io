@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS galleryLock(
     }
     // 查询所有的画廊数据，如果为 1 则开启，否则锁定！
     {
-        let mut stmt = conn.prepare("SELECT id, lock FROM galleryLock").ok()?;
+        let mut stmt = conn.prepare("SELECT * FROM galleryLock").ok()?;
         let rows = stmt
             .query_map([], |row| Ok((row.get::<_, i32>(0)?, row.get::<_, i32>(1)?)))
             .ok()?;
@@ -49,73 +49,20 @@ CREATE TABLE IF NOT EXISTS galleryLock(
             serde_json::Value::Object(gallery.clone()),
         );
     }
-    // 新增存档对象表
-    conn.execute(
-        r#"
-CREATE TABLE IF NOT EXISTS saveObject(
-    id INTEGER PRIMARY KEY,
-    saved INTEGER NOT NULL,
-    update_time TEXT,
-    remark TEXT
-)
-"#,
-        [],
-    )
-    .ok()?;
-    // 为存档对象表塞入 save_count 个数据，每个数据包含 4 个字段！
-    {
-        let tx = conn.transaction().ok()?;
-        for i in 1..=save_count {
-            tx.execute(
-                "INSERT OR IGNORE INTO saveObject (id, saved) VALUES (?1, 0)",
-                params![&i],
-            )
-            .ok()?;
-        }
-        tx.commit().ok()?;
-    }
-    // 查询所有字段！
-    {
-        let mut stmt = conn.prepare("SELECT * FROM saveObject").ok()?;
-        let rows = stmt
-            .query_map([], |row| {
-                Ok((
-                    row.get::<_, i32>(0)?,
-                    row.get::<_, i32>(1)?,
-                    row.get::<_, Option<String>>(2)?,
-                    row.get::<_, Option<String>>(3)?,
-                ))
-            })
-            .ok()?;
-        let mut saves = serde_json::Map::new();
-        for row in rows {
-            let (id, saved, update_time, remark) = row.ok()?;
-            if saved == 1 {
-                let mut save = serde_json::Map::new();
-                save.insert(
-                    "updateTime".to_string(),
-                    serde_json::json!(update_time.unwrap()),
-                );
-                save.insert("remark".to_string(), serde_json::json!(remark.unwrap()));
-                saves.insert(
-                    format!("save{}", id),
-                    serde_json::Value::Object(save.clone()),
-                );
-            } else {
-                saves.insert(format!("save{}", id), serde_json::json!({}));
-            }
-        }
-        result.insert(
-            "saveObject".to_string(),
-            serde_json::Value::Object(saves.clone()),
-        );
-    }
-    // 新建存档元数据表（当前只新增两个元数据，第一个是玩家名称，第二个是当前进度。后续所有的分支全部转入下方自主实现！）
+    // 新建存档元数据对象表（当前只新增五个元数据：
+    // 第一个是玩家名称，
+    // 第二个是是否存档，
+    // 第三个是更新日期，
+    // 第四个是备注，
+    // 第五个是当前进度。后续所有的分支全部转入下方自主实现！）
     conn.execute(
         r#"
 CREATE TABLE IF NOT EXISTS saveInstance(
     id INTEGER PRIMARY KEY,
     name TEXT,
+    saved INTEGER NOT NULL,
+    update_time TEXT,
+    remark TEXT,
     current INTEGER NOT NULL DEFAULT 0
 )
 "#,
@@ -126,7 +73,7 @@ CREATE TABLE IF NOT EXISTS saveInstance(
         let tx = conn.transaction().ok()?;
         for i in 1..=save_count {
             tx.execute(
-                "INSERT OR IGNORE INTO saveInstance (id) VALUES (?1)",
+                "INSERT OR IGNORE INTO saveInstance (id, saved) VALUES (?1, 0)",
                 params![&i],
             )
             .ok()?;
@@ -174,23 +121,35 @@ CREATE TABLE IF NOT EXISTS saveInstance(
             .query_map([], |row| {
                 let id: i32 = row.get(0)?;
                 let name: Option<String> = row.get(1)?;
-                let current: i32 = row.get(2)?;
+                let saved: i32 = row.get(2)?;
+                let update_time: Option<String> = row.get(3)?;
+                let remark: Option<String> = row.get(4)?;
+                let current: i32 = row.get(5)?;
                 let mut branches = std::collections::HashMap::new();
-                for i in 3..(branch_count + 3) {
+                for i in 6..(branch_count + 6) {
                     if let Ok(value) = row.get::<_, String>(i as usize) {
-                        branches.insert(format!("branch{}", i - 2), value);
+                        branches.insert(format!("branch{}", i - 5), value);
                     }
                 }
-                Ok((id, name, current, branches))
+                Ok((id, name, saved, update_time, remark, current, branches))
             })
             .ok()?;
         let mut saves = serde_json::Map::new();
         for row in rows {
-            let (id, name, current, branches) = row.ok()?;
+            let (id, name, saved, update_time, remark, current, branches) = row.ok()?;
             let mut save = serde_json::Map::new();
             save.insert(
                 "name".to_string(),
                 serde_json::json!(name.unwrap_or_default()),
+            );
+            save.insert("saved".to_string(), serde_json::json!(saved));
+            save.insert(
+                "updateTime".to_string(),
+                serde_json::json!(update_time.unwrap_or_default()),
+            );
+            save.insert(
+                "remark".to_string(),
+                serde_json::json!(remark.unwrap_or_default()),
             );
             save.insert("current".to_string(), serde_json::json!(current));
             for (key, value) in branches {
@@ -213,26 +172,24 @@ CREATE TABLE IF NOT EXISTS saveInstance(
 fn update_save(
     id: String,
     update_time: String,
-    // image: String,
     name: String,
     current: i32,
     branches: Vec<String>,
 ) -> Option<()> {
     let conn = Connection::open(path_join!(HOME_DIR.get().unwrap(), "data.db")).ok()?;
-    conn.execute(
-        "UPDATE saveObject SET update_time = ?1, saved = 1, remark = '' WHERE id = ?2",
-        params![&update_time, &id],
-    )
-    .ok()?;
     let mut branch_temp = String::new();
-    let mut params: Vec<Box<dyn rusqlite::ToSql>> =
-        vec![Box::new(name.clone()), Box::new(current), Box::new(id)];
+    let mut params: Vec<Box<dyn rusqlite::ToSql>> = vec![
+        Box::new(name.clone()),
+        Box::new(update_time.clone()),
+        Box::new(current),
+        Box::new(id),
+    ];
     for (i, branch_value) in branches.iter().enumerate() {
-        branch_temp.push_str(&format!(", branch{} = ?{}", i + 1, i + 4));
+        branch_temp.push_str(&format!(", branch{} = ?{}", i + 1, i + 5));
         params.push(Box::new(branch_value.clone()));
     }
     let sql = format!(
-        "UPDATE saveInstance SET name = ?1, current = ?2{} WHERE id = ?3",
+        "UPDATE saveInstance SET name = ?1, saved = 1, update_time = ?2, remark = '', current = ?3{} WHERE id = ?4",
         branch_temp
     );
     let params_refs: Vec<&dyn rusqlite::ToSql> = params.iter().map(|p| &**p).collect();

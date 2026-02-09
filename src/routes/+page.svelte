@@ -101,7 +101,7 @@
                                 onclick={() => {
                                     router.push("/saves/" + (index + 1));
                                 }}
-                                >{@html `<div>${$saveData.saveInstance["save" + (index + 1)].name ? index + 1 + ". " + $saveData.saveInstance["save" + (index + 1)].name + "</div><div>" + $saveData.saveObject["save" + (index + 1)].updateTime : index + 1 + ". 空存档"}</div>`}</button
+                                >{@html `<div>${$saveData.saveInstance["save" + (index + 1)].name ? index + 1 + ". " + $saveData.saveInstance["save" + (index + 1)].name + "</div><div>" + ($saveData.saveInstance["save" + (index + 1)].updateTime ?? "") : index + 1 + ". 空存档"}</div>`}</button
                             >
                         {/each}
                     </div>
