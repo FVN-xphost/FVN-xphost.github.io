@@ -279,7 +279,6 @@
         // 输入名字
         if (getSaveInfo("name") === "") {
             let name = await showInputName();
-            console.log(name);
             name = name === "" ? "乔治" : name;
             setSaveInfo("name", name);
         }
@@ -312,6 +311,7 @@
         dialogDom = document.querySelector(".dialog-by") as HTMLDivElement;
         dialogDom.scrollTop = dialogDom.scrollHeight;
         await next(false);
+        console.log(gc());
     });
     async function next(plus: boolean = true) {
         if (lockText) {
@@ -468,7 +468,6 @@
             await save(
                 params.some,
                 updateTime,
-                "",
                 name,
                 current,
                 new Array(branchCount)
@@ -479,6 +478,7 @@
                     ),
             );
             showHint("存档成功！");
+            console.log($saveData);
         } catch (e: any) {
             showHint("存档失败，错误信息：" + e.message);
         }

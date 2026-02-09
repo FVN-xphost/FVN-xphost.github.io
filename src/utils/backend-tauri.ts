@@ -17,7 +17,6 @@ export async function init() {
 export async function save(
   id: string,
   updateTime: string,
-  image: string,
   name: string,
   current: number,
   branches: Array<string>,
@@ -25,7 +24,6 @@ export async function save(
   await invoke("update_save", {
     id,
     updateTime,
-    image,
     name,
     current,
     branches,
