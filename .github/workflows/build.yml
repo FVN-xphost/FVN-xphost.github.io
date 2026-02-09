@@ -60,6 +60,7 @@ jobs:
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
+          toolchain: 1.84.1
           targets: ${{ matrix.target }}
       - name: Install Java toolchain
         if: ${{ matrix.platform == 'android' }}
