@@ -35,7 +35,7 @@ export class MyInputName extends LitElement {
             />
           </div>
           <div class="flex-1 w-[100vh] flex items-center justify-end">
-            <div class="text-left pl-[24vh]" style="font-size: 0.75rem">
+            <div class="text-left pl-[24vh]" style="font-size: 2vh">
               你是Aa-ω-7太空港垃圾分类操作中心的一名员工。<br />
               得益于慷慨的员工成长计划，你能认得操作手册上的每一个字，并且肢体齐全。<br />
               在其他方面……总之，你的能力足够让自己活到现在。加油，在未来继续保持。
@@ -43,9 +43,14 @@ export class MyInputName extends LitElement {
           </div>
         </div>
         <div
-          class="border border-yellow-300 border-solid absolute top-0 left-0 right-0 bottom-0 m-auto w-[100vh] h-[80vh]"
+          class="border border-yellow-300 border-solid absolute top-0 left-0 right-0 bottom-0 m-auto w-[105vh] h-[80vh]"
         >
-          <div class="absolute top-4 right-4 text-gray-300">回想你的名字</div>
+          <div
+            class="absolute top-4 right-4 text-gray-300"
+            style="font-size: 2vh"
+          >
+            回想你的名字
+          </div>
           <div
             class="absolute bottom-4 left-0 w-full flex flex-col items-center"
           >
@@ -57,7 +62,7 @@ export class MyInputName extends LitElement {
             </div>
             <div
               class="text-center text-yellow-300 relative mt-4"
-              style="font-size: 0.75rem"
+              style="font-size: 2vh"
             >
               你的面前是一间办公室。<br />
               准确的来说是一扇办公室的门，你还没有进去的打算，也尚未敲响它。<br />
