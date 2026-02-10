@@ -49,6 +49,10 @@ jobs:
             target: armv7-linux-androideabi
             platform: android
             arch: armv7
+          - os: ubuntu-latest
+            target: x86_64-linux-android
+            platform: android
+            arch: x86_64
 
     runs-on: ${{ matrix.os }}
     steps:
