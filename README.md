@@ -20,8 +20,8 @@
 5. Linux x86_64（Intel、AMD）：Actions 下载 Linux x86_64 即可！
 6. Linux aarch64（树莓派）：Actions 下载 Linux aarch64 即可！
 7. Android x86_64（Intel）：Actions 下载 Android x86_64 即可！
-8. Android aarch64（骁龙 8Gen 以上、鸿蒙）：Actions 下载 Android aarch64 即可！
-9. Android armv7（骁龙 8Gen 以下）：Actions 下载 Android armv7 即可！
+8. Android aarch64（骁龙 8（845、855、865） 以上、麒麟、鲲鹏）：Actions 下载 Android aarch64 即可！
+9. Android armv7（MT6592 以下、骁龙 200/400/S1-S4 以下）：Actions 下载 Android armv7 即可！
 10. Android x86_64（ChromeOS、Intel）：Actions 下载 Android x86_64 即可！
 11. Web 端请自行下载 github-pages，并使用 npm install -g anywhere，并在目录里使用 anywhere 运行！
 12. 在线游玩地址【已放入 Github Pages】：[点我](https://FVN-xphost.github.io)
