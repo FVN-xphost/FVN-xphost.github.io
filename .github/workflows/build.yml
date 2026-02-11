@@ -61,9 +61,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      # - name: Change Edition
-      #   run: |
-      #     sed -i 's/"2021"/"2024"/g' src-tauri/Cargo.toml
       - name: Build FreeBSD
         if: ${{ matrix.platform == 'freebsd' }}
         uses: vmactions/freebsd-vm@v1
