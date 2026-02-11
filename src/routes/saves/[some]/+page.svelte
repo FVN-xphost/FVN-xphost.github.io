@@ -46,7 +46,7 @@
     // 展示开头的信息框
     let showInput = $state(false);
     let resultInput = $state("");
-    let pedding = $state(undefined);
+    let pedding = $state<((resolve: string) => void) | undefined>(undefined);
     $effect(() => {
         if (!showInput && pedding) {
             pedding(resultInput);
@@ -55,7 +55,7 @@
     });
     function showInputName(): Promise<string> {
         showInput = true;
-        return new Promise((resolve) => {
+        return new Promise((resolve: (resolve: string) => void) => {
             pedding = resolve;
         });
     }

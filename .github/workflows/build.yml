@@ -42,6 +42,10 @@ jobs:
             platform: linux
             arch: aarch64
           - os: ubuntu-latest
+            target: x86_64-unknown-freebsd
+            platform: freebsd
+            arch: x86_64
+          - os: ubuntu-latest
             target: aarch64-linux-android
             platform: android
             arch: aarch64
@@ -57,11 +61,27 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - name: Build FreeBSD
+        if: ${{ matrix.platform == 'freebsd' }}
+        uses: vmactions/freebsd-vm@v1
+        with:
+          arch: ${{ matrix.arch }}
+          release: 15.0-gnome
+          sync: nfs
+          prepare: |
+            pkg update
+            pkg install -y node
+            pkg install -y rust
+          run: |
+            npm install
+            npm run tauri build -- --target ${{ matrix.target }}
       - name: setup node
+        if: ${{ matrix.platform != 'freebsd' }}
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
       - name: install Rust stable
+        if: ${{ matrix.platform != 'freebsd' }}
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.84.1
@@ -90,15 +110,14 @@ jobs:
         if: ${{ matrix.platform == 'android' }}
         run: |
           rustup target add ${{ matrix.target }}
-
       - name: install frontend dependencies
+        if: ${{ matrix.platform != 'freebsd' }}
         run: npm install
-
       - name: Build the app
-        if: ${{ matrix.platform != 'android' }}
+        if: ${{ matrix.platform != 'android' && matrix.platform != 'freebsd' }}
         run: npm run tauri build -- --target ${{ matrix.target }}
       - name: Build Android app and sign app
-        if: ${{ matrix.platform == 'android' }}
+        if: ${{ matrix.platform == 'android' && matrix.platform != 'freebsd' }}
         run: |
           npm run tauri android init
           # 生成签名（需要调用我的秘密密钥）
@@ -125,7 +144,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload artifact linux
-        if: ${{matrix.platform == 'linux'}}
+        if: ${{matrix.platform == 'linux' || matrix.platform == 'freebsd'}}
         uses: actions/upload-artifact@v4
         with:
           name: Bundle-${{matrix.platform}}-${{matrix.arch}}
