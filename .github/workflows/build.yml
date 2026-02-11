@@ -41,10 +41,10 @@ jobs:
             target: aarch64-unknown-linux-gnu
             platform: linux
             arch: aarch64
-          - os: ubuntu-latest
-            target: x86_64-unknown-freebsd
-            platform: freebsd
-            arch: x86_64
+          # - os: ubuntu-latest
+          #   target: x86_64-unknown-freebsd
+          #   platform: freebsd
+          #   arch: x86_64
           - os: ubuntu-latest
             target: aarch64-linux-android
             platform: android
@@ -61,6 +61,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      # - name: Change Edition
+      #   run: |
+      #     sed -i 's/"2021"/"2024"/g' src-tauri/Cargo.toml
       - name: Build FreeBSD
         if: ${{ matrix.platform == 'freebsd' }}
         uses: vmactions/freebsd-vm@v1
@@ -70,10 +73,7 @@ jobs:
           sync: nfs
           prepare: |
             pkg update
-            pkg install -y webkit2-gtk_41
-            pkg install -y node
-            pkg install -y npm
-            pkg install -y rust
+            pkg install -y webkit2-gtk_41 node npm rust
           run: |
             npm install
             npm run tauri build -- --target ${{ matrix.target }}
