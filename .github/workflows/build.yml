@@ -70,7 +70,9 @@ jobs:
           sync: nfs
           prepare: |
             pkg update
+            pkg install -y webkit2-gtk
             pkg install -y node
+            pkg install -y npm
             pkg install -y rust
           run: |
             npm install
