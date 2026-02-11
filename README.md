@@ -23,8 +23,5 @@
 8. 【推荐】`Android aarch64`（`骁龙 8（845、855、865） 以上`、`麒麟`、`鲲鹏`）：Actions 下载 Android aarch64 即可！
 9. `Android x86_64`（`ChromeOS`、`Intel`、`Android 模拟器`）：Actions 下载 Android x86_64 即可！
 10. 【不推荐】`Android armv7`（`MT6592 以下`、`骁龙 200/400/S1-S4 以下`）：Actions 下载 Android armv7 即可！
-11. `FreeBSD x86_64`（`Intel`、`AMD`）：Actions 下载 FreeBSD x86_64 即可！
-12. `Web` 端请自行下载 `github-pages`，并使用 `npm install -g anywhere`，并在目录里使用 `anywhere` 运行！
-13. 在线游玩地址【已放入 Github Pages】：[点我](https://FVN-xphost.github.io)
-
-很抱歉，不是我的原因，目前暂时无法编译 FreeBSD arm64 系统的 运行程序，请见谅。。
+11. `Web` 端请自行下载 `github-pages`，并使用 `npm install -g anywhere`，并在目录里使用 `anywhere` 运行！
+12. 在线游玩地址【已放入 Github Pages】：[点我](https://FVN-xphost.github.io)
