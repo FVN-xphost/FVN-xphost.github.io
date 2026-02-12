@@ -96,12 +96,6 @@ jobs:
         uses: android-actions/setup-android@v3
         with:
           cmdline-tools-version: 9477386
-      - name: Install Android NDK
-        if: ${{ matrix.platform == 'android' }}
-        uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: r27d
-          link-to-sdk: true
       - name: Install Linux dependencies
         if: ${{ matrix.platform == 'linux' }}
         run: |
@@ -124,8 +118,8 @@ jobs:
       - name: Build Android app and sign app
         if: ${{ matrix.platform == 'android' && matrix.platform != 'freebsd' }}
         env:
-          NDK_HOME: /usr/local/lib/android/sdk/ndk/27.3.13750724
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/27.3.13750724
+          NDK_HOME: /usr/local/lib/android/sdk/ndk/29.0.14206865
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/29.0.14206865
         run: |
           npm run tauri android init
           # 生成签名（需要调用我的秘密密钥）
