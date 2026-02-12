@@ -123,8 +123,10 @@ jobs:
         run: npm run tauri build -- --target ${{ matrix.target }}
       - name: Build Android app and sign app
         if: ${{ matrix.platform == 'android' && matrix.platform != 'freebsd' }}
+        env:
+          NDK_HOME: /usr/local/lib/android/sdk/ndk/27.3.13750724
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/27.3.13750724
         run: |
-          ls -al /usr/local/lib/android/sdk/ndk
           npm run tauri android init
           # 生成签名（需要调用我的秘密密钥）
           keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload -storepass ${{ secrets.MY_ANDROID_KEYTOOL_PASSWORD }} -dname "CN=xphost, OU=CandySharkStudio, O=CandySharkStudio, L=BeiJing, ST=BeiJing, C=CN"
