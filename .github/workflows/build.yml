@@ -124,7 +124,7 @@ jobs:
       - name: Build Android app and sign app
         if: ${{ matrix.platform == 'android' && matrix.platform != 'freebsd' }}
         run: |
-          ls -al /usr/local/lib/android/sdk
+          ls -al /usr/local/lib/android/sdk/ndk
           npm run tauri android init
           # 生成签名（需要调用我的秘密密钥）
           keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload -storepass ${{ secrets.MY_ANDROID_KEYTOOL_PASSWORD }} -dname "CN=xphost, OU=CandySharkStudio, O=CandySharkStudio, L=BeiJing, ST=BeiJing, C=CN"
