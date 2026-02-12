@@ -503,7 +503,7 @@
                 class="w-screen h-[93vh] border-gray-300 border flex items-center"
             >
                 <!-- 立绘区域 -->
-                <div class="w-[50vw] h-full relative">
+                <div class="shrink-0 w-[50vw] h-full relative">
                     <img
                         src={backImage}
                         alt="背景图片"
@@ -520,7 +520,7 @@
                     >
                         {#each historyFile as item, index}
                             <div
-                                class="shrink-0 text-white h-auto w-full text-left transition-[filter] duration-400"
+                                class="break-all shrink-0 text-white h-auto w-full text-left transition-[filter] duration-400"
                                 style={`filter: brightness(${index === historyFile.length - 1 ? "1" : "0.5"}); ${index === 0 ? "margin-top: auto;" : ""}`}
                             >
                                 {@html replaceCurrentText(
@@ -534,7 +534,7 @@
                     </div>
                     <!-- 选项区域 -->
                     <div
-                        class="flex flex-col h-[30vh] border-t-gray-300 border"
+                        class="flex flex-col w-full h-[30vh] border-t-gray-300 border"
                     >
                         {#if gd(gc()).type === "choice"}
                             <div
@@ -543,7 +543,7 @@
                             >
                                 {#each gd(gc()).choice as choice, index}
                                     <button
-                                        class="border-none outline-none w-full h-auto shrink-0 text-white hover:text-yellow-300 cursor-pointer"
+                                        class="break-all border-none text-left outline-none w-full h-auto shrink-0 text-white hover:bg-yellow-300 cursor-pointer"
                                         aria-labelledby={choice}
                                         onclick={(e) => {
                                             e.preventDefault();
@@ -598,13 +598,15 @@
                         {/if}
                     </div>
                 </div>
-                <div class="relative w-[5vw] h-full border-l-gray-300 border">
+                <div
+                    class="shrink-0 relative w-[10vw] h-full border-l-gray-300 border"
+                >
                     <div
-                        class="absolute flex flex-col items-center gap-[3vw] bottom-0 left-0 right-0 w-full h-auto mx-auto my-0"
+                        class="absolute flex flex-col gap-[1vw] bottom-[15vh] left-[1vh] w-auto h-auto my-0"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="w-[4vw] h-[4vw] border-none outline-none cursor-pointer"
+                            class="w-[2vw] h-[2vw] border-none outline-none cursor-pointer"
                             viewBox="0 0 64 64"
                             onclick={(e: Event) => {
                                 e.preventDefault();
@@ -639,7 +641,7 @@
                             /></svg
                         ><svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-orange-300"
+                            class="text-sky-300 w-[2vw] h-[2vw] border-none outline-none cursor-pointer hover:text-orange-300"
                             style={quickCurrent
                                 ? "color: rgb(257.48, 161.84, 162.27)"
                                 : ""}
@@ -671,7 +673,7 @@
                             /><path d="M12 10l-7 -7M12 10l7 -7" /></svg
                         ><svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="text-sky-300 w-[4vw] h-[4vw] border-none outline-none cursor-pointer hover:text-orange-300"
+                            class="text-sky-300 w-[2vw] h-[2vw] border-none outline-none cursor-pointer hover:text-orange-300"
                             width="32"
                             height="32"
                             viewBox="0 0 48 48"

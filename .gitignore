@@ -9,5 +9,5 @@ node_modules
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 *.log
-# package-lock.json
-# /src-tauri/Cargo.lock
+package-lock.json
+/src-tauri/Cargo.lock

@@ -1,7 +1,7 @@
 import { saveData } from "../store/store";
 import { branchCount, galleryCount, saveCount } from "./all";
 export async function init() {
-  let savedata = JSON.parse(localStorage.getItem("get_all_data") ?? "{}");
+  let savedata = JSON.parse(localStorage.getItem("spaceport_data") ?? "{}");
   if (savedata.gallery === undefined) savedata.gallery = {};
   if (savedata.saveInstance === undefined) savedata.saveInstance = {};
   for (let i = 0; i < galleryCount; i++) {
@@ -18,7 +18,7 @@ export async function init() {
   }
   console.log(savedata);
   saveData.set(savedata);
-  localStorage.setItem("get_all_data", JSON.stringify(savedata));
+  localStorage.setItem("spaceport_data", JSON.stringify(savedata));
 }
 export async function save(
   id: string,
@@ -27,7 +27,7 @@ export async function save(
   current: number,
   branches: Array<string>,
 ) {
-  let savedata = JSON.parse(localStorage.getItem("get_all_data") ?? "{}");
+  let savedata = JSON.parse(localStorage.getItem("spaceport_data") ?? "{}");
   savedata.saveInstance[`save${id}`].current = current;
   savedata.saveInstance[`save${id}`].name = name;
   savedata.saveInstance[`save${id}`].remark = "";
@@ -35,11 +35,11 @@ export async function save(
   for (let i = 0; i < branches.length; i++) {
     savedata.saveInstance[`save${id}`][`branch${i + 1}`] = branches[i];
   }
-  localStorage.setItem("get_all_data", JSON.stringify(savedata));
+  localStorage.setItem("spaceport_data", JSON.stringify(savedata));
 }
 export async function unlockGallery(id: number) {
-  let savedata = JSON.parse(localStorage.getItem("get_all_data") ?? "{}");
+  let savedata = JSON.parse(localStorage.getItem("spaceport_data") ?? "{}");
   savedata.gallery[`gallery${id}`] = true;
-  localStorage.setItem("get_all_data", JSON.stringify(savedata));
+  localStorage.setItem("spaceport_data", JSON.stringify(savedata));
 }
 export function closeWindow() {}
