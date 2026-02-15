@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { saveData } from "../store/store";
 import { window } from "@tauri-apps/api";
-import { branchCount, galleryCount, saveCount } from "./all";
+import { branchCount, galleryCount, globalCount, saveCount } from "./all";
 
 export async function init() {
   const savedata = JSON.parse(
@@ -9,6 +9,7 @@ export async function init() {
       galleryCount: galleryCount,
       saveCount: saveCount,
       branchCount: branchCount,
+      globalCount: globalCount,
     }),
   );
   console.log(savedata);
@@ -31,6 +32,10 @@ export async function save(
 }
 export async function unlockGallery(id: number) {
   await invoke("update_gallery", { id });
+}
+
+export async function updateGlobalVariable(id: number, value: string) {
+  await invoke("update_global_variable", { id, value })
 }
 
 export function closeWindow() {

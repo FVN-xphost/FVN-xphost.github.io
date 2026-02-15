@@ -4,6 +4,7 @@ import "../../../components/input/MyMenuButton";
 import tailwindcss from "../../../style/tailwind.css?inline";
 import indexcss from "../../../style/index.css?inline";
 import George from "../../../assets/illustration/george.png";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 @customElement("my-input-name")
 export class MyInputName extends LitElement {
@@ -13,6 +14,7 @@ export class MyInputName extends LitElement {
   `;
   @property({ type: Function }) result: (res: string) => void = (_) => {};
   value = "";
+  isMount = false;
   private _onInput(e: Event) {
     this.value = (e.target as HTMLInputElement).value;
   }
@@ -24,23 +26,33 @@ export class MyInputName extends LitElement {
     return html`
       <div class="fixed top-0 left-0 w-screen h-screen bg-black z-999">
         <div
-          class="absolute top-[20vh] left-0 w-screen min-h-[20vh] bg-yellow-300 z-10 flex flex-col items-center"
+          class="absolute left-0 w-screen transition-[top] duration-300 min-h-[20vh] bg-yellow-300 z-10 flex flex-col items-center"
+          style=${this.isMount
+            ? "margin-top: 0; margin-bottom: 0; top: 20vh;"
+            : "margin-top: auto; margin-bottom: auto; top: 0; bottom: 0; height: fit-content;"}
         >
-          <div class="flex-1 w-[50vh] border-l-8 border-l-black shrink-0">
+          <div
+            class="h-[50%] w-[50vh] border-l-8 border-l-black shrink-0 flex items-center"
+            style=${this.isMount
+              ? ""
+              : "top: 0; bottom: 0; height: fit-content; margin-top: auto; margin-bottom: auto;"}
+          >
             <input
-              @input=${this._onInput}
+              @blur=${this._onInput}
               placeholder="请输入名字"
               class="outline-none border-none pl-[2vh] font-bold"
               style="font-size: 6vh"
             />
           </div>
-          <div class="flex-1 w-[100vh] flex items-center justify-end">
-            <div class="text-left pl-[24vh]" style="font-size: 2vh">
-              你是Aa-ω-7太空港垃圾分类操作中心的一名员工。<br />
-              得益于慷慨的员工成长计划，你能认得操作手册上的每一个字，并且肢体齐全。<br />
-              在其他方面……总之，你的能力足够让自己活到现在。加油，在未来继续保持。
-            </div>
-          </div>
+          ${this.isMount
+            ? html`<div class="h-[50%] w-[100vh] flex items-center justify-end">
+                <div class="text-left pl-[24vh]" style="font-size: 2vh">
+                  你是Aa-ω-7太空港垃圾分类操作中心的一名员工。<br />
+                  得益于慷慨的员工成长计划，你能认得操作手册上的每一个字，并且肢体齐全。<br />
+                  在其他方面……总之，你的能力足够让自己活到现在。加油，在未来继续保持。
+                </div>
+              </div>`
+            : html``}
         </div>
         <div
           class="border border-yellow-300 border-solid absolute top-0 left-0 right-0 bottom-0 m-auto w-[105vh] h-[80vh]"

@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
-    import "./MyInputName";
     import { saveData } from "../../../store/store";
     import { choiceTitle, dialogInstance } from "../../../store/dialog";
     import { sleep, router, branchCount } from "../../../utils/all";
@@ -11,7 +10,7 @@
     import piano from "../../../assets/sounds/mp3/piano.mp3";
     import experience from "../../../assets/sounds/ogg/experience.ogg";
     import Scene1 from "../../../assets/scene/scene1.png";
-    import "../../../components/input/MyMenuButton";
+    import MyInputName from "./MyInputName.svelte";
     const { params } = $props();
     // 钢琴音乐
     const pianoIns = new Audio(piano);
@@ -534,16 +533,16 @@
                     </div>
                     <!-- 选项区域 -->
                     <div
-                        class="flex flex-col w-full h-[30vh] border-t-gray-300 border"
+                        class="relative w-full h-[30vh] border-t-gray-300 border"
                     >
                         {#if gd(gc()).type === "choice"}
                             <div
                                 transition:fade={{ duration: 400 }}
-                                class="flex flex-col w-full h-full p-2.5 overflow-y-auto gap-2.5"
+                                class="absolute top-0 left-0 flex flex-col w-full h-full py-2.5 overflow-y-auto gap-2.5"
                             >
                                 {#each gd(gc()).choice as choice, index}
                                     <button
-                                        class="break-all border-none text-left outline-none w-full h-auto shrink-0 text-white hover:bg-yellow-300 cursor-pointer"
+                                        class="break-all border-none text-left outline-none px-2.5 w-full h-auto shrink-0 text-white hover:*:text-black hover:text-black hover:bg-yellow-300 cursor-pointer"
                                         aria-labelledby={choice}
                                         onclick={(e) => {
                                             e.preventDefault();
@@ -573,14 +572,16 @@
                                         ><span class="text-yellow-400"
                                             >{index + 1}.</span
                                         >
-                                        {replaceCurrentText(choice)}</button
+                                        {@html replaceCurrentText(
+                                            choice,
+                                        )}</button
                                     >
                                 {/each}
                             </div>
                         {:else}
                             <div
                                 transition:fade={{ duration: 400 }}
-                                class="flex shrink-0 h-[10vh] w-full items-center justify-center"
+                                class="absolute top-0 left-0 flex shrink-0 h-[10vh] w-full items-center justify-center"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -714,12 +715,12 @@
     </div>
 {/if}
 {#if showInput}
-    <my-input-name
-        in:fade={{ duration: 300 }}
-        out:fade={{ duration: 300 }}
-        result={(res: string) => {
-            showInput = false;
-            resultInput = res;
-        }}
-    ></my-input-name>
+    <div in:fade={{ duration: 300 }} out:fade={{ duration: 300 }}>
+        <MyInputName
+            result={(res: string) => {
+                showInput = false;
+                resultInput = res;
+            }}
+        ></MyInputName>
+    </div>
 {/if}

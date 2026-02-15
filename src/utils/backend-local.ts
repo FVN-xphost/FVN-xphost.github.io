@@ -1,19 +1,24 @@
 import { saveData } from "../store/store";
-import { branchCount, galleryCount, saveCount } from "./all";
+import { branchCount, galleryCount, globalCount, saveCount } from "./all";
 export async function init() {
   let savedata = JSON.parse(localStorage.getItem("spaceport_data") ?? "{}");
   if (savedata.gallery === undefined) savedata.gallery = {};
   if (savedata.saveInstance === undefined) savedata.saveInstance = {};
-  for (let i = 0; i < galleryCount; i++) {
-    if (savedata.gallery[`gallery${i + 1}`] === undefined)
-      savedata.gallery[`gallery${i + 1}`] = false;
+  if (savedata.globalVariable === undefined) savedata.globalVariable = {};
+  for (let i = 1; i <= galleryCount; i++) {
+    if (savedata.gallery[`gallery${i}`] === undefined)
+      savedata.gallery[`gallery${i}`] = false;
   }
-  for (let i = 0; i < saveCount; i++) {
-    if (savedata.saveInstance[`save${i + 1}`] === undefined)
-      savedata.saveInstance[`save${i + 1}`] = { current: 0, name: "" };
-    for (let j = 0; j < branchCount; j++) {
-      if (savedata.saveInstance[`save${i + 1}`][`branch${j + 1}`] === undefined)
-        savedata.saveInstance[`save${i + 1}`][`branch${j + 1}`] = "";
+  for (let i = 1; i <= globalCount; i++) {
+    if (savedata.globalVariable[`global${i}`] === undefined)
+      savedata.globalVariable[`global${i}`] = false;
+  }
+  for (let i = 1; i <= saveCount; i++) {
+    if (savedata.saveInstance[`save${i}`] === undefined)
+      savedata.saveInstance[`save${i}`] = { current: 0, name: "", updateTime: "" };
+    for (let j = 1; j <= branchCount; j++) {
+      if (savedata.saveInstance[`save${i}`][`branch${j}`] === undefined)
+        savedata.saveInstance[`save${i}`][`branch${j}`] = "";
     }
   }
   console.log(savedata);
@@ -40,6 +45,12 @@ export async function save(
 export async function unlockGallery(id: number) {
   let savedata = JSON.parse(localStorage.getItem("spaceport_data") ?? "{}");
   savedata.gallery[`gallery${id}`] = true;
+  localStorage.setItem("spaceport_data", JSON.stringify(savedata));
+}
+
+export async function updateGlobalVariable(id: number, value: string) {
+  let savedata = JSON.parse(localStorage.getItem("spaceport_data") ?? "{}");
+  savedata.globalVariable[`global${id}`] = value;
   localStorage.setItem("spaceport_data", JSON.stringify(savedata));
 }
 export function closeWindow() {}

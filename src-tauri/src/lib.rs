@@ -4,7 +4,7 @@ use rusqlite::*;
 use util::*;
 
 #[tauri::command]
-fn get_all_data(gallery_count: i32, save_count: i32, branch_count: i32) -> Option<String> {
+fn get_all_data(gallery_count: i32, save_count: i32, branch_count: i32, global_count: i32) -> Option<String> {
     let mut conn = Connection::open(path_join!(HOME_DIR.get().unwrap(), "data.db")).ok()?;
     let mut result = serde_json::Map::new();
     // 新增画廊数据库表
@@ -47,6 +47,48 @@ CREATE TABLE IF NOT EXISTS galleryLock(
         result.insert(
             "gallery".to_string(),
             serde_json::Value::Object(gallery.clone()),
+        );
+    }
+    // 新增全局变量表
+    conn.execute(
+        r#"
+CREATE TABLE IF NOT EXISTS globalVariable(
+    id TEXT PRIMARY KEY,
+    value TEXT NOT NULL DEFAULT ''
+)
+"#,
+        [],
+    )
+    .ok()?;
+    // 为画廊数据库表塞入 global_count 个数据！
+    {
+        let tx = conn.transaction().ok()?;
+        for i in 1..=global_count {
+            tx.execute(
+                "INSERT OR IGNORE INTO globalVariable (id, value) VALUES (?1, 0)",
+                params![&i],
+            )
+            .ok()?;
+        }
+        tx.commit().ok()?;
+    }
+    // 查询所有的全局变量数据！用于跨存档安排。
+    {
+        let mut stmt = conn.prepare("SELECT * FROM globalVariable").ok()?;
+        let rows = stmt
+            .query_map([], |row| Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?)))
+            .ok()?;
+        let mut global = serde_json::Map::new();
+        for row in rows {
+            let (id, value) = row.ok()?;
+            global.insert(
+                format!("global{}", id.clone()),
+                serde_json::json!(value.clone()),
+            );
+        }
+        result.insert(
+            "globalVariable".to_string(),
+            serde_json::Value::Object(global.clone()),
         );
     }
     // 新建存档元数据对象表（当前只新增五个元数据：
@@ -197,6 +239,20 @@ fn update_save(
     Some(())
 }
 #[tauri::command]
+fn update_global_variable(id: i32, value: String) -> Option<()> {
+    let mut conn = Connection::open(path_join!(HOME_DIR.get().unwrap(), "data.db")).ok()?;
+    {
+        let tx = conn.transaction().ok()?;
+        tx.execute(
+            "UPDATE globalVariable SET value = ?2 WHERE id = ?1",
+            params![&id, &value],
+        )
+        .ok()?;
+        tx.commit().ok()?;
+    }
+    Some(())
+}
+#[tauri::command]
 fn update_gallery(id: i32) -> Option<()> {
     let mut conn = Connection::open(path_join!(HOME_DIR.get().unwrap(), "data.db")).ok()?;
     {
@@ -222,7 +278,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             get_all_data,
             update_save,
-            update_gallery
+            update_gallery,
+            update_global_variable
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

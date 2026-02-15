@@ -2,6 +2,7 @@ import { goto } from "$app/navigation";
 export const branchCount = 7;
 export const saveCount = 40;
 export const galleryCount = 10;
+export const globalCount = 1;
 export async function sleep(second: number) {
   return new Promise((resolve) => setTimeout(resolve, second));
 }
