@@ -20,11 +20,11 @@
     const thisname = (() => `save${params.some}`)();
     // 临时变量：控制主屏幕显示。
     let o1 = $state(false);
-    /// 以下为一组：
-    // 锁住文本（用于 next 时是否控制文本点击时自动显示完整。）
-    let lockText = $state(false);
-    /// 退出文本（同上用于判断）
-    let exitText = $state(false);
+    // /// 以下为一组：
+    // // 锁住文本（用于 next 时是否控制文本点击时自动显示完整。）
+    // let lockText = $state(false);
+    // // 退出文本（同上用于判断）
+    // let exitText = $state(false);
     // 控制 空格键 锁定
     let keyLock = $state(false);
     // 是否点击了快进
@@ -308,19 +308,19 @@
         o1 = true;
         await sleep(500);
         dialogDom = document.querySelector(".dialog-by") as HTMLDivElement;
-        dialogDom.scrollTop = dialogDom.scrollHeight;
+        dialogDom.scrollTop = dialogDom.scrollHeight + 200;
         await next(false);
         console.log(gc());
     });
     async function next(plus: boolean = true) {
-        if (lockText) {
-            exitText = true;
-            historyFile[historyFile.length - 1].text = replaceCurrentText(
-                gd(gc()).message,
-            );
-            dialogDom.scrollTop = dialogDom.scrollHeight;
-            return;
-        }
+        // if (lockText) {
+        //     exitText = true;
+        //     historyFile[historyFile.length - 1].text = replaceCurrentText(
+        //         gd(gc()).message,
+        //     );
+        //     dialogDom.scrollTop = dialogDom.scrollHeight + 200;
+        //     return;
+        // }
         if (!gd(gc()).message) return;
         let n = nextOne(gc(), plus);
         if (n === -10 || n === -12) return;
@@ -333,33 +333,40 @@
             name: replaceCurrentText(gd(gc()).name),
             text: "",
         });
-        lockText = true;
+        dialogDom.scrollTop = dialogDom.scrollHeight + 200;
+        // lockText = true;
         await doStyle(gc());
         let ct = replaceCurrentText(gd(gc()).message);
         let isLt = false;
-        for (let i = 0; i < (ct?.length ?? 0); i++) {
-            if (exitText) {
-                break;
-            }
-            if (ct[i] === "<") {
-                isLt = true;
-            }
-            if (ct[i] === ">") {
-                isLt = false;
-            }
-            if (!isLt) await sleep(20);
-            if (exitText) {
-                break;
-            }
-            historyFile[historyFile.length - 1].text += ct[i];
-            dialogDom.scrollTop = dialogDom.scrollHeight;
-            if (exitText) {
-                break;
-            }
+        historyFile[historyFile.length - 1].text = ct;
+        // for (let i = 0; i < (ct?.length ?? 0); i++) {
+        //     if (exitText) {
+        //         break;
+        //     }
+        //     if (ct[i] === "<") {
+        //         isLt = true;
+        //     }
+        //     if (ct[i] === ">") {
+        //         isLt = false;
+        //     }
+        //     if (!isLt) await sleep(20);
+        //     if (exitText) {
+        //         break;
+        //     }
+        //     historyFile[historyFile.length - 1].text += ct[i];
+        //     dialogDom.scrollTop = dialogDom.scrollHeight + 200;
+        //     if (exitText) {
+        //         break;
+        //     }
+        // }
+        await sleep(50);
+        for (let i = 0; i < 100; i++) {
+            dialogDom.scrollTop += 10;
+            await sleep(5);
         }
-        dialogDom.scrollTop = dialogDom.scrollHeight;
-        exitText = false;
-        lockText = false;
+        // dialogDom.scrollTop = dialogDom.scrollHeight + 200;
+        // exitText = false;
+        // lockText = false;
     }
     /**
      * 使用古法查看历史（ps：逐步往前退，直到退到0。。由于 jumpTo 函数已经帮我们解决了分支问题，因此无需担心历史数据丢失或者起冲突。。）
@@ -404,14 +411,6 @@
     async function quick() {
         quickCurrent = !quickCurrent;
         if (!quickCurrent) return;
-        if (lockText) {
-            exitText = true;
-            historyFile[historyFile.length - 1].text = replaceCurrentText(
-                gd(gc()).message,
-            );
-        }
-        exitText = false;
-        lockText = false;
         while (true) {
             if (!gd(gc()).message) break;
             let n = nextOne(gc(), true);
@@ -427,9 +426,13 @@
                 name: gd(gc()).name,
                 text: gd(gc()).message,
             });
-            dialogDom.scrollTop = dialogDom.scrollHeight;
+            dialogDom.scrollTop = dialogDom.scrollHeight + 200;
         }
-        dialogDom.scrollTop = dialogDom.scrollHeight;
+        await sleep(50);
+        for (let i = 0; i < 200; i++) {
+            dialogDom.scrollTop += 5;
+            await sleep(5);
+        }
     }
     function spaceDown(e: KeyboardEvent) {
         e.preventDefault();
@@ -482,24 +485,31 @@
             showHint("存档失败，错误信息：" + e.message);
         }
     }
+    // setInterval(() => {
+    //     if(dialogDom) {
+    //         dialogDom.scrollTop += 10
+    //     }
+    // }, 20)
 </script>
 
 {#if o1}
     <div
-        class="container2 bg-img-full bg-[url(/src/assets/Home/back.png)] fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden flex items-center"
+        class="bg-img-full bg-[url(/src/assets/Home/back.png)] fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden flex items-center"
         in:fade={{ duration: 500 }}
         onclick={() => {
-            if (quickCurrent) quickCurrent = false;
-            next();
+            // if (quickCurrent) quickCurrent = false;
+            // next();
         }}
         onkeydown={spaceDown}
         onkeyup={spaceUp}
         tabindex="0"
         role="button"
     >
-        <div class="w-screen h-[95vh] flex border-white border items-center">
+        <div
+            class="w-[50vw] h-[93vh] border-y-gray-300 border-y flex items-center"
+        >
             <div
-                class="w-screen h-[93vh] border-gray-300 border flex items-center"
+                class="w-full h-[91.5vh] border-y-gray-600 border-y flex items-center"
             >
                 <!-- 立绘区域 -->
                 <div class="shrink-0 w-[50vw] h-full relative">
@@ -510,199 +520,220 @@
                         style={backStyle}
                     />
                 </div>
+            </div>
+        </div>
+        <div
+            class="relative flex flex-col items-center flex-1 h-full border-x-gray-600 border-x"
+        >
+            <div
+                class="absolute top-0 -left-[0.2rem] w-[0.3rem] h-[5vh] bg-white"
+            ></div>
+            <div
+                class="absolute top-0 -right-[0.2rem] w-[0.3rem] h-[5vh] bg-white"
+            ></div>
+            <div
+                class="absolute left-[-4.4vh] w-[5vh] top-[3.2vh] h-[0.3rem] bg-white"
+            ></div>
+            <div
+                class="absolute right-[-4.4vh] w-[5vh] top-[3.2vh] h-[0.3rem] bg-white"
+            ></div>
+            <div
+                class="absolute bottom-0 -left-[0.2rem] w-[0.3rem] h-[5vh] bg-white"
+            ></div>
+            <div
+                class="absolute bottom-0 -right-[0.2rem] w-[0.3rem] h-[5vh] bg-white"
+            ></div>
+            <div
+                class="flex flex-col items-center h-full w-[98%] border-x-gray-300 border-x bg-[#3D3D3DFF]"
+            >
+                <!-- 对话区域 -->
                 <div
-                    class="flex flex-col flex-1 h-full border-l-gray-300 border"
+                    class="dialog-by flex-1 w-full flex flex-col before:content-[''] gap-2.5 overflow-y-auto p-4"
                 >
-                    <!-- 对话区域 -->
-                    <div
-                        class="dialog-by flex-1 w-full flex flex-col before:content-[''] gap-2.5 overflow-y-auto p-4"
-                    >
-                        {#each historyFile as item, index}
-                            <div
-                                class="break-all shrink-0 text-white h-auto w-full text-left transition-[filter] duration-400"
-                                style={`filter: brightness(${index === historyFile.length - 1 ? "1" : "0.5"}); ${index === 0 ? "margin-top: auto;" : ""}`}
-                            >
-                                {@html replaceCurrentText(
-                                    item.name === "" || item.name === undefined
-                                        ? ""
-                                        : item.name + "：",
-                                )}
-                                {@html replaceCurrentText(item.text)}
-                            </div>
-                        {/each}
-                    </div>
-                    <!-- 选项区域 -->
-                    <div
-                        class="relative w-full h-[30vh] border-t-gray-300 border"
-                    >
-                        {#if gd(gc()).type === "choice"}
-                            <div
-                                transition:fade={{ duration: 400 }}
-                                class="absolute top-0 left-0 flex flex-col w-full h-full py-2.5 overflow-y-auto gap-2.5"
-                            >
-                                {#each gd(gc()).choice as choice, index}
-                                    <button
-                                        class="break-all border-none text-left outline-none px-2.5 w-full h-auto shrink-0 text-white hover:*:text-black hover:text-black hover:bg-yellow-300 cursor-pointer"
-                                        aria-labelledby={choice}
-                                        onclick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            setSaveInfo(gd(gc()).id!, choice);
-                                            let score =
-                                                $dialogInstance[gc()]?.score;
-                                            if (score !== undefined) {
-                                                setSaveInfo(
-                                                    score.targetId!,
-                                                    score.action(
-                                                        choice,
-                                                        getSaveInfo(
-                                                            score.targetId,
-                                                        ),
-                                                    ),
-                                                );
-                                            }
-                                            historyFile.push({
-                                                name: choiceTitle,
-                                                text: choice,
-                                            });
-                                            setc(jumpTo(true));
-                                            plusOne();
-                                            next(false);
-                                        }}
-                                        ><span class="text-yellow-400"
-                                            >{index + 1}.</span
-                                        >
-                                        {@html replaceCurrentText(
-                                            choice,
-                                        )}</button
-                                    >
-                                {/each}
-                            </div>
-                        {:else}
-                            <div
-                                transition:fade={{ duration: 400 }}
-                                class="absolute top-0 left-0 flex shrink-0 h-[10vh] w-full items-center justify-center"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="text-yellow-400 w-[3vh] h-[3vh] animate-bounce"
-                                    width="32"
-                                    height="32"
-                                    viewBox="0 0 16 16"
-                                    ><path
-                                        fill="currentColor"
-                                        d="M10.164 13.756c-.962 1.665-3.366 1.665-4.329 0L.918 5.251C-.045 3.584 1.158 1.5 3.083 1.5h9.834c1.925 0 3.128 2.084 2.164 3.751z"
-                                    /></svg
-                                >
-                            </div>
-                            <div class="flex-1"></div>
-                        {/if}
-                    </div>
-                </div>
-                <div
-                    class="shrink-0 relative w-[10vw] h-full border-l-gray-300 border"
-                >
-                    <div
-                        class="absolute flex flex-col gap-[1vw] bottom-[15vh] left-[1vh] w-auto h-auto my-0"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="w-[2vw] h-[2vw] border-none outline-none cursor-pointer"
-                            viewBox="0 0 64 64"
-                            onclick={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                updateSave(getSaveInfo("name"), gc());
-                            }}
-                            onkeydown={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }}
-                            onkeyup={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }}
-                            tabindex="0"
-                            role="button"
-                            ><path
-                                fill="#3e4347"
-                                d="m61.3 9.3l-6.6-6.6c-.4-.4-1.2-.7-1.7-.7H9v4H5V2H3c-.5 0-1 .5-1 1v58c0 .5.5 1 1 1h58c.5 0 1-.5 1-1V11c0-.6-.3-1.3-.7-1.7"
-                            /><path
-                                fill="#fff"
-                                d="M12 62V34c0-1.1.9-2 2-2h36c1.1 0 2 .9 2 2v28z"
-                            /><path
-                                fill="#e8e8e8"
-                                d="M18 2v20c0 1.1.9 2 2 2h30c1.1 0 2-.9 2-2V2z"
-                            /><path fill="#3e4347" d="M36 6h10v16H36z" /><path
-                                fill="#fff"
-                                d="M59 56c0-.6-.5-1-1-1h-2c-.5 0-1 .4-1 1v2c0 .5.5 1 1 1h2c.5 0 1-.5 1-1z"
-                            /><path
-                                fill="#f15744"
-                                d="M12 54h40v8H12zm5-18h30v2H17zm0 6h30v2H17zm0 6h30v2H17z"
-                            /></svg
-                        ><svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="text-sky-300 w-[2vw] h-[2vw] border-none outline-none cursor-pointer hover:text-orange-300"
-                            style={quickCurrent
-                                ? "color: rgb(257.48, 161.84, 162.27)"
-                                : ""}
-                            width="32"
-                            height="32"
-                            viewBox="0 0 24 24"
-                            onclick={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                quick();
-                            }}
-                            onkeydown={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }}
-                            onkeyup={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }}
-                            tabindex="0"
-                            role="button"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            ><path d="M12 22l-7 -7M12 22l7 -7" /><path
-                                d="M12 16l-7 -7M12 16l7 -7"
-                            /><path d="M12 10l-7 -7M12 10l7 -7" /></svg
-                        ><svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="text-sky-300 w-[2vw] h-[2vw] border-none outline-none cursor-pointer hover:text-orange-300"
-                            width="32"
-                            height="32"
-                            viewBox="0 0 48 48"
-                            onclick={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                router.back();
-                            }}
-                            onkeydown={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }}
-                            onkeyup={(e: Event) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }}
-                            tabindex="0"
-                            role="button"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="4"
-                            ><path d="m13 8l-7 6l7 7" /><path
-                                d="M6 14h22.994c6.883 0 12.728 5.62 12.996 12.5c.284 7.27-5.723 13.5-12.996 13.5H11.998"
-                            /></svg
+                    {#each historyFile as item, index}
+                        <div
+                            class="break-all shrink-0 text-white h-auto w-full text-left transition-[filter] duration-400"
+                            style={`filter: brightness(${index === historyFile.length - 1 ? "1" : "0.5"}); ${index === 0 ? "margin-top: auto;" : ""}`}
                         >
-                    </div>
+                            {@html replaceCurrentText(
+                                item.name === "" || item.name === undefined
+                                    ? ""
+                                    : item.name + "：",
+                            )}
+                            {@html replaceCurrentText(item.text)}
+                        </div>
+                    {/each}
+                </div>
+                <!-- 选项区域 -->
+                <div class="relative w-full h-[35vh]">
+                    {#if gd(gc()).type === "choice"}
+                        <div
+                            transition:fade={{ duration: 400 }}
+                            class="absolute top-0 left-0 flex flex-col w-full h-full p-2.5 overflow-y-auto gap-2.5"
+                        >
+                            {#each gd(gc()).choice as choice, index}
+                                <button
+                                    class="break-all border-none text-left outline-none px-2.5 w-full h-auto py-1 shrink-0 text-white cursor-pointer
+                                    hover:*:text-black hover:text-black hover:bg-yellow-300
+                                    active:text-yellow-300 active:bg-black active:*:text-yellow-300 active:outline-yellow-300 active:outline-2 active:outline-solid"
+                                    aria-labelledby={choice}
+                                    onclick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setSaveInfo(gd(gc()).id!, choice);
+                                        let score =
+                                            $dialogInstance[gc()]?.score;
+                                        if (score !== undefined) {
+                                            setSaveInfo(
+                                                score.targetId!,
+                                                score.action(
+                                                    choice,
+                                                    getSaveInfo(score.targetId),
+                                                ),
+                                            );
+                                        }
+                                        historyFile.push({
+                                            name: choiceTitle,
+                                            text: choice,
+                                        });
+                                        setc(jumpTo(true));
+                                        plusOne();
+                                        next(false);
+                                    }}
+                                    ><span class="text-yellow-400"
+                                        >{index + 1}.</span
+                                    >
+                                    {@html replaceCurrentText(choice)}</button
+                                >
+                            {/each}
+                        </div>
+                    {:else}
+                        <div
+                            transition:fade={{ duration: 400 }}
+                            class="absolute top-0 left-0 flex shrink-0 h-[10vh] p-2.5 w-full items-center justify-center"
+                        >
+                            <button
+                                class="break-all border-none text-left outline-none px-2.5 w-full h-auto py-1 shrink-0 text-white cursor-pointer
+                                    hover:*:text-black hover:text-black hover:bg-yellow-300
+                                    active:text-yellow-300 active:bg-black active:*:text-yellow-300 active:outline-yellow-300 active:outline-2 active:outline-solid"
+                                aria-labelledby="继续"
+                                onclick={() => {
+                                    if (quickCurrent) quickCurrent = false;
+                                    next();
+                                }}>继续</button
+                            >
+                        </div>
+                        <div class="flex-1"></div>
+                    {/if}
+                </div>
+            </div>
+        </div>
+        <div
+            class="w-[15vw] h-[93vh] border-y-gray-300 border-y flex items-center"
+        >
+            <div
+                class="w-full h-[91.5vh] border-y-gray-600 border-y flex items-center relative"
+            >
+                <div
+                    class="absolute flex flex-col gap-[1vw] bottom-[15vh] left-[1vh] w-auto h-auto my-0"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-[2vw] h-[2vw] border-none outline-none cursor-pointer"
+                        viewBox="0 0 64 64"
+                        onclick={(e: Event) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            updateSave(getSaveInfo("name"), gc());
+                        }}
+                        onkeydown={(e: Event) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                        onkeyup={(e: Event) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                        tabindex="0"
+                        role="button"
+                        ><path
+                            fill="#3e4347"
+                            d="m61.3 9.3l-6.6-6.6c-.4-.4-1.2-.7-1.7-.7H9v4H5V2H3c-.5 0-1 .5-1 1v58c0 .5.5 1 1 1h58c.5 0 1-.5 1-1V11c0-.6-.3-1.3-.7-1.7"
+                        /><path
+                            fill="#fff"
+                            d="M12 62V34c0-1.1.9-2 2-2h36c1.1 0 2 .9 2 2v28z"
+                        /><path
+                            fill="#e8e8e8"
+                            d="M18 2v20c0 1.1.9 2 2 2h30c1.1 0 2-.9 2-2V2z"
+                        /><path fill="#3e4347" d="M36 6h10v16H36z" /><path
+                            fill="#fff"
+                            d="M59 56c0-.6-.5-1-1-1h-2c-.5 0-1 .4-1 1v2c0 .5.5 1 1 1h2c.5 0 1-.5 1-1z"
+                        /><path
+                            fill="#f15744"
+                            d="M12 54h40v8H12zm5-18h30v2H17zm0 6h30v2H17zm0 6h30v2H17z"
+                        /></svg
+                    ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="text-sky-300 w-[2vw] h-[2vw] border-none outline-none cursor-pointer hover:text-orange-300"
+                        style={quickCurrent
+                            ? "color: rgb(257.48, 161.84, 162.27)"
+                            : ""}
+                        width="32"
+                        height="32"
+                        viewBox="0 0 24 24"
+                        onclick={(e: Event) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            quick();
+                        }}
+                        onkeydown={(e: Event) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                        onkeyup={(e: Event) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                        tabindex="0"
+                        role="button"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        ><path d="M12 22l-7 -7M12 22l7 -7" /><path
+                            d="M12 16l-7 -7M12 16l7 -7"
+                        /><path d="M12 10l-7 -7M12 10l7 -7" /></svg
+                    ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="text-sky-300 w-[2vw] h-[2vw] border-none outline-none cursor-pointer hover:text-orange-300"
+                        width="32"
+                        height="32"
+                        viewBox="0 0 48 48"
+                        onclick={(e: Event) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            router.back();
+                        }}
+                        onkeydown={(e: Event) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                        onkeyup={(e: Event) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                        tabindex="0"
+                        role="button"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="4"
+                        ><path d="m13 8l-7 6l7 7" /><path
+                            d="M6 14h22.994c6.883 0 12.728 5.62 12.996 12.5c.284 7.27-5.723 13.5-12.996 13.5H11.998"
+                        /></svg
+                    >
                 </div>
             </div>
         </div>

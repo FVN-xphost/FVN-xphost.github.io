@@ -1,6 +1,5 @@
 <script lang="ts">
     import George from "../../../assets/illustration/george.png";
-    import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import { sleep } from "../../../utils/all";
     const { result = (res: string) => {} } = $props();
