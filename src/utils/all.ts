@@ -1,5 +1,5 @@
 import { goto } from "$app/navigation";
-export const branchCount = 7;
+export const branchCount = 9;
 export const saveCount = 40;
 export const galleryCount = 10;
 export const globalCount = 1;

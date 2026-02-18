@@ -5,37 +5,17 @@
     import { choiceTitle, dialogInstance } from "../../../store/dialog";
     import { sleep, router, branchCount } from "../../../utils/all";
     import { save, unlockGallery } from "../../../utils/backend-tauri";
-    import Dragon from "../../../assets/illustration/dragon_dressed.png";
-    import Tiger from "../../../assets/illustration/tiger_dressed.png";
-    import piano from "../../../assets/sounds/mp3/piano.mp3";
-    import experience from "../../../assets/sounds/ogg/experience.ogg";
     import Scene1 from "../../../assets/scene/scene1.png";
     import MyInputName from "./MyInputName.svelte";
     const { params } = $props();
-    // 钢琴音乐
-    const pianoIns = new Audio(piano);
-    // 获得经验
-    const experienceIns = new Audio(experience);
     // 当前存档名称
     const thisname = (() => `save${params.some}`)();
     // 临时变量：控制主屏幕显示。
     let o1 = $state(false);
-    // /// 以下为一组：
-    // // 锁住文本（用于 next 时是否控制文本点击时自动显示完整。）
-    // let lockText = $state(false);
-    // // 退出文本（同上用于判断）
-    // let exitText = $state(false);
     // 控制 空格键 锁定
     let keyLock = $state(false);
     // 是否点击了快进
     let quickCurrent = $state(false);
-    // 龙立绘样式
-    let liveStyleDragon = $state("");
-    // 虎立绘样式
-    let liveStyleTiger = $state("");
-    // 背景样式
-    let backStyle = $state("");
-    let backImage = $state("");
     // 展示提示
     let isShowHint = $state(false);
     // 提示内容
@@ -161,21 +141,38 @@
         }
         return resNum;
     }
+    // 背景样式
+    let backStyle = $state("");
+    let backImage = $state("");
+    // Tony 样式
+    let TonyStyle = $state("");
+    let TonyImage = $state("");
+    import TonyClothHandEye from "../../../assets/illustration/sms_cloth_hand_eye.png"
+    import TonyClothHandNoeye from "../../../assets/illustration/sms_cloth_hand_noeye.png"
+    import TonyClothNohandEye from "../../../assets/illustration/sms_cloth_nohand_eye.png"
+    import TonyClothNohandNoeye from "../../../assets/illustration/sms_cloth_nohand_noeye.png"
+    import TonyNoclothHandEye from "../../../assets/illustration/sms_nocloth_hand_eye.png"
+    import TonyNoclothHandNoeye from "../../../assets/illustration/sms_nocloth_hand_noeye.png"
+    import TonyNoclothNohandEye from "../../../assets/illustration/sms_nocloth_nohand_eye.png"
+    import TonyNoclothNohandNoeye from "../../../assets/illustration/sms_nocloth_nohand_noeye.png"
     async function doStyle(current: number, isQuick: boolean = false) {
         if (current === 0) {
-            pianoIns.pause();
-            pianoIns.currentTime = 0;
-            experienceIns.pause();
-            experienceIns.currentTime = 0;
-            liveStyleTiger = "transform: translateX(150vw);";
-            liveStyleDragon = "transform: translateX(-150vw);";
             backStyle = `opacity: 0;`;
             backImage = "";
+            TonyStyle = `opacity: 0; `;
+            TonyImage = "";
         }
         if (gd(current).id === "start1") {
             backImage = Scene1;
             backStyle = `opacity: 1;`;
-            if (!isQuick) await sleep(500);
+            // if (!isQuick) await sleep(500);
+        } else if (gd(current).id === "tonyshow1") {
+            TonyImage = TonyClothNohandEye;
+            TonyStyle = `opacity: 1; bottom: 0; right: 0; height: 80%`;
+        } else if (gd(current).id === "tonyhide1") {
+            TonyStyle = `opacity: 0; bottom: 0; right: 0; height: 80%`;
+            await sleep(500);
+            TonyImage = ""
         }
         // if (current === 0) {
         //     backStyle = "opacity: 0;";
@@ -310,7 +307,6 @@
         dialogDom = document.querySelector(".dialog-by") as HTMLDivElement;
         dialogDom.scrollTop = dialogDom.scrollHeight + 200;
         await next(false);
-        console.log(gc());
     });
     async function next(plus: boolean = true) {
         // if (lockText) {
@@ -333,11 +329,11 @@
             name: replaceCurrentText(gd(gc()).name),
             text: "",
         });
-        dialogDom.scrollTop = dialogDom.scrollHeight + 200;
         // lockText = true;
         await doStyle(gc());
         let ct = replaceCurrentText(gd(gc()).message);
-        let isLt = false;
+        // let isLt = false;
+        dialogDom.scrollTop = dialogDom.scrollHeight + 200;
         historyFile[historyFile.length - 1].text = ct;
         // for (let i = 0; i < (ct?.length ?? 0); i++) {
         //     if (exitText) {
@@ -512,12 +508,18 @@
                 class="w-full h-[91.5vh] border-y-gray-600 border-y flex items-center"
             >
                 <!-- 立绘区域 -->
-                <div class="shrink-0 w-[50vw] h-full relative">
+                <div class="shrink-0 w-full h-full relative">
                     <img
                         src={backImage}
                         alt="背景图片"
                         class="absolute top-[50%] left-[50%] translate-[-50%] w-full aspect-video transition-opacity duration-500"
                         style={backStyle}
+                    />
+                    <img
+                        src={TonyImage}
+                        alt="Tony图片"
+                        class="absolute transition-opacity duration-500"
+                        style={TonyStyle}
                     />
                 </div>
             </div>
@@ -543,6 +545,9 @@
             <div
                 class="absolute bottom-0 -right-[0.2rem] w-[0.3rem] h-[5vh] bg-white"
             ></div>
+            <div class="origin-[50%_0] -rotate-90 absolute -left-[23vh] bottom-[20vh] text-white font-bold" style="font-size: 8vh;">
+                管理员
+            </div>
             <div
                 class="flex flex-col items-center h-full w-[98%] border-x-gray-300 border-x bg-[#3D3D3DFF]"
             >
@@ -629,7 +634,7 @@
             </div>
         </div>
         <div
-            class="w-[15vw] h-[93vh] border-y-gray-300 border-y flex items-center"
+            class="w-[12vw] h-[93vh] border-y-gray-300 border-y flex items-center"
         >
             <div
                 class="w-full h-[91.5vh] border-y-gray-600 border-y flex items-center relative"

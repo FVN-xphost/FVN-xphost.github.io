@@ -108,7 +108,6 @@ function Wildebeest(
     ifbranch,
   );
 }
-export const choiceTitle = `<span style="${publicCss} background-color: blue;">选项</span>`;
 function Choice(
   id: string,
   choice: string[],
@@ -164,6 +163,7 @@ const ifbranch3o4o5: IfInterface[] = [
     value: "不卖船票",
   },
 ];
+export const choiceTitle = `<span style="${publicCss} background-color: blue;">选项</span>`;
 export const dialogInstance = readable<DialogInterface[]>([
   Aside(
     "一个方正的房间。狭小，几乎推开门就会撞到桌子。金属桌腿和地板是一体的，典型的空间站早期风格，“为了预防可能的撞击”。除此之外，房间里只有档案柜，管理员，档案柜。他们沉默着。",
@@ -225,8 +225,8 @@ export const dialogInstance = readable<DialogInterface[]>([
   // 切换场景：走廊
   Aside("走廊像一条苍白的喉咙。"),
   // 托尼走上来
-  Tony("%name，你还好吧？"),
-  Choice("branch2", [
+  Tony("%name，你还好吧？", [], "tonyshow1"),
+  Choice("branch6", [
     "还好，只是没想到还要照相。",
     "不太好。我感觉自己要被闪光灯谋杀了。",
   ]),
@@ -245,7 +245,7 @@ export const dialogInstance = readable<DialogInterface[]>([
   Aside("大门被拉开，门轴发出摩擦的声音。"),
   // 切换场景：告别厅
   Tony("那么，你和逝者的关系？"),
-  Choice("branch2", [
+  Choice("branch7", [
     "又来？就非要做这种事吗？",
     "刚刚在那个办公室已经问过我一遍了。",
   ]),
@@ -314,7 +314,7 @@ export const dialogInstance = readable<DialogInterface[]>([
   Tony(
     "骗子吗？他们不会来的，想要确认身份至少得开5到15份证明，等开完，你早已经签完字了。而且他们来干嘛？骗一个在葬礼上致辞的机会？除了你没人那么干。",
   ),
-  Choice("branch2", [
+  Choice("branch8", [
     "谢谢，我真的非常感谢你……",
     "伙计，我以后会给你换一个闪闪发亮的无缝一体式头套，我说真的，无论多少钱我都要买给你。",
   ]),
@@ -337,7 +337,7 @@ export const dialogInstance = readable<DialogInterface[]>([
   Tony(
     "这个算是HB-c1，特殊活体宠物，按照规定……别管那些了，总之你可以先把这个带走。其他什么也别放在心上，就算不走完流程你也可以继续在查理的位置睡，根本没人管这种事。",
   ),
-  Choice("branch2", ["谢谢你，托尼", "亲吻托尼"]),
+  Choice("branch9", ["谢谢你，托尼", "亲吻托尼"]),
   Aside("我抱住了他，那枚蛋隔在我俩中间，撞在托尼坚硬的身体上发出一声脆响。"),
   // 切换场景：宿舍床铺
   Aside(
@@ -346,6 +346,8 @@ export const dialogInstance = readable<DialogInterface[]>([
   Aside("蛋也没事，它完整地被你带回来了。"),
   Aside(
     "休息区仍是你熟悉的样子，紧贴墙壁的垂直货架，上面摆了许多稀奇的小玩意——都是从垃圾传送带上捡回来的。",
+    [],
+    "tonyhide1"
   ),
   Aside("把货架沿着滑轨抬上去，剩下的空间才是你真正的家——一张床铺。"),
   Aside(
@@ -582,6 +584,10 @@ export const dialogInstance = readable<DialogInterface[]>([
   ),
   Aside("光滑的登船通道像是一面镜子，反射出你的身形。", ifbranch3o4o5),
   Aside("你上了船。", ifbranch3o4o5),
+  {
+    id: "scene1",
+    type: "scene"
+  },
   George(
     "卖掉，这应该是一大笔钱吧？让我想想该怎么花它……我们可以在接待区买下一个隔间。也许我可以换一份工作，在候船厅卖卖纪念品什么的，就是那种花花绿绿的铁皮小徽章。",
     ifbranch3a4a5,
