@@ -149,7 +149,7 @@
     .trans2 {
         transform: rotate(0);
         background-color: white;
-        background-image: url("../../assets/gallery/galleryback.png");
+        background-image: url("../../assets/gallery/galleryback.jpg");
         z-index: 10;
         cursor: pointer;
     }

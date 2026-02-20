@@ -25,6 +25,8 @@
     // 展示开头的信息框
     let showInput = $state(false);
     let resultInput = $state("");
+    // 自动播放
+    let autoplay = $state(false);
     let pedding = $state<((resolve: string) => void) | undefined>(undefined);
     $effect(() => {
         if (!showInput && pedding) {
@@ -147,14 +149,14 @@
     // Tony 样式
     let TonyStyle = $state("");
     let TonyImage = $state("");
-    import TonyClothHandEye from "../../../assets/illustration/sms_cloth_hand_eye.gif"
-    import TonyClothHandNoeye from "../../../assets/illustration/sms_cloth_hand_noeye.png"
-    import TonyClothNohandEye from "../../../assets/illustration/sms_cloth_nohand_eye.png"
-    import TonyClothNohandNoeye from "../../../assets/illustration/sms_cloth_nohand_noeye.png"
-    import TonyNoclothHandEye from "../../../assets/illustration/sms_nocloth_hand_eye.png"
-    import TonyNoclothHandNoeye from "../../../assets/illustration/sms_nocloth_hand_noeye.png"
-    import TonyNoclothNohandEye from "../../../assets/illustration/sms_nocloth_nohand_eye.png"
-    import TonyNoclothNohandNoeye from "../../../assets/illustration/sms_nocloth_nohand_noeye.png"
+    import TonyClothHandEye from "../../../assets/illustration/sms_cloth_hand_eye.gif";
+    import TonyClothHandNoeye from "../../../assets/illustration/sms_cloth_hand_noeye.png";
+    import TonyClothNohandEye from "../../../assets/illustration/sms_cloth_nohand_eye.png";
+    import TonyClothNohandNoeye from "../../../assets/illustration/sms_cloth_nohand_noeye.png";
+    import TonyNoclothHandEye from "../../../assets/illustration/sms_nocloth_hand_eye.png";
+    import TonyNoclothHandNoeye from "../../../assets/illustration/sms_nocloth_hand_noeye.png";
+    import TonyNoclothNohandEye from "../../../assets/illustration/sms_nocloth_nohand_eye.png";
+    import TonyNoclothNohandNoeye from "../../../assets/illustration/sms_nocloth_nohand_noeye.png";
     async function doStyle(current: number, isQuick: boolean = false) {
         if (current === 0) {
             backStyle = `opacity: 0;`;
@@ -172,7 +174,7 @@
         } else if (gd(current).id === "tonyhide1") {
             TonyStyle = `opacity: 0; bottom: 0; right: 0; height: 80%`;
             // if (!isQuick) await sleep(500);
-            TonyImage = ""
+            TonyImage = "";
         }
         // if (current === 0) {
         //     backStyle = "opacity: 0;";
@@ -481,6 +483,11 @@
             showHint("存档失败，错误信息：" + e.message);
         }
     }
+    setInterval(() => {
+        if(autoplay) {
+            next()
+        }
+    }, 2000)
     // setInterval(() => {
     //     if(dialogDom) {
     //         dialogDom.scrollTop += 10
@@ -490,7 +497,7 @@
 
 {#if o1}
     <div
-        class="bg-img-full bg-[url(/src/assets/Home/back.png)] fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden flex items-center"
+        class="bg-img-full bg-[url(/src/assets/Home/back.jpg)] fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden flex items-center"
         in:fade={{ duration: 500 }}
         onclick={() => {
             // if (quickCurrent) quickCurrent = false;
@@ -527,6 +534,7 @@
         <div
             class="relative flex flex-col items-center flex-1 h-full border-x-gray-600 border-x"
         >
+            <!-- 四个角的装饰 -->
             <div
                 class="absolute top-0 -left-[0.2rem] w-[0.3rem] h-[5vh] bg-white"
             ></div>
@@ -545,7 +553,55 @@
             <div
                 class="absolute bottom-0 -right-[0.2rem] w-[0.3rem] h-[5vh] bg-white"
             ></div>
-            <div class="origin-[50%_0] -rotate-90 absolute -left-[23vh] bottom-[20vh] text-white font-bold" style="font-size: 8vh;">
+            <!-- 自动播放 -->
+            <div
+                onclick={() => {
+                    autoplay = !autoplay;
+                }}
+                onkeydown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
+                onkeyup={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
+                tabindex="0"
+                role="button"
+                class="absolute cursor-pointer bottom-3 -left-[13vw] w-[5.4vh] h-[5.4vh] border-2 border-solid border-white text-white hover:border-green-300 hover:*:text-green-300"
+                style={autoplay
+                    ? "border: 2px solid oklch(79.2% 0.209 151.711)"
+                    : ""}
+            >
+                <div
+                    class="absolute -bottom-[2vh] left-0 right-0 mx-auto flex flex-col items-center"
+                    style="font-size: 1.1vh; color: oklch(55.1% 0.027 264.364);"
+                >
+                    自动播放
+                </div>
+                <div class="absolute -top-[4.8vh] -translate-x-[50%] left-[50%] max-w-none border border-solid border-white flex flex-col items-center">
+                    <div class="text-black m-0.75 bg-white whitespace-nowrap" style="font-size: 1.6vh;">太空港·丧葬及遗产办公室</div>
+                </div>
+                <svg
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style={autoplay ? "color: oklch(79.2% 0.209 151.711)" : ""}
+                    class="w-full h-full"
+                >
+                    <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    ></circle>
+                    <path d="M9 7L9 17L18 12Z" fill="currentColor"></path>
+                </svg>
+            </div>
+            <div
+                class="origin-[50%_0] -rotate-90 absolute -left-[23vh] bottom-[20vh] text-white font-bold"
+                style="font-size: 8vh;"
+            >
                 管理员
             </div>
             <div
