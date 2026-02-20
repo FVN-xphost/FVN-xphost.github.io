@@ -7,6 +7,7 @@
     import { mounted, saveData } from "../store/store";
     import { fade } from "svelte/transition";
     import { router } from "../utils/all";
+    import titlejpg from '../assets/Home/title.jpg'
     let o1 = $state(false);
     let o2 = $state(false);
     let o3 = $state(false);
@@ -14,6 +15,25 @@
     let o5 = $state(false);
     let o6 = $state(false);
     let isStart = $state<number>(-1);
+    // 等待 1200 秒
+    async function showStar() {
+        let dom = document.getElementById("myBack");
+        for (let i = 0; i < 120; i++) {
+            let star = document.createElement("div");
+            star.style.width = Math.random() / 4 + "vw";
+            star.style.height = Math.random() / 4 + "vh";
+            star.style.position = "absolute";
+            star.style.top = Math.random() * 100 + "vh";
+            star.style.left = Math.random() * 100 + "vw";
+            star.style.backgroundColor = "white";
+            star.style.borderRadius = "50%";
+            star.style.opacity = (Math.random() * 0.7 + 0.3).toString();
+            // star.style.animation = `star ${Math.random() * 4 + 1}s infinite`;
+            star.style.zIndex = "-1";
+            dom?.appendChild(star);
+            await sleep(10);
+        }
+    }
     onMount(async () => {
         if ($mounted) {
             isStart = 0;
@@ -23,12 +43,15 @@
             o4 = true;
             o5 = true;
             o6 = true;
+            await sleep(300);
+            await showStar();
             return;
         }
         mounted.set(true);
         init();
         o1 = true;
-        await sleep(1500);
+        await sleep(300);
+        await showStar();
         o2 = true;
         await sleep(1500);
         isStart = 0;
@@ -50,7 +73,8 @@
 
 {#if o1}
     <div
-        class="fixed w-screen h-screen overflow-hidden bg-img-full bg-[url(/src/assets/Home/back.png)]"
+        id="myBack"
+        class="fixed w-screen h-screen overflow-hidden bg-img-full bg-[url(/src/assets/Home/back.jpg)]"
         in:fade={{ duration: 1500 }}
         onclick={showStart}
         onkeydown={showStart}
@@ -61,9 +85,10 @@
         {#if o2}
             <div
                 in:fade={{ duration: 1500 }}
-                class="absolute w-screen h-[30vh] bg-yellow-300 top-[20vh] left-0 right-0 flex flex-col items-center"
+                class="absolute w-screen h-[30vh] top-[20vh] left-0 right-0 flex flex-col items-center overflow-auto"
             >
-                <div
+                <img src={titlejpg} alt="标题图片" class="h-full w-auto shrink-0 max-w-none min-w-screen">
+                <!-- <div
                     class="flex-1 w-auto flex flex-col relative before:absolute before:bottom-2 before:-right-12 before:content-['v0.1.0']"
                 >
                     <div
@@ -79,7 +104,7 @@
                             class="w-full h-px border border-t-gray-700 border-dashed"
                         ></div>
                     </div>
-                </div>
+                </div> -->
             </div>
             {#if isStart === 2}
                 <div

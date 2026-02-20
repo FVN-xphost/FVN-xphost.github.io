@@ -147,7 +147,7 @@
     // Tony 样式
     let TonyStyle = $state("");
     let TonyImage = $state("");
-    import TonyClothHandEye from "../../../assets/illustration/sms_cloth_hand_eye.png"
+    import TonyClothHandEye from "../../../assets/illustration/sms_cloth_hand_eye.gif"
     import TonyClothHandNoeye from "../../../assets/illustration/sms_cloth_hand_noeye.png"
     import TonyClothNohandEye from "../../../assets/illustration/sms_cloth_nohand_eye.png"
     import TonyClothNohandNoeye from "../../../assets/illustration/sms_cloth_nohand_noeye.png"
@@ -167,11 +167,11 @@
             backStyle = `opacity: 1;`;
             // if (!isQuick) await sleep(500);
         } else if (gd(current).id === "tonyshow1") {
-            TonyImage = TonyClothNohandEye;
+            TonyImage = TonyClothHandEye;
             TonyStyle = `opacity: 1; bottom: 0; right: 0; height: 80%`;
         } else if (gd(current).id === "tonyhide1") {
             TonyStyle = `opacity: 0; bottom: 0; right: 0; height: 80%`;
-            await sleep(500);
+            // if (!isQuick) await sleep(500);
             TonyImage = ""
         }
         // if (current === 0) {

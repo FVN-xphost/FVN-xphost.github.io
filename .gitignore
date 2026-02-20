@@ -12,3 +12,4 @@ vite.config.ts.timestamp-*
 package-lock.json
 /src-tauri/Cargo.lock
 /BackgroundMusic/*.mid
+/src/assets/**/*.py

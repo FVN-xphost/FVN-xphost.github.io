@@ -87,7 +87,7 @@
 >
     <div
         class="absolute left-0 w-screen transition-[top] duration-1000 h-[25vh] bg-yellow-300 z-10 flex flex-col items-center my-auto top-0 bottom-0
-        before:content-['回想你的名字'] before:text-[2vh] before:text-yellow-300 before:absolute before:top-[-4vh] before:-left-[30vh] before:w-fit before:mx-auto before:right-0"
+        before:content-['回想你的名字（默认：乔治）'] before:text-[2vh] before:text-yellow-300 before:absolute before:top-[-4vh] before:-left-[30vh] before:w-fit before:mx-auto before:right-0"
         style={o1 ? "top: -40vh" : ""}
     >
         <div

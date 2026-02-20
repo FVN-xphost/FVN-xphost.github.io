@@ -6,7 +6,7 @@
     import { quadInOut } from "svelte/easing";
     import { onMount } from "svelte";
     import { router } from "../../utils/all";
-    import GalleryBack from "../../assets/gallery/galleryback.png";
+    import GalleryBack from "../../assets/Home/galleryback.jpg";
     let galleryTrans1 = $state(new Array($galleryLock.length).fill(false));
     let galleryTrans2 = $state(new Array($galleryLock.length).fill(false));
     let o1 = $state(false);
