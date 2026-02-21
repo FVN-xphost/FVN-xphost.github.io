@@ -15,7 +15,7 @@ export async function init() {
   }
   for (let i = 1; i <= saveCount; i++) {
     if (savedata.saveInstance[`save${i}`] === undefined)
-      savedata.saveInstance[`save${i}`] = { current: 0, name: "", updateTime: "" };
+      savedata.saveInstance[`save${i}`] = { current: 0, name: "", updateTime: "", saved: 0 };
     for (let j = 1; j <= branchCount; j++) {
       if (savedata.saveInstance[`save${i}`][`branch${j}`] === undefined)
         savedata.saveInstance[`save${i}`][`branch${j}`] = "";
@@ -53,4 +53,9 @@ export async function updateGlobalVariable(id: number, value: string) {
   savedata.globalVariable[`global${id}`] = value;
   localStorage.setItem("spaceport_data", JSON.stringify(savedata));
 }
-export function closeWindow() {}
+
+export async function reset() {
+  localStorage.setItem("spaceport_data", "{}");
+  init();
+}
+export function closeWindow() { }

@@ -3,7 +3,7 @@
     import "../style/tailwind.css";
     import { onMount } from "svelte";
     import { saveCount, sleep } from "../utils/all";
-    import { init, closeWindow } from "../utils/backend-tauri";
+    import { init, closeWindow, reset } from "../utils/backend-tauri";
     import { mounted, saveData } from "../store/store";
     import { fade } from "svelte/transition";
     import { router } from "../utils/all";
@@ -28,7 +28,7 @@
             star.style.backgroundColor = "white";
             star.style.borderRadius = "50%";
             star.style.opacity = (Math.random() * 0.7 + 0.3).toString();
-            // star.style.animation = `star ${Math.random() * 4 + 1}s infinite`;
+            star.style.animation = `star ${Math.random() * 2 + 3}s infinite`;
             star.style.zIndex = "-1";
             dom?.appendChild(star);
             await sleep(10);
@@ -150,7 +150,7 @@
                         aria-label="开始游戏"
                         class="w-full flex-1 bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white cursor-pointer transition-opacity duration-400"
                         style={`opacity: ${o3 ? "1" : "0"}`}
-                        onclick={async () => {
+                        onclick={() => {
                             isStart = 2;
                         }}>开始游戏</button
                     >
@@ -189,6 +189,9 @@
                     单击以继续
                 </div>
             {/if}
+            <button class="fixed bottom-10 left-10 w-20 h-10 bg-yellow-300 border-none outline-none cursor-pointer hover:bg-white active:bg-black active:text-white" onclick={() => {
+                reset()
+            }} aria-labelledby="重置">重置</button>
         {/if}
     </div>
 {/if}

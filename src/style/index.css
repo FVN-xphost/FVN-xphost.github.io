@@ -24,7 +24,7 @@
 }
 
 *:not(.button-span) {
-    font-family: AlibabaPuHuiTi;
+    font-family: AlibabaPuHuiTi, system-ui;
 }
 
 *::-webkit-scrollbar {
@@ -34,16 +34,17 @@
 @keyframes star {
     0% {
         opacity: 0;
-        box-shadow: none;
     }
 
-    50% {
+    20% {
         opacity: 1;
-        box-shadow: 0 0 4px 1px darkgray;
+    }
+
+    80% {
+        opacity: 1;
     }
 
     100% {
         opacity: 0;
-        box-shadow: none;
     }
 }

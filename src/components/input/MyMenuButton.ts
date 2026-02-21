@@ -25,13 +25,13 @@ export class MyMenuButton extends LitElement {
       top: 1px;
     }
     .button-span {
-      font-family: Silver !important;
+      font-family: Silver, system-ui !important;
     }
     .button-span * {
-      font-family: Silver !important;
+      font-family: Silver, system-ui !important;
     }
     .button-span > * {
-      font-family: Silver !important;
+      font-family: Silver, system-ui !important;
     }
   `;
   render() {

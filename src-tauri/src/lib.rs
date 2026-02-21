@@ -215,6 +215,7 @@ fn update_save(
     id: String,
     update_time: String,
     name: String,
+    saved: i32,
     current: i32,
     branches: Vec<String>,
 ) -> Option<()> {
@@ -225,13 +226,14 @@ fn update_save(
         Box::new(update_time.clone()),
         Box::new(current),
         Box::new(id),
+        Box::new(saved),
     ];
     for (i, branch_value) in branches.iter().enumerate() {
         branch_temp.push_str(&format!(", branch{} = ?{}", i + 1, i + 5));
         params.push(Box::new(branch_value.clone()));
     }
     let sql = format!(
-        "UPDATE saveInstance SET name = ?1, saved = 1, update_time = ?2, remark = '', current = ?3{} WHERE id = ?4",
+        "UPDATE saveInstance SET name = ?1, saved = ?5, update_time = ?2, remark = '', current = ?3{} WHERE id = ?4",
         branch_temp
     );
     let params_refs: Vec<&dyn rusqlite::ToSql> = params.iter().map(|p| &**p).collect();
@@ -266,6 +268,11 @@ fn update_gallery(id: i32) -> Option<()> {
     }
     Some(())
 }
+#[tauri::command]
+fn reset() -> Option<()> {
+    let _ = std::fs::remove_file(path_join!(HOME_DIR.get().unwrap(), "data.db")).ok()?;
+    Some(())
+}
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -279,7 +286,8 @@ pub fn run() {
             get_all_data,
             update_save,
             update_gallery,
-            update_global_variable
+            update_global_variable,
+            reset
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

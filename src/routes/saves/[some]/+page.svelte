@@ -27,6 +27,9 @@
     let resultInput = $state("");
     // 自动播放
     let autoplay = $state(false);
+    // 章节数
+    let chapterNum = $state(0);
+    let showChapter = $state(false);
     let pedding = $state<((resolve: string) => void) | undefined>(undefined);
     $effect(() => {
         if (!showInput && pedding) {
@@ -68,6 +71,7 @@
             },
         });
     }
+    // 解锁任一画廊
     async function ug(id: number) {
         await unlockGallery(id);
         setGalleryMeta(id);
@@ -81,8 +85,11 @@
     function gc(): number {
         return parseInt(getSaveInfo("current"));
     }
+    function gi(): any {
+        return $dialogInstance
+    }
     function gd(index: number): any {
-        return $dialogInstance[index] ?? {};
+        return gi()[index] ?? {};
     }
     function setc(current: number) {
         setSaveInfo("current", current);
@@ -149,14 +156,12 @@
     // Tony 样式
     let TonyStyle = $state("");
     let TonyImage = $state("");
-    import TonyClothHandEye from "../../../assets/illustration/sms_cloth_hand_eye.gif";
-    import TonyClothHandNoeye from "../../../assets/illustration/sms_cloth_hand_noeye.png";
-    import TonyClothNohandEye from "../../../assets/illustration/sms_cloth_nohand_eye.png";
-    import TonyClothNohandNoeye from "../../../assets/illustration/sms_cloth_nohand_noeye.png";
-    import TonyNoclothHandEye from "../../../assets/illustration/sms_nocloth_hand_eye.png";
-    import TonyNoclothHandNoeye from "../../../assets/illustration/sms_nocloth_hand_noeye.png";
-    import TonyNoclothNohandEye from "../../../assets/illustration/sms_nocloth_nohand_eye.png";
-    import TonyNoclothNohandNoeye from "../../../assets/illustration/sms_nocloth_nohand_noeye.png";
+    import TonyClothHand from "../../../assets/illustration/sms_cloth_hand.png";
+    import TonyClothNohand from "../../../assets/illustration/sms_cloth_nohand.png";
+    import TonyNoclothHand from "../../../assets/illustration/sms_nocloth_hand.png";
+    import TonyNoclothNohand from "../../../assets/illustration/sms_nocloth_nohand.png";
+    import TonyNoEye from '../../../assets/illustration/sms_noeye.png';
+    import Chapter from "./Chapter.svelte";
     async function doStyle(current: number, isQuick: boolean = false) {
         if (current === 0) {
             backStyle = `opacity: 0;`;
@@ -165,16 +170,14 @@
             TonyImage = "";
         }
         if (gd(current).id === "start1") {
-            backImage = Scene1;
+            backImage = Scene1 as string;
             backStyle = `opacity: 1;`;
             // if (!isQuick) await sleep(500);
         } else if (gd(current).id === "tonyshow1") {
-            TonyImage = TonyClothHandEye;
+            TonyImage = TonyClothHand as string;
             TonyStyle = `opacity: 1; bottom: 0; right: 0; height: 80%`;
         } else if (gd(current).id === "tonyhide1") {
             TonyStyle = `opacity: 0; bottom: 0; right: 0; height: 80%`;
-            // if (!isQuick) await sleep(500);
-            TonyImage = "";
         }
         // if (current === 0) {
         //     backStyle = "opacity: 0;";
@@ -233,9 +236,9 @@
     // 返回 -10 代表已经走到末尾，返回 -11 代表这是一个选项。返回 -12 代表已经到末尾！
     function nextOne(index: number, plus: boolean): number {
         let resNum = index;
-        if (resNum >= $dialogInstance.length) return -10;
+        if (resNum >= gi().length) return -10;
         if (gd(resNum).next && gd(resNum).if) {
-            const i = $dialogInstance.findIndex(
+            const i = gi().findIndex(
                 (item: any) => item.id === gd(resNum).next,
             );
             if (i >= 0) {
@@ -254,7 +257,7 @@
         let resNum = index;
         if (resNum <= 0) return -10;
         if (gd(resNum).prev) {
-            const i = $dialogInstance.findIndex(
+            const i = gi().findIndex(
                 (item: any) => item.id === gd(resNum).prev,
             );
             if (i >= 0) resNum = i;
@@ -303,6 +306,14 @@
                 await doStyle(m, true);
             }
             m++;
+        }
+        if(m === 0) {
+            showChapter = true;
+            await sleep(10000);
+            showChapter = false;
+            await sleep(500);
+        }else{
+            chapterNum = parseInt(getSaveInfo('saved'))
         }
         o1 = true;
         await sleep(500);
@@ -367,7 +378,7 @@
         // lockText = false;
     }
     /**
-     * 使用古法查看历史（ps：逐步往前退，直到退到0。。由于 jumpTo 函数已经帮我们解决了分支问题，因此无需担心历史数据丢失或者起冲突。。）
+     * 使用古法查看历史（ps：逐步往前退，直到退到 0。。由于 jumpTo 函数已经帮我们解决了分支问题，因此无需担心历史数据丢失或者起冲突。。）
      * @deprecated 自 v4 版本已被弃用！因为现在是直接显示历史！
      */
     function showHistory() {
@@ -463,12 +474,14 @@
             date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds()
         }`;
         setSaveInfo("remark", "");
+        setSaveInfo("saved", chapterNum);
         setSaveInfo("updateTime", updateTime);
         try {
             await save(
                 params.some,
                 updateTime,
                 name,
+                chapterNum,
                 current,
                 new Array(branchCount)
                     .fill(null)
@@ -488,6 +501,12 @@
             next()
         }
     }, 2000)
+    let TonyEye = $state(true)
+    setInterval(async () => {
+        TonyEye = false;
+        await sleep(500);
+        TonyEye = true;
+    }, 5000)
     // setInterval(() => {
     //     if(dialogDom) {
     //         dialogDom.scrollTop += 10
@@ -522,12 +541,16 @@
                         class="absolute top-[50%] left-[50%] translate-[-50%] w-full aspect-video transition-opacity duration-500"
                         style={backStyle}
                     />
-                    <img
-                        src={TonyImage}
-                        alt="Tony图片"
-                        class="absolute transition-opacity duration-500"
-                        style={TonyStyle}
-                    />
+                    <div class="absolute transition-opacity duration-500 w-auto" style={TonyStyle}>
+                        {#if !TonyEye}
+                            <img src={TonyNoEye} alt="Tony脸" class="absolute top-0 left-0 w-auto h-auto">
+                        {/if}
+                        <img
+                            src={TonyImage}
+                            alt="Tony图片"
+                            class="w-auto h-full"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -641,12 +664,12 @@
                                     onclick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        setSaveInfo(gd(gc()).id!, choice);
+                                        setSaveInfo(gd(gc()).id, choice);
                                         let score =
-                                            $dialogInstance[gc()]?.score;
+                                            gi()[gc()]?.score;
                                         if (score !== undefined) {
                                             setSaveInfo(
-                                                score.targetId!,
+                                                score.targetId,
                                                 score.action(
                                                     choice,
                                                     getSaveInfo(score.targetId),
@@ -702,16 +725,16 @@
                         xmlns="http://www.w3.org/2000/svg"
                         class="w-[2vw] h-[2vw] border-none outline-none cursor-pointer"
                         viewBox="0 0 64 64"
-                        onclick={(e: Event) => {
+                        onclick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             updateSave(getSaveInfo("name"), gc());
                         }}
-                        onkeydown={(e: Event) => {
+                        onkeydown={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                         }}
-                        onkeyup={(e: Event) => {
+                        onkeyup={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                         }}
@@ -742,16 +765,16 @@
                         width="32"
                         height="32"
                         viewBox="0 0 24 24"
-                        onclick={(e: Event) => {
+                        onclick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             quick();
                         }}
-                        onkeydown={(e: Event) => {
+                        onkeydown={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                         }}
-                        onkeyup={(e: Event) => {
+                        onkeyup={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                         }}
@@ -771,16 +794,16 @@
                         width="32"
                         height="32"
                         viewBox="0 0 48 48"
-                        onclick={(e: Event) => {
+                        onclick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             router.back();
                         }}
-                        onkeydown={(e: Event) => {
+                        onkeydown={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                         }}
-                        onkeyup={(e: Event) => {
+                        onkeyup={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                         }}
@@ -809,10 +832,15 @@
 {#if showInput}
     <div in:fade={{ duration: 300 }} out:fade={{ duration: 300 }}>
         <MyInputName
-            result={(res: string) => {
+            result={(res) => {
                 showInput = false;
                 resultInput = res;
             }}
         ></MyInputName>
+    </div>
+{/if}
+{#if showChapter}
+    <div in:fade={{ duration: 500 }} out:fade={{ duration: 500 }}>
+        <Chapter chapter={chapterNum}></Chapter>
     </div>
 {/if}

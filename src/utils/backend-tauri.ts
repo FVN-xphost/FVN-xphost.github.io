@@ -19,6 +19,7 @@ export async function save(
   id: string,
   updateTime: string,
   name: string,
+  saved: number,
   current: number,
   branches: Array<string>,
 ) {
@@ -26,6 +27,7 @@ export async function save(
     id,
     updateTime,
     name,
+    saved,
     current,
     branches,
   });
@@ -38,6 +40,10 @@ export async function updateGlobalVariable(id: number, value: string) {
   await invoke("update_global_variable", { id, value })
 }
 
+export async function reset() {
+  await invoke("reset", {});
+  init();
+}
 export function closeWindow() {
   window.getCurrentWindow().close();
 }

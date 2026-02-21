@@ -9,19 +9,22 @@
 
 本仓库目前的许可证是 All rights reserved. 如果没有特殊说明，严禁使用本开源地址进行二次开发！！
 
-可执行文件在线下载：
+### 以下是支持的从 Actions 的架构选择
 
 - 目前仅采用 Actions 方式发布！您需要登录 github 账号才能下载！
 
-1. 【推荐】`Windows x86_64`（`Intel`、`AMD`）：Actions 下载 Windows x86_64 即可！
-2. `Windows arm64`（`骁龙`、`麒麟`、`海光`）：Actions 下载 Windows arm64 即可！
-3. 【不推荐】`Windows i686`（`Intel Atom 2500 以下 Atom 系列 CPU`）：Actions 下载 Windows i686 即可！
-4. 【推荐】`macOS aarch64`（`M1`、`M2`）：Actions 下载 macOS aarch64 即可！
-5. `macOS x86_64`（`Intel`）：Actions 下载 macOS x86_64 即可！
-6. 【推荐】`Linux x86_64`（`Intel`、`AMD`）：Actions 下载 Linux x86_64 即可！
-7. `Linux aarch64`（`树莓派`）：Actions 下载 Linux aarch64 即可！
-8. 【推荐】`Android aarch64`（`骁龙 8（845、855、865） 以上`、`麒麟`、`鲲鹏`）：Actions 下载 Android aarch64 即可！
-9. `Android x86_64`（`ChromeOS`、`Intel`、`Android 模拟器`）：Actions 下载 Android x86_64 即可！
-10. 【不推荐】`Android armv7`（`MT6592 以下`、`骁龙 200/400/S1-S4 以下`）：Actions 下载 Android armv7 即可！
-11. `Web` 端请自行下载 `github-pages`，并使用 `npm install -g anywhere`，并在目录里使用 `anywhere` 运行！
-12. 在线游玩地址【已放入 Github Pages】：[点我](https://FVN-xphost.github.io)
+| 架构              | CPU                                | 下载文件名              | 是否推荐 |
+|-----------------|------------------------------------|--------------------|------|
+| Windows x86_64  | `Intel`、`AMD`                      | Bundle-Windows-x86_64 | 推荐   |
+| Windows arm64   | `骁龙`、`飞腾`、`鲲鹏`                     | Bundle-Windows-arm64 | -    |
+| Windows i686    | `Intel Atom 2500 以下 Atom 系列 CPU`   | Bundle-Windows-i686 | 不推荐  |
+| macOS aarch64   | `M1`、`M2`、`M3`、`M4`                | Bundle-macOS-aarch64 | 推荐   |
+| macOS x86_64    | `Intel`                            | Bundle-macOS-x86_64 | -    |
+| Linux x86_64    | `Intel`、`AMD`                      | Bundle-Linux-x86_64 | 推荐   |
+| Linux aarch64   | `树莓派（Respberry 系列）` 、`骁龙 X2 Elite` | Bundle-Linux-aarch64 | -    |
+| Android aarch64 | `骁龙 8（845、855、865） 以上`、`麒麟`、`鲲鹏`   | Bundle-Android-aarch64 | 推荐   |
+| Android x86_64  | `ChromeOS`、`Intel`、`Android 模拟器`   | Bundle-Android-x86_64 | -    |
+| Android armv7   | `MT6592 以下`、`骁龙 200/400/S1-S4 以下`  | Bundle-Android-armv7 | 不推荐  |
+| Web             | `浏览器配合 node 搭建本机服务器游玩`             | github-pages       | -    |
+
+- 在线游玩地址【已放入 Github Pages】：[点我](https://FVN-xphost.github.io)
