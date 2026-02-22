@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS galleryLock(
         let tx = conn.transaction().ok()?;
         for i in 1..=gallery_count {
             tx.execute(
-                "INSERT OR IGNORE INTO galleryLock (id, lock) VALUES (?1, 0)",
+                "INSERT OR IGNORE INTO galleryLock (id) VALUES (?1)",
                 params![&i],
             )
             .ok()?;
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS globalVariable(
     }
     // 新建存档元数据对象表（当前只新增五个元数据：
     // 第一个是玩家名称，
-    // 第二个是是否存档，
+    // 第二个是是否存档（已改名成章节名），
     // 第三个是更新日期，
     // 第四个是备注，
     // 第五个是当前进度。后续所有的分支全部转入下方自主实现！）
@@ -229,7 +229,7 @@ fn update_save(
         Box::new(saved),
     ];
     for (i, branch_value) in branches.iter().enumerate() {
-        branch_temp.push_str(&format!(", branch{} = ?{}", i + 1, i + 5));
+        branch_temp.push_str(&format!(", branch{} = ?{}", i + 1, i + 6));
         params.push(Box::new(branch_value.clone()));
     }
     let sql = format!(

@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import { saveData } from "../../../store/store";
-    import { choiceTitle, dialogInstance } from "../../../store/dialog";
+    import { choiceTitle, dialogChapter0, dialogChapter1 } from "../../../store/dialog";
     import { sleep, router, branchCount } from "../../../utils/all";
     import { save, unlockGallery } from "../../../utils/backend-tauri";
     import Scene1 from "../../../assets/scene/scene1.png";
@@ -10,8 +10,8 @@
     const { params } = $props();
     // 当前存档名称
     const thisname = (() => `save${params.some}`)();
-    // 临时变量：控制主屏幕显示。
-    let o1 = $state(false);
+    // 控制主屏幕显示。
+    let showMainScreen = $state(false);
     // 控制 空格键 锁定
     let keyLock = $state(false);
     // 是否点击了快进
@@ -30,6 +30,9 @@
     // 章节数
     let chapterNum = $state(0);
     let showChapter = $state(false);
+    // 显示结局
+    let showEnd = $state(false);
+    let endText = $state("");
     let pedding = $state<((resolve: string) => void) | undefined>(undefined);
     $effect(() => {
         if (!showInput && pedding) {
@@ -86,7 +89,7 @@
         return parseInt(getSaveInfo("current"));
     }
     function gi(): any {
-        return $dialogInstance
+        return chapterNum === 0 ? $dialogChapter0 : $dialogChapter1;
     }
     function gd(index: number): any {
         return gi()[index] ?? {};
@@ -160,8 +163,9 @@
     import TonyClothNohand from "../../../assets/illustration/sms_cloth_nohand.png";
     import TonyNoclothHand from "../../../assets/illustration/sms_nocloth_hand.png";
     import TonyNoclothNohand from "../../../assets/illustration/sms_nocloth_nohand.png";
-    import TonyNoEye from '../../../assets/illustration/sms_noeye.png';
+    import TonyNoEye from "../../../assets/illustration/sms_noeye.png";
     import Chapter from "./Chapter.svelte";
+    import End from "./End.svelte";
     async function doStyle(current: number, isQuick: boolean = false) {
         if (current === 0) {
             backStyle = `opacity: 0;`;
@@ -233,7 +237,7 @@
         // }
     }
     // 会根据 对话内容 进行下一步处理！
-    // 返回 -10 代表已经走到末尾，返回 -11 代表这是一个选项。返回 -12 代表已经到末尾！
+    // 返回 -10 代表已经走到末尾，返回 -11 代表这是一个选项。返回 -12 代表已经到末尾！返回 -13 代表跳转到下一章节
     function nextOne(index: number, plus: boolean): number {
         let resNum = index;
         if (resNum >= gi().length) return -10;
@@ -250,6 +254,7 @@
             resNum++;
         }
         if (gd(resNum).type === "choice") return -11;
+        if (gd(resNum).type === "to") return resNum;
         if (!gd(resNum).message) return -12;
         return resNum;
     }
@@ -283,6 +288,7 @@
             name = name === "" ? "乔治" : name;
             setSaveInfo("name", name);
         }
+        chapterNum = parseInt(getSaveInfo("saved"));
         let m = 0;
         // 回朔历史
         // 直接在初始化里面显示【历史】！（不直接用按钮显示了。。）
@@ -307,15 +313,13 @@
             }
             m++;
         }
-        if(m === 0) {
+        if (m === 0 && chapterNum === 0) {
             showChapter = true;
             await sleep(10000);
             showChapter = false;
             await sleep(500);
-        }else{
-            chapterNum = parseInt(getSaveInfo('saved'))
         }
-        o1 = true;
+        showMainScreen = true;
         await sleep(500);
         dialogDom = document.querySelector(".dialog-by") as HTMLDivElement;
         dialogDom.scrollTop = dialogDom.scrollHeight + 200;
@@ -333,8 +337,36 @@
         if (!gd(gc()).message) return;
         let n = nextOne(gc(), plus);
         if (n === -10 || n === -12) return;
-        if (n === -11) {
+        else if (n === -11) {
             plusOne();
+            return;
+        }
+        if (gd(n).type === "to") {
+            showMainScreen = false;
+            await sleep(500);
+            chapterNum = gd(n).to;
+            console.log(chapterNum);
+            setSaveInfo("saved", gd(n).to);
+            showChapter = true;
+            await sleep(5000);
+            historyFile = [];
+            setc(0);
+            await sleep(5000);
+            showChapter = false;
+            await doStyle(0, true);
+            await sleep(500);
+            showMainScreen = true;
+            await sleep(500);
+            dialogDom = document.querySelector(".dialog-by") as HTMLDivElement;
+            dialogDom.scrollTop = dialogDom.scrollHeight + 200;
+            await next(false);
+            return;
+        }
+        if (gd(n).type === "end") {
+            showMainScreen = false;
+            await sleep(500);
+            endText = gd(n).message;
+            showEnd = true;
             return;
         }
         setc(n);
@@ -427,6 +459,29 @@
             if (n === -11) {
                 plusOne();
                 break;
+            } else if (n === -13) {
+                quickCurrent = false;
+                showMainScreen = false;
+                await sleep(500);
+                chapterNum = gd(n).to;
+                setSaveInfo("saved", gd(n).to);
+                showChapter = true;
+                await sleep(5000);
+                historyFile = [];
+                await sleep(5000);
+                showChapter = false;
+                await sleep(500);
+                setc(0);
+                next(false);
+                return;
+            }
+            if (gd(n).type === "end") {
+                quickCurrent = false;
+                showMainScreen = false;
+                await sleep(500);
+                endText = gd(n).message;
+                showEnd = true;
+                return;
             }
             setc(n);
             await sleep(50);
@@ -474,7 +529,6 @@
             date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds()
         }`;
         setSaveInfo("remark", "");
-        setSaveInfo("saved", chapterNum);
         setSaveInfo("updateTime", updateTime);
         try {
             await save(
@@ -497,16 +551,16 @@
         }
     }
     setInterval(() => {
-        if(autoplay) {
-            next()
+        if (autoplay) {
+            next();
         }
-    }, 2000)
-    let TonyEye = $state(true)
+    }, 2000);
+    let TonyEye = $state(true);
     setInterval(async () => {
         TonyEye = false;
         await sleep(500);
         TonyEye = true;
-    }, 5000)
+    }, 5000);
     // setInterval(() => {
     //     if(dialogDom) {
     //         dialogDom.scrollTop += 10
@@ -514,10 +568,11 @@
     // }, 20)
 </script>
 
-{#if o1}
+{#if showMainScreen}
     <div
         class="bg-img-full bg-[url(/src/assets/Home/back.jpg)] fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden flex items-center"
         in:fade={{ duration: 500 }}
+        out:fade={{ duration: 500 }}
         onclick={() => {
             // if (quickCurrent) quickCurrent = false;
             // next();
@@ -541,9 +596,16 @@
                         class="absolute top-[50%] left-[50%] translate-[-50%] w-full aspect-video transition-opacity duration-500"
                         style={backStyle}
                     />
-                    <div class="absolute transition-opacity duration-500 w-auto" style={TonyStyle}>
+                    <div
+                        class="absolute transition-opacity duration-500 w-auto"
+                        style={TonyStyle}
+                    >
                         {#if !TonyEye}
-                            <img src={TonyNoEye} alt="Tony脸" class="absolute top-0 left-0 w-auto h-auto">
+                            <img
+                                src={TonyNoEye}
+                                alt="Tony脸"
+                                class="absolute top-0 left-0 w-auto h-auto"
+                            />
                         {/if}
                         <img
                             src={TonyImage}
@@ -602,8 +664,15 @@
                 >
                     自动播放
                 </div>
-                <div class="absolute -top-[4.8vh] -translate-x-[50%] left-[50%] max-w-none border border-solid border-white flex flex-col items-center">
-                    <div class="text-black m-0.75 bg-white whitespace-nowrap" style="font-size: 1.6vh;">太空港·丧葬及遗产办公室</div>
+                <div
+                    class="absolute -top-[4.8vh] -translate-x-[50%] left-[50%] max-w-none border border-solid border-white flex flex-col items-center"
+                >
+                    <div
+                        class="text-black m-0.75 bg-white whitespace-nowrap"
+                        style="font-size: 1.6vh;"
+                    >
+                        太空港·丧葬及遗产办公室
+                    </div>
                 </div>
                 <svg
                     viewBox="0 0 24 24"
@@ -665,8 +734,7 @@
                                         e.preventDefault();
                                         e.stopPropagation();
                                         setSaveInfo(gd(gc()).id, choice);
-                                        let score =
-                                            gi()[gc()]?.score;
+                                        let score = gi()[gc()]?.score;
                                         if (score !== undefined) {
                                             setSaveInfo(
                                                 score.targetId,
@@ -842,5 +910,10 @@
 {#if showChapter}
     <div in:fade={{ duration: 500 }} out:fade={{ duration: 500 }}>
         <Chapter chapter={chapterNum}></Chapter>
+    </div>
+{/if}
+{#if showEnd}
+    <div in:fade={{ duration: 500 }} out:fade={{ duration: 500 }}>
+        <End {endText} result={() => {}}></End>
     </div>
 {/if}

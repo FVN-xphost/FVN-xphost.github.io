@@ -30,7 +30,6 @@
 *::-webkit-scrollbar {
     display: none;
 }
-
 @keyframes star {
     0% {
         opacity: 0;

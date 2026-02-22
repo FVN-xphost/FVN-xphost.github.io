@@ -8,6 +8,12 @@ interface ScoreInterface {
   targetId: string;
   action: (branch: string, rawValue: string) => string;
 }
+/* 
+ * type 目前只有三个值，还有一个默认。
+ * 1. choice：表示选择
+ * 2. to：表示跳转章节
+ * 3. end：表示结束
+ */ 
 interface DialogInterface {
   type?: string;
   id?: string;
@@ -18,7 +24,7 @@ interface DialogInterface {
   score?: ScoreInterface;
   if?: Array<IfInterface>;
   next?: string;
-  prev?: string;
+  to?: number;
 }
 function Normal(
   id: string = "",
@@ -164,7 +170,7 @@ const ifbranch3o4o5: IfInterface[] = [
   },
 ];
 export const choiceTitle = `<span style="${publicCss} background-color: blue;">选项</span>`;
-export const dialogInstance = readable<DialogInterface[]>([
+export const dialogChapter0 = readable<DialogInterface[]>([
   Aside(
     "一个方正的房间。狭小，几乎推开门就会撞到桌子。金属桌腿和地板是一体的，典型的空间站早期风格，“为了预防可能的撞击”。除此之外，房间里只有档案柜，管理员，档案柜。他们沉默着。",
   ),
@@ -585,8 +591,9 @@ export const dialogInstance = readable<DialogInterface[]>([
   Aside("光滑的登船通道像是一面镜子，反射出你的身形。", ifbranch3o4o5),
   Aside("你上了船。", ifbranch3o4o5),
   {
-    id: "scene1",
-    type: "scene"
+    type: "to",
+    to: 1,
+    if: ifbranch3o4o5,
   },
   George(
     "卖掉，这应该是一大笔钱吧？让我想想该怎么花它……我们可以在接待区买下一个隔间。也许我可以换一份工作，在候船厅卖卖纪念品什么的，就是那种花花绿绿的铁皮小徽章。",
@@ -676,4 +683,13 @@ export const dialogInstance = readable<DialogInterface[]>([
     "前所未有的满足感充盈着你的内心，托尼抱住你，向你解释，这种感觉叫做幸福。",
     ifbranch3a4a5,
   ),
+  {
+    type: "end",
+    message: `<span style="color: yellow">Normal Ending</span><br>你将船票卖掉了`,
+    if: ifbranch3a4a5
+  }
 ]);
+export const dialogChapter1 = readable<DialogInterface[]>([
+  George("你好！有人吗？"),
+  Aside("你在船上漫步着。")
+])
