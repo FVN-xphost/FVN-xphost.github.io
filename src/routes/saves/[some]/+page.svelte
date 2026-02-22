@@ -914,6 +914,6 @@
 {/if}
 {#if showEnd}
     <div in:fade={{ duration: 500 }} out:fade={{ duration: 500 }}>
-        <End {endText} result={() => {}}></End>
+        <End {endText} result={() => router.push('/')}></End>
     </div>
 {/if}
