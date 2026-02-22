@@ -1,5 +1,6 @@
 <script lang="ts">
-    import George from "../../../assets/illustration/george.png";
+    import GeorgeNocoat from "../../../assets/illustration/george_nocoat.png";
+    import GeorgeNoeye from "../../../assets/illustration/george_noeye.png"
     import { fade } from "svelte/transition";
     import { sleep } from "../../../utils/all";
     const { result = (res: string) => {} } = $props();
@@ -73,6 +74,12 @@
             o5 = true;
         }
     }
+    let o6 = $state(false);
+    setInterval(async () => {
+        o6 = true;
+        await sleep(500);
+        o6 = false;
+    }, 5000);
 </script>
 
 <div
@@ -151,10 +158,17 @@
         </div>
     {/if}
     <img
-        src={George}
+        src={GeorgeNocoat}
         alt="George"
         class="absolute top-[6vh] -left-[95vh] right-0 mx-auto h-[94vh] z-20"
     />
+    {#if o6}
+        <img
+            src={GeorgeNoeye}
+            alt="GeorgeNoeye"
+            class="absolute top-[6vh] -left-[95vh] right-0 mx-auto h-[94vh] z-21"
+        />
+    {/if}
     {#if !o1}
         <button
             class="absolute cursor-pointer bottom-[30vh] h-[5vh] mx-auto left-0 right-0 w-[50vh] bg-white text-black hover:bg-yellow-300 active:bg-black active:text-white"

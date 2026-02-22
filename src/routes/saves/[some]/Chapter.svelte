@@ -12,7 +12,7 @@
 <style>
     .text {
         animation: CT 10s;
-        transform: scale(0.84);
+        transform: scale(0.8);
     }
     .mask {
         animation: CM 10s;
@@ -25,7 +25,7 @@
             transform: scale(1);
         }
         100% {
-            transform: scale(0.84);
+            transform: scale(0.8);
         }
     }
     @keyframes CM {
@@ -53,7 +53,7 @@
             background-color: transparent;
         }
         20% {
-            background-color: #111111;
+            background-color: #101010;
         }
         21% {
             background-color: transparent;
@@ -71,7 +71,7 @@
             background-color: transparent;
         }
         40% {
-            background-color: #212121;
+            background-color: #202020;
         }
         41% {
             background-color: transparent;
