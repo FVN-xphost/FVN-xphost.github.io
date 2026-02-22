@@ -237,13 +237,13 @@
         // }
     }
     // 会根据 对话内容 进行下一步处理！
-    // 返回 -10 代表已经走到末尾，返回 -11 代表这是一个选项。返回 -12 代表已经到末尾！返回 -13 代表跳转到下一章节
+    // 返回 -10 代表已经走到末尾，返回 -11 代表这是一个选项。返回 -12 代表已经到末尾！
     function nextOne(index: number, plus: boolean): number {
         let resNum = index;
         if (resNum >= gi().length) return -10;
-        if (gd(resNum).next && gd(resNum).if) {
+        if (gd(resNum).goto && gd(resNum).if) {
             const i = gi().findIndex(
-                (item: any) => item.id === gd(resNum).next,
+                (item: any) => item.id === gd(resNum).goto,
             );
             if (i >= 0) {
                 resNum = i;

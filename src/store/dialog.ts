@@ -1,18 +1,133 @@
 import { readable } from "svelte/store";
+/**
+ * key: 传入你需要判断的 branch 名称。
+ * value: 可以填入一个字符串，也可以填入一个函数。填入字符串的话，就仅判断是否相等。如果填入函数的话，就可以判断类似分数，分数见下！分数可以用作角色好感度！
+ * next: 一个 if 可以传入一个列表，那么自然少不了 and 和 or 拼接！这里一般末尾的 ifbranch 无需填入 next，然后上面的传入 next 就可以判断与下面的是 and 还是 or！
+ * 以下是一个示例填写：
+ * ```js
+ * {
+ *   type: "choice",
+ *   id: "branch1",
+ *   choice: ["牛奶", "橙汁", "汽水"],
+ * },
+ * {
+ *   type: "choice",
+ *   id: "branch2",
+ *   choice: ["跑步", "骑马", "射箭"]
+ * },
+ * {
+ *   name: "小龙",
+ *   message: "这里是 if 判断测试，我猜测你上面肯定既选择了牛奶，然后选择了跑步或骑马！你居然不喜欢射箭？",
+ *   if: [
+ *     {
+ *       key: "branch1",
+ *       value: "牛奶",
+ *       next: "and"
+ *     },
+ *     {
+ *       key: "branch2",
+ *       value: "跑步",
+ *       next: "or"
+ *     },
+ *     {
+ *       key: "branch2",
+ *       value: "骑马"
+ *     }
+ *   ]
+ * }
+ * ```
+ * 上述最终会拼接成类似下面的样子：
+ * if (branch1 === "牛奶" && branch2 === "跑步" || branch2 === "骑马")
+ * 好了，我承认，上述应该是判断牛奶和跑步，如果牛奶和跑步同时满足，则骑马无论满足不满足，都会执行，反之，骑马满足了，那么无论 branch1 选择的是否是牛奶，都会执行。
+ * 那么如何解决这个问题呢？答案是：将 branch2 放到前面！
+ * 这样的话，就变成了如下：
+ * ```js
+ * {
+ *   name: "小龙",
+ *   message: "这里是 if 判断测试，我猜测你上面肯定既选择了牛奶，然后选择了跑步或骑马！你居然不喜欢射箭？",
+ *   if: [
+ *     {
+ *       key: "branch2",
+ *       value: "跑步",
+ *       next: "or"
+ *     },
+ *     {
+ *       key: "branch2",
+ *       value: "骑马",
+ *       next: "and"
+ *     },
+ *     {
+ *       key: "branch1",
+ *       value: "牛奶"
+ *     }
+ *   ]
+ * }
+ * ```
+ * 上述最终会拼接成类似下面的样子：
+ * if (branch2 === "跑步" || branch2 === "骑马" && branch1 === "牛奶")
+ * 当然，由于程序是从左往右运行的，并不存在优先级，因此 || 和 && 的优先级是平级，最终会先判断跑步和骑马，如果任意一个为 true，则判断牛奶，如果牛奶也为 true，则执行！
+ */
 interface IfInterface {
   key: string;
   value: string | ((branch_value: string) => boolean);
   next?: "and" | "or";
 }
+/**
+ * targetId: 用于保存的变量。需要与当前 if 分支的不同，if 分支的和该处的必须不同。choice 是用来存储当前选项的，targetId 才是用来存储当前变量的！并且所有的 targetId 都必须使用 branch + 数字 来命名！并且全局的 branch 必须全部递增，不能跳过或重复！
+ * action: 是一个函数类型，接收两个参数，返回 1 个字符串值。
+ * 以下是一个示例填写：
+ * ```js
+ * {
+ *   type: 'choice',
+ *   choice: ["牛奶", "橙汁", "汽水"]
+ *   score: {
+ *     targetId: "branch10",
+ *     action: (branch: string, rawValue: string) => {
+ *       if (branch === "牛奶") return (parseInt(rawValue) || 0) + 1;
+ *       if (branch === "橙汁") return (parseInt(rawValue) || 0) + 2;
+ *       if (branch === "汽水") return (parseInt(rawValue) || 0) + 3;
+ *     }
+ *   }
+ * }
+ * ```
+ * 随后在底下判断：
+ * ```js
+ * {
+ *   name: "小龙",
+ *   message: "哇，是牛奶，我也喜欢喝！",
+ *   if: [
+ *     {
+ *       key: "branch10",
+ *       value: (branch_value: string) => {
+ *         return branch_value === "1" || parseInt(branch_value) === 1
+ *       }
+ *     }
+ *   ]
+ * }
+ * ```
+ * 由于选项均各不相同，因此此处可以把 value 当作一个闭包来填入！
+ */
 interface ScoreInterface {
   targetId: string;
   action: (branch: string, rawValue: string) => string;
 }
-/* 
- * type 目前只有三个值，还有一个默认。
+/**
+ * type: 目前只有三个值，还有一个默认。
  * 1. choice：表示选择
- * 2. to：表示跳转章节
- * 3. end：表示结束
+ * 2. to：表示跳转章节，跳转到哪个章节就执行哪个。
+ * 3. end：表示结束所有章节，显示 message 内容并返回主界面！
+ * id: 当前对话唯一 id（每个章节均需要唯一。）ps：所有 choice 选项的 id 必须是：branch + 数字！而且数字必须递增且不能重复！其余的无所谓。
+ * // 以下是当 type 为默认时添加的内容
+ * name: 当前对话者名字（可以直接写 html 标记）
+ * avatar: 头像（已废除）
+ * message: 当前对话内容（可以直接写 html 标记）
+ * // 以下是当 type 为 choice 时添加的内容
+ * choice: 定义一大堆的选择。
+ * score: 定义分数。见上面所示
+ * // 以下时全局定义
+ * if: 优先级最大，可以当作分支运行，程序会先判断 if 分支，再判断是否应该执行该内容，此处适用于任何 type 任何值的任何地方。。
+ * goto: 表示跳转对话。优先级次要，会跳转到对应 id 的对话。无论这个对话在哪。如果对话在前，则重新进入时历史记录将不会显示在表单里。
+ * to: 表示跳转章节。0 代表序章，1 代表第一章。以下分别用 dialogChapter0、dialogChapter1 代替。
  */ 
 interface DialogInterface {
   type?: string;
@@ -23,20 +138,19 @@ interface DialogInterface {
   choice?: Array<string>;
   score?: ScoreInterface;
   if?: Array<IfInterface>;
-  next?: string;
+  goto?: string;
   to?: number;
 }
+// 以下均是为了方便构建最终的 dialogInstance 而创建的函数！各位既可以忽略，也可以直接照着写！
 function Normal(
   id: string = "",
   name: string,
-  avatar: string,
   message: string,
   ifbranch: IfInterface[] | undefined = undefined,
 ): DialogInterface {
   return {
     id: id,
     name: name,
-    avatar: avatar,
     message: message,
     if: ifbranch,
   };
@@ -47,7 +161,7 @@ function Aside(
   ifbranch: IfInterface[] | undefined = undefined,
   id: string = "",
 ) {
-  return Normal(id, "", "", message, ifbranch);
+  return Normal(id, "", message, ifbranch);
 }
 function George(
   message: string,
@@ -57,7 +171,6 @@ function George(
   return Normal(
     id,
     `<span style="${publicCss} background-color: #2B7FFF;">%name</span>`,
-    "",
     message,
     ifbranch,
   );
@@ -70,7 +183,6 @@ function Admin(
   return Normal(
     id,
     `<span style="${publicCss} background-color: #31C950;">管理员</span>`,
-    "",
     message,
     ifbranch,
   );
@@ -83,7 +195,6 @@ function Qm(
   return Normal(
     id,
     `<span style="${publicCss} background-color: darkgray;">？？</span>`,
-    "",
     message,
     ifbranch,
   );
@@ -96,7 +207,6 @@ function Tony(
   return Normal(
     id,
     `<span style="${publicCss} background-color: orange;">托尼</span>`,
-    "",
     message,
     ifbranch,
   );
@@ -109,7 +219,6 @@ function Wildebeest(
   return Normal(
     id,
     `<span style="${publicCss} background-color: lightcoral;">角马</span>`,
-    "",
     message,
     ifbranch,
   );
@@ -559,7 +668,7 @@ export const dialogChapter0 = readable<DialogInterface[]>([
         name: `<span style="color: orange">托尼</span>`,
         avatar: "",
         message: "那地方可到处是水，连屋顶都没有，我可去不了。你再想想。",
-        next: "isSell",
+        goto: "isSell",
         if: ifbranch,
       },
     ];
@@ -618,7 +727,6 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   Normal(
     "",
     `<span style="${publicCss} background-color: darkred;">犹豫之心</span>`,
-    "",
     "%name？%name！你在干什么，你就像过去无数次做蠢事一样做你这辈子最蠢的决定吗？你得再想想，动动脑子，深思熟虑，衡量自身利弊。快叫托尼回来，快点，你不能在这种事上犯蠢。",
     ifbranch3a4a5,
   ),
@@ -627,7 +735,6 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   Normal(
     "",
     `<span style="${publicCss} background-color: darkblue;">怀疑之心</span>`,
-    "",
     "仅此一次的机会，被你浪费掉了。你犯了世上最愚蠢的错误，最难以宽恕的错误，最不可理喻的错误。你就是一只活在垃圾堆里的蠢狗，一辈子在垃圾堆刨食的废物，一步都不敢迈出的懦夫、胆小鬼！你辜负了查理送你最后的礼物。",
     ifbranch3a4a5,
   ),
@@ -639,7 +746,6 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   Normal(
     "",
     `<span style="${publicCss} background-color: rebeccapurple;">恐惧之心</span>`,
-    "",
     "啧啧，看看你干了什么好事。看看已经过去了多长时间？托尼在干嘛？他在安排另一具身体，他在转移自己的数据，他在花你的钱。再等一会你面前的屏幕就会熄灭，保安会冲进来把你按在地上“你个小偷！”然后查理留下的休息区被收回，你被流放到宇宙真空中，不穿宇航服的那种。",
     ifbranch3a4a5,
   ),
