@@ -155,7 +155,7 @@ function Normal(
     if: ifbranch,
   };
 }
-const publicCss = `color: white; background-color: transparent; font-size: 0.8rem; padding: 2px; border-radius: 2px;`;
+const publicCss = `color: white; background-color: transparent; font-size: 1.2vw; padding: 2px; border-radius: 2px;`;
 function Aside(
   message: string,
   ifbranch: IfInterface[] | undefined = undefined,
@@ -719,8 +719,8 @@ export const dialogChapter0 = readable<DialogInterface[]>([
     "托尼最后看一眼船票，轻轻摇了摇头，他似乎还想说什么，但撞上你熟悉的倔强的眼神。他轻轻点头，你想那大概是“真拿你没办法”。",
     ifbranch3a4a5,
   ),
-  Aside(
-    "托尼的屏：别这样，伙计，我不是在逼你离开。太空港挺好的，你愿意留下来陪我，简直感激不尽。幕暗淡下去，只是一个瞬间，屏幕上重新亮起瀑布流，那是数据的原始海洋，你完全未知的领域。",
+  Tony(
+    "别这样，伙计，我不是在逼你离开。太空港挺好的，你愿意留下来陪我，简直感激不尽。幕暗淡下去，只是一个瞬间，屏幕上重新亮起瀑布流，那是数据的原始海洋，你完全未知的领域。",
     ifbranch3a4a5,
   ),
   Aside("时间一分一秒的过去。", ifbranch3a4a5),

@@ -110,10 +110,10 @@
                 <div
                     in:fade={{ duration: 1500 }}
                     out:fade={{ duration: 300 }}
-                    class="flex flex-col absolute bottom-[10vh] h-[30vh] gap-1.5 left-0 right-0 w-[30vw] mx-auto
+                    class="flex flex-col absolute bottom-[10vh] h-[30vh] gap-1 left-0 right-0 w-[30vw] mx-auto
                     before:content-['主选单/存档'] before:absolute before:text-[0.75rem] before:text-yellow-300 before:-top-6 before:left-0"
                 >
-                    <div class="flex-3 flex flex-col overflow-auto gap-[1vh]">
+                    <div class="flex-3 flex flex-col overflow-auto gap-1">
                         {#each new Array(saveCount).fill(null) as _, index}
                             <button
                                 aria-label="存档"
@@ -143,7 +143,7 @@
                 <div
                     in:fade={{ duration: 1500 }}
                     out:fade={{ duration: 300 }}
-                    class="flex flex-col absolute border-white border border-solid bottom-[10vh] h-[30vh] p-1.5 gap-1.5 left-0 right-0 w-[20vw] mx-auto
+                    class="flex flex-col absolute border-white border border-solid bottom-[10vh] h-[30vh] p-1 gap-1 left-0 right-0 w-[20vw] mx-auto
                     before:content-['主选单/'] before:absolute before:text-[0.75rem] before:text-yellow-300 before:-top-6 before:left-0"
                 >
                     <button
@@ -172,11 +172,11 @@
                 <div
                     in:fade={{ duration: 1500 }}
                     out:fade={{ duration: 300 }}
-                    class="absolute border border-yellow-300 border-solid p-1.5 bottom-[10vh] h-[30vh] left-[50vw] right-0 w-[20vw] mx-auto
+                    class="absolute border border-yellow-300 border-solid p-1 bottom-[10vh] h-[30vh] left-[50vw] right-0 w-[20vw] mx-auto
                     before:content-['制作成员/'] before:absolute before:text-[0.75rem] before:text-yellow-300 before:-top-6 before:left-0"
                 >
                     <div
-                        class="w-full h-full flex flex-col gap-1.5 bg-gray-600 transition-opacity duration-400 *:shrink-0 *:text-white overflow-auto"
+                        class="w-full h-full flex flex-col gap-1 bg-gray-600 transition-opacity duration-400 *:shrink-0 *:text-white overflow-auto"
                         style={`opacity: ${o3 ? "1" : "0"}`}
                     ></div>
                 </div>

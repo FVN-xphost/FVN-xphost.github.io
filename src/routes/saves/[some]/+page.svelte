@@ -2,7 +2,11 @@
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import { saveData } from "../../../store/store";
-    import { choiceTitle, dialogChapter0, dialogChapter1 } from "../../../store/dialog";
+    import {
+        choiceTitle,
+        dialogChapter0,
+        dialogChapter1,
+    } from "../../../store/dialog";
     import { sleep, router, branchCount } from "../../../utils/all";
     import { save, unlockGallery } from "../../../utils/backend-tauri";
     import Scene1 from "../../../assets/scene/scene1.png";
@@ -583,17 +587,17 @@
         role="button"
     >
         <div
-            class="w-[50vw] h-[93vh] border-y-gray-300 border-y flex items-center"
+            class="w-[50vw] h-[90vh] border-y-gray-300 border-y flex items-center"
         >
             <div
-                class="w-full h-[91.5vh] border-y-gray-600 border-y flex items-center"
+                class="w-full h-[88.5vh] border-y-gray-600 border-y flex items-center"
             >
                 <!-- 立绘区域 -->
                 <div class="shrink-0 w-full h-full relative">
                     <img
                         src={backImage}
                         alt="背景图片"
-                        class="absolute top-[50%] left-[50%] translate-[-50%] w-full aspect-video transition-opacity duration-500"
+                        class="absolute top-[50%] left-[50%] translate-[-50%] w-full aspect-16/10 transition-opacity duration-500"
                         style={backStyle}
                     />
                     <div
@@ -604,7 +608,7 @@
                             <img
                                 src={TonyNoEye}
                                 alt="Tony脸"
-                                class="absolute top-0 left-0 w-auto h-auto"
+                                class="absolute top-0 left-0 w-auto h-full"
                             />
                         {/if}
                         <img
@@ -617,26 +621,26 @@
             </div>
         </div>
         <div
-            class="relative flex flex-col items-center flex-1 h-full border-x-gray-600 border-x"
+            class="relative flex flex-col items-center flex-1 h-full border-x-gray-600 border-x z-10"
         >
             <!-- 四个角的装饰 -->
             <div
-                class="absolute top-0 -left-[0.2rem] w-[0.3rem] h-[5vh] bg-white"
+                class="absolute top-0 -left-[0.2rem] w-[0.3rem] h-[7.5vh] bg-white"
             ></div>
             <div
-                class="absolute top-0 -right-[0.2rem] w-[0.3rem] h-[5vh] bg-white"
+                class="absolute top-0 -right-[0.2rem] w-[0.3rem] h-[7.5vh] bg-white"
             ></div>
             <div
-                class="absolute left-[-4.4vh] w-[5vh] top-[3.2vh] h-[0.3rem] bg-white"
+                class="absolute -left-[3.4vh] w-[4vh] top-[4.75vh] h-[0.3rem] bg-white"
             ></div>
             <div
-                class="absolute right-[-4.4vh] w-[5vh] top-[3.2vh] h-[0.3rem] bg-white"
+                class="absolute -right-[3.4vh] w-[4vh] top-[4.75vh] h-[0.3rem] bg-white"
             ></div>
             <div
-                class="absolute bottom-0 -left-[0.2rem] w-[0.3rem] h-[5vh] bg-white"
+                class="absolute bottom-0 -left-[0.2rem] w-[0.3rem] h-[7.5vh] bg-white"
             ></div>
             <div
-                class="absolute bottom-0 -right-[0.2rem] w-[0.3rem] h-[5vh] bg-white"
+                class="absolute bottom-0 -right-[0.2rem] w-[0.3rem] h-[7.5vh] bg-white"
             ></div>
             <!-- 自动播放 -->
             <div
@@ -653,7 +657,7 @@
                 }}
                 tabindex="0"
                 role="button"
-                class="absolute cursor-pointer bottom-3 -left-[13vw] w-[5.4vh] h-[5.4vh] border-2 border-solid border-white text-white hover:border-green-300 hover:*:text-green-300"
+                class="absolute cursor-pointer bottom-6 -left-[13vw] w-[5.4vh] h-[5.4vh] border-2 border-solid border-white text-white hover:border-green-300 hover:*:text-green-300"
                 style={autoplay
                     ? "border: 2px solid oklch(79.2% 0.209 151.711)"
                     : ""}
@@ -691,7 +695,7 @@
                 </svg>
             </div>
             <div
-                class="origin-[50%_0] -rotate-90 absolute -left-[23vh] bottom-[20vh] text-white font-bold"
+                class="absolute -left-[11vh] bottom-[20vh] wvr text-white font-bold"
                 style="font-size: 8vh;"
             >
                 管理员
@@ -701,11 +705,11 @@
             >
                 <!-- 对话区域 -->
                 <div
-                    class="dialog-by flex-1 w-full flex flex-col before:content-[''] gap-2.5 overflow-y-auto p-4"
+                    class="dialog-by flex-1 w-full flex flex-col gap-3 overflow-y-auto p-4"
                 >
                     {#each historyFile as item, index}
                         <div
-                            class="break-all shrink-0 text-white h-auto w-full text-left transition-[filter] duration-400"
+                            class="zwtext break-all shrink-0 text-white h-auto w-full text-left transition-[filter] duration-400"
                             style={`filter: brightness(${index === historyFile.length - 1 ? "1" : "0.5"}); ${index === 0 ? "margin-top: auto;" : ""}`}
                         >
                             {@html replaceCurrentText(
@@ -722,11 +726,11 @@
                     {#if gd(gc()).type === "choice"}
                         <div
                             transition:fade={{ duration: 400 }}
-                            class="absolute top-0 left-0 flex flex-col w-full h-full p-2.5 overflow-y-auto gap-2.5"
+                            class="absolute top-0 left-0 flex flex-col w-full h-full p-2.5 overflow-y-auto gap-3"
                         >
                             {#each gd(gc()).choice as choice, index}
                                 <button
-                                    class="break-all border-none text-left outline-none px-2.5 w-full h-auto py-1 shrink-0 text-white cursor-pointer
+                                    class="zwtext break-all border-none text-left outline-none px-2.5 w-full h-auto py-1 shrink-0 text-white cursor-pointer
                                     hover:*:text-black hover:text-black hover:bg-yellow-300
                                     active:text-yellow-300 active:bg-black active:*:text-yellow-300 active:outline-yellow-300 active:outline-2 active:outline-solid"
                                     aria-labelledby={choice}
@@ -765,7 +769,7 @@
                             class="absolute top-0 left-0 flex shrink-0 h-[10vh] p-2.5 w-full items-center justify-center"
                         >
                             <button
-                                class="break-all border-none text-left outline-none px-2.5 w-full h-auto py-1 shrink-0 text-white cursor-pointer
+                                class="zwtext break-all border-none text-left outline-none px-2.5 w-full h-auto py-1 shrink-0 text-white cursor-pointer
                                     hover:*:text-black hover:text-black hover:bg-yellow-300
                                     active:text-yellow-300 active:bg-black active:*:text-yellow-300 active:outline-yellow-300 active:outline-2 active:outline-solid"
                                 aria-labelledby="继续"
@@ -781,17 +785,17 @@
             </div>
         </div>
         <div
-            class="w-[12vw] h-[93vh] border-y-gray-300 border-y flex items-center"
+            class="w-[12vw] h-[90vh] border-y-gray-300 border-y flex items-center"
         >
             <div
-                class="w-full h-[91.5vh] border-y-gray-600 border-y flex items-center relative"
+                class="w-full h-[88.5vh] border-y-gray-600 border-y flex items-center relative"
             >
                 <div
                     class="absolute flex flex-col gap-[1vw] bottom-[15vh] left-[1vh] w-auto h-auto my-0"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="w-[2vw] h-[2vw] border-none outline-none cursor-pointer"
+                        class="w-[20px] h-[20px] border-none outline-none cursor-pointer"
                         viewBox="0 0 64 64"
                         onclick={(e) => {
                             e.preventDefault();
@@ -826,7 +830,7 @@
                         /></svg
                     ><svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="text-sky-300 w-[2vw] h-[2vw] border-none outline-none cursor-pointer hover:text-orange-300"
+                        class="text-sky-300 w-[20px] h-[20px] border-none outline-none cursor-pointer hover:text-orange-300"
                         style={quickCurrent
                             ? "color: rgb(257.48, 161.84, 162.27)"
                             : ""}
@@ -858,7 +862,7 @@
                         /><path d="M12 10l-7 -7M12 10l7 -7" /></svg
                     ><svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="text-sky-300 w-[2vw] h-[2vw] border-none outline-none cursor-pointer hover:text-orange-300"
+                        class="text-sky-300 w-[20px] h-[20px] border-none outline-none cursor-pointer hover:text-orange-300"
                         width="32"
                         height="32"
                         viewBox="0 0 48 48"
@@ -914,6 +918,19 @@
 {/if}
 {#if showEnd}
     <div in:fade={{ duration: 500 }} out:fade={{ duration: 500 }}>
-        <End {endText} result={() => router.push('/')}></End>
+        <End {endText} result={() => router.push("/")}></End>
     </div>
 {/if}
+
+<style>
+    .wvr {
+        writing-mode: vertical-rl;
+        text-orientation: upright;
+    }
+    :global(.zwtext) {
+        font-size: 1.5vw;
+    }
+    :global(.zwtext *) {
+        font-size: 1.5vw;
+    }
+</style>
