@@ -278,7 +278,10 @@ const ifbranch3o4o5: IfInterface[] = [
     value: "不卖船票",
   },
 ];
+// 这里是选项的【标题】
 export const choiceTitle = `<span style="${publicCss} background-color: blue;">选项</span>`;
+// 以下为构建文案，可以直接写对象，也可以写函数！总之 TypeScript 或者 JavaScript 能用的这里都可以写！
+// dialogChapter0 是序章的，dialogChapter1 是第一章的，以此类推！
 export const dialogChapter0 = readable<DialogInterface[]>([
   Aside(
     "一个方正的房间。狭小，几乎推开门就会撞到桌子。金属桌腿和地板是一体的，典型的空间站早期风格，“为了预防可能的撞击”。除此之外，房间里只有档案柜，管理员，档案柜。他们沉默着。",

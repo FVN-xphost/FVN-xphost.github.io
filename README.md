@@ -21,7 +21,7 @@
 | macOS aarch64   | `M1`、`M2`、`M3`、`M4`                | Bundle-macOS-aarch64 | 推荐   |
 | macOS x86_64    | `Intel`                            | Bundle-macOS-x86_64 | -    |
 | Linux x86_64    | `Intel`、`AMD`                      | Bundle-Linux-x86_64 | 推荐   |
-| Linux aarch64   | `树莓派（Respberry 系列）` 、`骁龙 X2 Elite` | Bundle-Linux-aarch64 | -    |
+| Linux aarch64   | `树莓派（Raspberry 系列）` 、`骁龙 X2 Elite` | Bundle-Linux-aarch64 | -    |
 | Android aarch64 | `骁龙 8（845、855、865） 以上`、`麒麟`、`鲲鹏`   | Bundle-Android-aarch64 | 推荐   |
 | Android x86_64  | `ChromeOS`、`Intel`、`Android 模拟器`   | Bundle-Android-x86_64 | -    |
 | Android armv7   | `MT6592 以下`、`骁龙 200/400/S1-S4 以下`  | Bundle-Android-armv7 | 不推荐  |
