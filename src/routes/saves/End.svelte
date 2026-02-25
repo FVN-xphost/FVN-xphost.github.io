@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { sleep } from "../../../utils/all";
+    import { sleep } from "../../utils/all";
 
     const { endText, result } = $props();
     let endRealText = $state("");

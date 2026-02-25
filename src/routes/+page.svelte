@@ -2,9 +2,9 @@
     import "../style/index.css";
     import "../style/tailwind.css";
     import { onMount } from "svelte";
-    import { saveCount, sleep } from "../utils/all";
+    import { branchCount, saveCount, sleep } from "../utils/all";
     import { init, closeWindow, reset } from "../utils/backend-tauri";
-    import { mounted, saveData } from "../store/store";
+    import { currentSave, mounted, saveData } from "../store/store";
     import { fade } from "svelte/transition";
     import { router } from "../utils/all";
     import StarUp from "../assets/Home/star_up.png";
@@ -147,55 +147,83 @@
                 >
                     <div class="flex-3 flex flex-col overflow-auto gap-1">
                         {#each new Array(saveCount).fill(null) as _, index}
-                            <button
-                                aria-label="存档"
-                                class="text-left px-2 w-full h-[6vh] shrink-0 bg-white text-black hover:bg-yellow-300 active:bg-black active:text-white cursor-pointer transition-opacity duration-400"
-                                style={$saveData.saveInstance[
-                                    `save${index + 1}`
-                                ].name
-                                    ? `display: flex; align-items: center; justify-content: space-between;`
-                                    : ``}
-                                onclick={() => {
-                                    router.push("/saves/" + (index + 1));
-                                }}
-                                >{@html `<div>${$saveData.saveInstance["save" + (index + 1)].name ? index + 1 + ". " + $saveData.saveInstance["save" + (index + 1)].name + "</div><div>" + ($saveData.saveInstance["save" + (index + 1)].updateTime ?? "") : index + 1 + ". 空存档"}</div>`}</button
-                            >
+                            <div class="border-white border border-solid active:border-yellow-300 p-1">
+                                <button
+                                    aria-labelledby="存档"
+                                    class="text-left flex items-center justify-between px-2 w-full h-[6vh] shrink-0 cursor-pointer transition-opacity duration-400 {$saveData.saveInstance[
+                                        `save${index + 1}`
+                                    ].name
+                                        ? `bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white`
+                                        : `bg-[#FFFFFF4C] hover:bg-[#FFFFFF6C] active:bg-[#FFFFFF8C] text-black hover:text-black active:text-black`}"
+
+                                    onclick={() => {
+                                        if($saveData.saveInstance[`save${index + 1}`].name) {
+                                            currentSave.set($saveData.saveInstance[`save${index + 1}`]);
+                                            router.push("/saves");
+                                        }
+                                    }}
+                                    >{@html `<div>${$saveData.saveInstance["save" + (index + 1)].name ? index + 1 + ". " + $saveData.saveInstance["save" + (index + 1)].name + "</div><div>" + ($saveData.saveInstance["save" + (index + 1)].updateTime ?? "") : index + 1 + ". 空存档"}</div>`}</button
+                                >
+                            </div>
                         {/each}
                     </div>
-                    <button
-                        aria-label="返回"
-                        class="w-full flex-1 bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white cursor-pointer transition-opacity duration-400"
-                        style={`opacity: ${o5 ? "1" : "0"}`}
-                        onclick={() => {
-                            isStart = 1;
-                        }}>返回</button
-                    >
+                    <div class="flex-1 border-white border border-solid active:border-yellow-300 p-1">
+                        <button
+                            aria-label="返回"
+                            class="w-full h-full bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white cursor-pointer transition-opacity duration-400"
+                            onclick={() => {
+                                isStart = 1;
+                            }}>返回</button
+                        >
+                    </div>
                 </div>
             {:else if isStart === 1}
                 <div
                     in:fade={{ duration: 1500 }}
                     out:fade={{ duration: 300 }}
-                    class="flex flex-col absolute border-white border border-solid bottom-[10vh] h-[30vh] p-1 gap-1 left-0 right-0 w-[20vw] z-10 mx-auto
+                    class="flex flex-col absolute bottom-[10vh] h-[30vh] gap-1 left-0 right-0 w-[20vw] z-10 mx-auto
                     before:content-['主选单/'] before:absolute before:text-[0.75rem] before:text-yellow-300 before:-top-6 before:left-0"
                 >
                     <button
-                        aria-label="开始游戏"
-                        class="w-full flex-1 bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white cursor-pointer transition-opacity duration-400"
+                        aria-labelledby="新的开始"
+                        class="w-full flex-1 bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white active:border active:border-solid active:border-yellow-300 cursor-pointer transition-opacity duration-400"
                         style={`opacity: ${o3 ? "1" : "0"}`}
                         onclick={() => {
-                            isStart = 2;
+                            currentSave.set({
+                                current: 0,
+                                name: "",
+                                remark: "",
+                                saved: 0,
+                                updateTime: 0,
+                            })
+                            for(let i = 0; i < branchCount; i++) {
+                                currentSave.set({
+                                    ...$currentSave,
+                                    [`branch${i + 1}`]: ""
+                                })
+                            }
+                            router.push("/saves");
+                            // isStart = 2;
                         }}>开始游戏</button
                     >
                     <button
-                        aria-label="画廊"
-                        class="w-full flex-1 bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white cursor-pointer transition-opacity duration-400"
+                        aria-labelledby="旧的回忆"
+                        class="w-full flex-1 bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white active:border active:border-solid active:border-yellow-300 cursor-pointer transition-opacity duration-400"
                         style={`opacity: ${o4 ? "1" : "0"}`}
+                        onclick={() => {
+                            isStart = 2;
+                        }}>旧的回忆</button
+                    >
+                    <button
+                        aria-labelledby="画廊"
+                        class="w-full flex-1 bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white active:border active:border-solid active:border-yellow-300 cursor-pointer transition-opacity duration-400"
+                        style={`opacity: ${o5 ? "1" : "0"}`}
                         onclick={() => router.push("/gallery")}>画廊</button
                     >
                     <button
-                        aria-label="退出游戏"
-                        class="w-full flex-1 bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white cursor-pointer transition-opacity duration-400"
-                        style={`opacity: ${o5 ? "1" : "0"}`}
+                        aria-labelledby="退出游戏"
+                        class="w-full flex-1 bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white active:border active:border-solid active:border-yellow-300 cursor-pointer transition-opacity duration-400"
+                        style={`opacity: ${o6 ? "1" : "0"}`}
                         onclick={() => {
                             closeWindow();
                         }}>退出游戏</button
@@ -208,9 +236,23 @@
                     before:content-['制作成员/'] before:absolute before:text-[0.75rem] before:text-yellow-300 before:-top-6 before:left-0"
                 >
                     <div
-                        class="w-full h-full flex flex-col gap-1 bg-gray-600 transition-opacity duration-400 *:shrink-0 *:text-white overflow-auto"
+                        class="w-full h-full flex p-2 flex-col gap-1 bg-[#FFFFFF1C] transition-opacity duration-400 *:shrink-0 *:text-white overflow-auto"
                         style={`opacity: ${o3 ? "1" : "0"}`}
-                    ></div>
+                    >
+                        <div>程序：</div>
+                        <div class="ml-4">xphost</div>
+                        <div>文案：</div>
+                        <div class="ml-4">维特</div>
+                        <div class="ml-4">阿瓜</div>
+                        <div>UI：</div>
+                        <div class="ml-4">阿瓜</div>
+                        <div>美术：</div>
+                        <div class="ml-4">糖圆</div>
+                        <div class="ml-4">太阳饼</div>
+                        <div class="ml-4">南司</div>
+                        <div>音乐：</div>
+                        <div class="ml-4">阿庆</div>
+                    </div>
                 </div>
             {:else if isStart === 0}
                 <div

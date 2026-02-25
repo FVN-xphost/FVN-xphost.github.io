@@ -1,5 +1,6 @@
 import { writable, readable } from "svelte/store";
 export const saveData = writable<any>({});
+export const currentSave = writable<any>({});
 export const mounted = writable(false);
 export const galleryPage = writable(1);
 export const galleryLock = readable<{ id: string; images: string[] }[]>([

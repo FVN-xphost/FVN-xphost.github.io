@@ -1,9 +1,13 @@
 <script lang="ts">
-    import GeorgeNocoat from "../../../assets/illustration/george_nocoat.png";
-    import GeorgeNoeye from "../../../assets/illustration/george_noeye.png"
+    import GeorgeNocoat from "../../assets/illustration/george_nocoat.png";
+    import GeorgeNoeye from "../../assets/illustration/george_noeye.png";
     import { fade } from "svelte/transition";
-    import { sleep } from "../../../utils/all";
+    import { sleep } from "../../utils/all";
+    import { onMount } from "svelte";
     const { result = (res: string) => {} } = $props();
+    import StarUp from "../../assets/Home/star_up.png";
+    import StarMiddle from "../../assets/Home/star_middle.png";
+    import StarDown from "../../assets/Home/star_down.png";
     let resultValue = "";
     let o1 = $state(false);
     let o2 = $state(false);
@@ -14,6 +18,51 @@
     let o5 = $state(false);
     let v1 = $state("");
     let v2 = $state("");
+    onMount(async () => {
+        await sleep(100);
+        let dom = document.querySelector(".back") as HTMLDivElement;
+        for (let i = 0; i < 3; i++) {
+            let starback = document.createElement("img");
+            starback.src = [StarDown, StarMiddle, StarUp][i];
+            starback.style.maxHeight = "none";
+            starback.style.maxWidth = "none";
+            starback.style.width = `${i * 30 + 80}vw`;
+            starback.style.height = `${i * 30 + 80}vh`;
+            starback.style.zIndex = (i + 1).toString();
+            starback.style.position = "absolute";
+            starback.style.transition = "transform 0.2s ease-out";
+            starback.classList.add("starback");
+            starback.setAttribute("data-speed", (i * 40 + 20).toString());
+            dom?.appendChild(starback);
+            // for (let i = 0; i < 50; i++) {
+            //     let star = document.createElement("img");
+            //     star.style.width = Math.random() / 3 + "vw";
+            //     star.style.height = Math.random() / 2 + "vh";
+            //     star.style.position = "absolute";
+            //     star.style.top = Math.random() * 100 + "%";
+            //     star.style.left = Math.random() * 100 + "%";
+            //     star.style.backgroundColor = "white";
+            //     star.style.borderRadius = "50%";
+            //     star.style.opacity = (Math.random() * 0.7 + 0.3).toString();
+            //     // star.style.animation = `star ${Math.random() * 2 + 3}s infinite`;
+            //     star.style.zIndex = "-1";
+            //     starback?.appendChild(star);
+            //     await sleep(10);
+            // }
+        }
+        const layers = document.querySelectorAll(".starback");
+        dom?.addEventListener("mousemove", (e: MouseEvent) => {
+            const x = window.innerWidth / 2 - e.pageX;
+            const y = window.innerHeight / 2 - e.pageY;
+
+            layers.forEach((layer: any) => {
+                const speed = parseInt(layer.getAttribute("data-speed")!);
+                const xPos = (x * speed) / 500;
+                const yPos = (y * speed) / 500;
+                layer.style.transform = `translateX(${xPos}px) translateY(${yPos}px)`;
+            });
+        });
+    });
     function onInputblur(event: Event) {
         resultValue = (event.target as HTMLInputElement).value;
     }
@@ -83,7 +132,7 @@
 </script>
 
 <div
-    class="fixed top-0 left-0 w-screen h-screen bg-black z-999"
+    class="back bg-img-full bg-[url(/src/assets/Home/back.jpg)] fixed top-0 left-0 w-screen h-screen bg-black z-999"
     onclick={sureScreen}
     role="button"
     onkeydown={(e) => {
@@ -93,7 +142,7 @@
     tabindex="0"
 >
     <div
-        class="absolute left-0 w-screen transition-[top] duration-1000 h-[25vh] bg-yellow-300 z-10 flex flex-col items-center my-auto top-0 bottom-0
+        class="absolute left-0 w-screen transition-[top] duration-1000 h-[25vh] bg-yellow-300 z-15 flex flex-col items-center my-auto top-0 bottom-0
         before:content-['回想你的名字（默认：乔治）'] before:text-[2vh] before:text-yellow-300 before:absolute before:top-[-4vh] before:-left-[30vh] before:w-fit before:mx-auto before:right-0"
         style={o1 ? "top: -40vh" : ""}
     >
@@ -125,7 +174,7 @@
         <div
             in:fade={{ duration: 400 }}
             out:fade={{ duration: 400 }}
-            class="border border-yellow-300 border-solid absolute top-0 left-0 right-0 bottom-0 m-auto w-[115vh] h-[80vh]"
+            class="border z-10 border-yellow-300 border-solid absolute top-0 left-0 right-0 bottom-0 m-auto w-[115vh] h-[80vh]"
         >
             <div
                 class="absolute bottom-4 left-0 w-full flex flex-col items-center"
@@ -136,14 +185,6 @@
                 >
                     办公室
                 </div>
-                <!-- <div
-                    class="text-center text-gray-100 relative h-[30vh] mt-4 w-[70vh]
-                    before:content-[''] before:w-px before:h-[calc(100%-3vh)] before:absolute before:-left-[3vh] before:top-0 before:bottom-[3vh] before:bg-yellow-300
-                    after:content-[''] after:w-px after:h-[calc(100%-3vh)] after:absolute after:-right-[3vh] after:top-0 after:bottom-[3vh] after:bg-yellow-300"
-                    style="font-size: 2vh"
-                >
-                    {@html v2}
-                </div> -->
                 <div
                     class="text-center text-gray-100 relative h-[30vh] mt-4 w-[75vh]"
                     style="font-size: 2vh"
@@ -171,7 +212,7 @@
     {/if}
     {#if !o1}
         <button
-            class="absolute cursor-pointer bottom-[30vh] h-[5vh] mx-auto left-0 right-0 w-[50vh] bg-white text-black hover:bg-yellow-300 active:bg-black active:text-white"
+            class="z-10 absolute cursor-pointer bottom-[30vh] h-[5vh] mx-auto left-0 right-0 w-[50vh] bg-white text-black hover:bg-yellow-300 active:bg-black active:text-white"
             aria-label="确定"
             onclick={sureName}
         >
@@ -182,7 +223,7 @@
         <button
             in:fade={{ duration: 300 }}
             out:fade={{ duration: 300 }}
-            class="absolute cursor-pointer bottom-[2.5vh] h-[5vh] mx-auto left-0 right-0 w-[50vh] bg-white text-black hover:bg-yellow-300 active:bg-black active:text-white"
+            class="z-10 absolute cursor-pointer bottom-[2.5vh] h-[5vh] mx-auto left-0 right-0 w-[50vh] bg-white text-black hover:bg-yellow-300 active:bg-black active:text-white"
             onclick={returnResult}
             aria-label="敲门"
         >

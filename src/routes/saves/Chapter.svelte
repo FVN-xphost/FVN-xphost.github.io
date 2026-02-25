@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import CS from '../../../assets/title/0.png'
-    import C1 from '../../../assets/title/1.png'
-    import Mask from '../../../assets/title/mask.png'
+    import CS from '../../assets/title/0.png'
+    import C1 from '../../assets/title/1.png'
+    import Mask from '../../assets/title/mask.png'
     const { chapter } = $props()
 </script>
 <div class="fixed top-0 left-0 w-screen h-screen back">

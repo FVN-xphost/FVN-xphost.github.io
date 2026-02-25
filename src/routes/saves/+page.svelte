@@ -1,34 +1,29 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
-    import { saveData } from "../../../store/store";
+    import { currentSave, saveData } from "../../store/store";
     import {
         choiceTitle,
         dialogChapter0,
         dialogChapter1,
-    } from "../../../store/dialog";
-    import { sleep, router, branchCount } from "../../../utils/all";
-    import { save, unlockGallery } from "../../../utils/backend-tauri";
-    import Scene1 from "../../../assets/scene/scene1.png";
+    } from "../../store/dialog";
+    import { sleep, router, branchCount } from "../../utils/all";
+    import { save, unlockGallery } from "../../utils/backend-tauri";
+    import Scene1 from "../../assets/scene/scene1.png";
     import MyInputName from "./MyInputName.svelte";
-    import StarUp from '../../../assets/Home/star_up.png'
-    import StarMiddle from '../../../assets/Home/star_middle.png'
-    import StarDown from '../../../assets/Home/star_down.png'
-    const { params } = $props();
-    // 当前存档名称
-    const thisname = (() => `save${params.some}`)();
+    import StarUp from "../../assets/Home/star_up.png";
+    import StarMiddle from "../../assets/Home/star_middle.png";
+    import StarDown from "../../assets/Home/star_down.png";
     // 控制主屏幕显示。
     let showMainScreen = $state(false);
     // 控制 空格键 锁定
     let keyLock = $state(false);
     // 是否点击了快进
     let quickCurrent = $state(false);
-    // 展示提示
-    let isShowHint = $state(false);
-    // 提示内容
-    let hintContent = $state("");
     // 历史
     let historyFile = $state<any[]>([]);
+    // 展示存档界面
+    let showSaved = $state(false);
     // 展示开头的信息框
     let showInput = $state(false);
     let resultInput = $state("");
@@ -53,13 +48,6 @@
             pedding = resolve;
         });
     }
-    function showHint(hintText: string) {
-        isShowHint = true;
-        hintContent = hintText;
-        setTimeout(() => {
-            isShowHint = false;
-        }, 3000);
-    }
     function setGalleryMeta(id: number) {
         saveData.set({
             ...$saveData,
@@ -70,15 +58,9 @@
         });
     }
     function setSaveInfo(key: string, value: string | number) {
-        saveData.set({
-            ...$saveData,
-            saveInstance: {
-                ...$saveData.saveInstance,
-                [thisname]: {
-                    ...$saveData.saveInstance[thisname],
-                    [key]: value,
-                },
-            },
+        currentSave.set({
+            ...$currentSave,
+            [key]: value,
         });
     }
     // 解锁任一画廊
@@ -88,9 +70,9 @@
     }
     function getSaveInfo(key: string | undefined = undefined): any {
         if (key === undefined) {
-            return $saveData.saveInstance[thisname];
+            return $currentSave;
         }
-        return $saveData.saveInstance[thisname][key];
+        return $currentSave[key];
     }
     function gc(): number {
         return parseInt(getSaveInfo("current"));
@@ -166,13 +148,14 @@
     // Tony 样式
     let TonyStyle = $state("");
     let TonyImage = $state("");
-    import TonyClothHand from "../../../assets/illustration/sms_cloth_hand.png";
-    import TonyClothNohand from "../../../assets/illustration/sms_cloth_nohand.png";
-    import TonyNoclothHand from "../../../assets/illustration/sms_nocloth_hand.png";
-    import TonyNoclothNohand from "../../../assets/illustration/sms_nocloth_nohand.png";
-    import TonyNoEye from "../../../assets/illustration/sms_noeye.png";
+    import TonyClothHand from "../../assets/illustration/sms_cloth_hand.png";
+    import TonyClothNohand from "../../assets/illustration/sms_cloth_nohand.png";
+    import TonyNoclothHand from "../../assets/illustration/sms_nocloth_hand.png";
+    import TonyNoclothNohand from "../../assets/illustration/sms_nocloth_nohand.png";
+    import TonyNoEye from "../../assets/illustration/sms_noeye.png";
     import Chapter from "./Chapter.svelte";
     import End from "./End.svelte";
+    import Saved from "./Saved.svelte";
     async function doStyle(current: number, isQuick: boolean = false) {
         if (current === 0) {
             backStyle = `opacity: 0`;
@@ -330,7 +313,10 @@
         await sleep(500);
         dialogDom = document.querySelector(".dialog-by") as HTMLDivElement;
         dialogDom.scrollTop = dialogDom.scrollHeight + 200;
+        showStar();
         await next(false);
+    });
+    function showStar() {
         const back = document.querySelector(".back") as HTMLDivElement;
         for (let i = 0; i < 3; i++) {
             let starback = document.createElement("img");
@@ -371,13 +357,13 @@
                 el.style.transform = `translateX(${xPos}px) translateY(${yPos}px)`;
             });
             layers.forEach((layer: any) => {
-                const speed = parseInt(layer.getAttribute('data-speed')!);
+                const speed = parseInt(layer.getAttribute("data-speed")!);
                 const xPos = (x * speed) / 500;
                 const yPos = (y * speed) / 500;
                 layer.style.transform = `translateX(${xPos}px) translateY(${yPos}px)`;
-            })
+            });
         });
-    });
+    }
     async function next(plus: boolean = true) {
         // if (lockText) {
         //     exitText = true;
@@ -412,6 +398,7 @@
             await sleep(500);
             dialogDom = document.querySelector(".dialog-by") as HTMLDivElement;
             dialogDom.scrollTop = dialogDom.scrollHeight + 200;
+            showStar();
             await next(false);
             return;
         }
@@ -568,6 +555,11 @@
             keyLock = false;
         }
     }
+    /**
+     * @deprecated 从 f9 版本弃用，改用 Saved 组件使用！
+     * @param name
+     * @param current
+     */
     async function updateSave(name: string, current: number) {
         const date = new Date();
         const updateTime = `${date.getFullYear()}-${
@@ -585,7 +577,8 @@
         setSaveInfo("updateTime", updateTime);
         try {
             await save(
-                params.some,
+                // $currentSave.some,
+                "",
                 updateTime,
                 name,
                 chapterNum,
@@ -597,11 +590,8 @@
                             getSaveInfo(`branch${index + 1}`) ?? "",
                     ),
             );
-            showHint("存档成功！");
             console.log($saveData);
-        } catch (e: any) {
-            showHint("存档失败，错误信息：" + e.message);
-        }
+        } catch (e: any) {}
     }
     setInterval(() => {
         if (autoplay) {
@@ -639,7 +629,7 @@
             class="w-[50vw] h-[90vh] border-y-gray-300 border-y flex items-center relative"
         >
             <div
-                class="w-full h-[88.5vh] border-y-gray-600 border-y flex items-center"
+                class="w-full h-[88.5vh] border-y-gray-600 border-y flex items-center z-10"
             >
                 <!-- 立绘区域 -->
                 <div class="shrink-0 w-full h-full relative">
@@ -818,8 +808,8 @@
                             class="absolute top-0 left-0 flex shrink-0 h-[10vh] p-2.5 w-full items-center justify-center"
                         >
                             <button
-                                class="zwtext break-all border-none text-left outline-none px-2.5 w-full h-auto py-1 shrink-0 text-white cursor-pointer
-                                    hover:*:text-black hover:text-black hover:bg-yellow-300
+                                class="zwtext break-all border-none text-left outline-none px-2.5 w-full h-auto py-1 shrink-0 bg-yellow-300 text-black cursor-pointer
+                                    hover:*:text-black hover:text-black hover:bg-white
                                     active:text-yellow-300 active:bg-black active:*:text-yellow-300 active:outline-yellow-300 active:outline-2 active:outline-solid"
                                 aria-labelledby="继续"
                                 onclick={() => {
@@ -846,10 +836,12 @@
                         xmlns="http://www.w3.org/2000/svg"
                         class="w-[30px] h-[30px] border-none outline-none cursor-pointer"
                         viewBox="0 0 64 64"
-                        onclick={(e) => {
+                        onclick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            updateSave(getSaveInfo("name"), gc());
+                            showMainScreen = false;
+                            await sleep(500);
+                            showSaved = true;
                         }}
                         onkeydown={(e) => {
                             e.preventDefault();
@@ -942,12 +934,6 @@
                 </div>
             </div>
         </div>
-        <div
-            class="fixed top-10 left-0 flex items-center bg-gray-200 rounded-r-sm shadow-[0_0_10px_#333333] w-auto transition-[max-width] duration-200 overflow-hidden whitespace-nowrap"
-            style={`max-width: ${isShowHint ? "300px" : "0"}`}
-        >
-            <span class="mx-2.5 text-2.5 text-black">{hintContent}</span>
-        </div>
     </div>
 {/if}
 {#if showInput}
@@ -968,6 +954,19 @@
 {#if showEnd}
     <div in:fade={{ duration: 500 }} out:fade={{ duration: 500 }}>
         <End {endText} result={() => router.push("/")}></End>
+    </div>
+{/if}
+{#if showSaved}
+    <div in:fade={{ duration: 500 }} out:fade={{ duration: 500 }}>
+        <Saved
+            result={async () => {
+                showSaved = false;
+                await sleep(500);
+                showMainScreen = true;
+                await sleep(500);
+                showStar();
+            }}
+        ></Saved>
     </div>
 {/if}
 

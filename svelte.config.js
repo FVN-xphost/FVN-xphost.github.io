@@ -13,6 +13,9 @@ const config = {
       fallback: "index.html",
     }),
   },
+  compilerOptions: {
+    customElement: true
+  }
 };
 
 export default config;
