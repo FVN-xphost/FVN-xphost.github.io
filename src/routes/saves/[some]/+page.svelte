@@ -334,9 +334,11 @@
         const back = document.querySelector(".back") as HTMLDivElement;
         for (let i = 0; i < 3; i++) {
             let starback = document.createElement("img");
-            // starback.style.width = `${i * 20 + 85}vh`;
             starback.src = [StarDown, StarMiddle, StarUp][i];
-            starback.style.height = `${i * 20 + 45}vh`;
+            starback.style.maxHeight = "none";
+            starback.style.maxWidth = "none";
+            starback.style.width = `${i * 20 + 60}vw`;
+            starback.style.height = `${i * 20 + 60}vh`;
             starback.style.zIndex = (i + 1).toString();
             starback.style.position = "absolute";
             starback.style.transition = "transform 0.2s ease-out";

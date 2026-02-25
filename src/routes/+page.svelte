@@ -7,9 +7,9 @@
     import { mounted, saveData } from "../store/store";
     import { fade } from "svelte/transition";
     import { router } from "../utils/all";
-    import StarUp from '../assets/Home/star_up.png'
-    import StarMiddle from '../assets/Home/star_middle.png'
-    import StarDown from '../assets/Home/star_down.png'
+    import StarUp from "../assets/Home/star_up.png";
+    import StarMiddle from "../assets/Home/star_middle.png";
+    import StarDown from "../assets/Home/star_down.png";
     import titlejpg from "../assets/Home/title.jpg";
     let o1 = $state(false);
     let o2 = $state(false);
@@ -25,8 +25,10 @@
         for (let i = 0; i < 3; i++) {
             let starback = document.createElement("img");
             starback.src = [StarDown, StarMiddle, StarUp][i];
-            // starback.style.width = `${i * 20 + 85}vh`;
-            starback.style.height = `${i * 20 + 45}vh`;
+            starback.style.maxHeight = "none";
+            starback.style.maxWidth = "none";
+            starback.style.width = `${i * 20 + 60}vw`;
+            starback.style.height = `${i * 20 + 60}vh`;
             starback.style.zIndex = (i + 1).toString();
             starback.style.position = "absolute";
             starback.style.transition = "transform 0.2s ease-out";
@@ -49,13 +51,13 @@
             //     await sleep(10);
             // }
         }
-        const layers = document.querySelectorAll(".starback")
+        const layers = document.querySelectorAll(".starback");
         dom?.addEventListener("mousemove", (e: MouseEvent) => {
-            const x = (window.innerWidth / 2 - e.pageX);
-            const y = (window.innerHeight / 2 - e.pageY);
+            const x = window.innerWidth / 2 - e.pageX;
+            const y = window.innerHeight / 2 - e.pageY;
 
             layers.forEach((layer: any) => {
-                const speed = parseInt(layer.getAttribute('data-speed')!);
+                const speed = parseInt(layer.getAttribute("data-speed")!);
                 const xPos = (x * speed) / 500;
                 const yPos = (y * speed) / 500;
                 layer.style.transform = `translateX(${xPos}px) translateY(${yPos}px)`;
@@ -140,7 +142,7 @@
                 <div
                     in:fade={{ duration: 1500 }}
                     out:fade={{ duration: 300 }}
-                    class="flex flex-col absolute bottom-[10vh] h-[30vh] gap-1 left-0 right-0 w-[30vw] mx-auto z-10
+                    class="flex flex-col absolute bottom-[10vh] h-[30vh] gap-1 left-0 right-0 w-[35vw] mx-auto z-10
                     before:content-['主选单/存档'] before:absolute before:text-[0.75rem] before:text-yellow-300 before:-top-6 before:left-0"
                 >
                     <div class="flex-3 flex flex-col overflow-auto gap-1">
