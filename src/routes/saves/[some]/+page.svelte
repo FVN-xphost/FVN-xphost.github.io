@@ -11,6 +11,9 @@
     import { save, unlockGallery } from "../../../utils/backend-tauri";
     import Scene1 from "../../../assets/scene/scene1.png";
     import MyInputName from "./MyInputName.svelte";
+    import StarUp from '../../../assets/Home/star_up.png'
+    import StarMiddle from '../../../assets/Home/star_middle.png'
+    import StarDown from '../../../assets/Home/star_down.png'
     const { params } = $props();
     // 当前存档名称
     const thisname = (() => `save${params.some}`)();
@@ -172,9 +175,9 @@
     import End from "./End.svelte";
     async function doStyle(current: number, isQuick: boolean = false) {
         if (current === 0) {
-            backStyle = `opacity: 0;`;
+            backStyle = `opacity: 0`;
             backImage = "";
-            TonyStyle = `opacity: 0; `;
+            TonyStyle = `opacity: 0; bottom: 0; right: 0; height: 80%`;
             TonyImage = "";
         }
         if (gd(current).id === "start1") {
@@ -328,6 +331,50 @@
         dialogDom = document.querySelector(".dialog-by") as HTMLDivElement;
         dialogDom.scrollTop = dialogDom.scrollHeight + 200;
         await next(false);
+        const back = document.querySelector(".back") as HTMLDivElement;
+        for (let i = 0; i < 3; i++) {
+            let starback = document.createElement("img");
+            // starback.style.width = `${i * 20 + 85}vh`;
+            starback.src = [StarDown, StarMiddle, StarUp][i];
+            starback.style.height = `${i * 20 + 45}vh`;
+            starback.style.zIndex = (i + 1).toString();
+            starback.style.position = "absolute";
+            starback.style.transition = "transform 0.2s ease-out";
+            starback.classList.add("starback");
+            starback.setAttribute("data-speed", (i * 40 + 20).toString());
+            back?.appendChild(starback);
+            // for (let i = 0; i < 50; i++) {
+            //     let star = document.createElement("div");
+            //     star.style.width = Math.random() / 3 + "vw";
+            //     star.style.height = Math.random() / 2 + "vh";
+            //     star.style.position = "absolute";
+            //     star.style.top = Math.random() * 100 + "%";
+            //     star.style.left = Math.random() * 100 + "%";
+            //     star.style.backgroundColor = "white";
+            //     star.style.borderRadius = "50%";
+            //     star.style.opacity = (Math.random() * 0.7 + 0.3).toString();
+            //     // star.style.animation = `star ${Math.random() * 2 + 3}s infinite`;
+            //     star.style.zIndex = "-1";
+            //     starback?.appendChild(star);
+            // }
+        }
+        const layers = document.querySelectorAll(".starback");
+        const mc = document.querySelectorAll(".mousecover");
+        back.addEventListener("mousemove", (e: MouseEvent) => {
+            const x = window.innerWidth / 2 - e.pageX;
+            const y = window.innerHeight / 2 - e.pageY;
+            mc.forEach((el: any) => {
+                const xPos = x / 300;
+                const yPos = y / 300;
+                el.style.transform = `translateX(${xPos}px) translateY(${yPos}px)`;
+            });
+            layers.forEach((layer: any) => {
+                const speed = parseInt(layer.getAttribute('data-speed')!);
+                const xPos = (x * speed) / 500;
+                const yPos = (y * speed) / 500;
+                layer.style.transform = `translateX(${xPos}px) translateY(${yPos}px)`;
+            })
+        });
     });
     async function next(plus: boolean = true) {
         // if (lockText) {
@@ -558,7 +605,7 @@
         if (autoplay) {
             next();
         }
-    }, 2000);
+    }, 3000);
     let TonyEye = $state(true);
     setInterval(async () => {
         TonyEye = false;
@@ -574,7 +621,7 @@
 
 {#if showMainScreen}
     <div
-        class="bg-img-full bg-[url(/src/assets/Home/back.jpg)] fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden flex items-center"
+        class="back bg-img-full bg-[url(/src/assets/Home/back.jpg)] fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden flex items-center justify-center"
         in:fade={{ duration: 500 }}
         out:fade={{ duration: 500 }}
         onclick={() => {
@@ -587,7 +634,7 @@
         role="button"
     >
         <div
-            class="w-[50vw] h-[90vh] border-y-gray-300 border-y flex items-center"
+            class="w-[50vw] h-[90vh] border-y-gray-300 border-y flex items-center relative"
         >
             <div
                 class="w-full h-[88.5vh] border-y-gray-600 border-y flex items-center"
@@ -601,7 +648,7 @@
                         style={backStyle}
                     />
                     <div
-                        class="absolute transition-opacity duration-500 w-auto"
+                        class="mousecover absolute transition-opacity duration-500 w-auto z-10"
                         style={TonyStyle}
                     >
                         {#if !TonyEye}
@@ -616,6 +663,12 @@
                             alt="Tony图片"
                             class="w-auto h-full"
                         />
+                    </div>
+                    <div
+                        class="absolute right-0 bottom-[13vh] wvr text-white font-bold"
+                        style="font-size: 8vh;"
+                    >
+                        管理员
                     </div>
                 </div>
             </div>
@@ -693,12 +746,6 @@
                     ></circle>
                     <path d="M9 7L9 17L18 12Z" fill="currentColor"></path>
                 </svg>
-            </div>
-            <div
-                class="absolute -left-[11vh] bottom-[20vh] wvr text-white font-bold"
-                style="font-size: 8vh;"
-            >
-                管理员
             </div>
             <div
                 class="flex flex-col items-center h-full w-[98%] border-x-gray-300 border-x bg-[#3D3D3DFF]"
@@ -785,7 +832,7 @@
             </div>
         </div>
         <div
-            class="w-[12vw] h-[90vh] border-y-gray-300 border-y flex items-center"
+            class="w-[12vw] h-[90vh] border-y-gray-300 border-y flex items-center z-10"
         >
             <div
                 class="w-full h-[88.5vh] border-y-gray-600 border-y flex items-center relative"
@@ -795,7 +842,7 @@
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="w-[20px] h-[20px] border-none outline-none cursor-pointer"
+                        class="w-[30px] h-[30px] border-none outline-none cursor-pointer"
                         viewBox="0 0 64 64"
                         onclick={(e) => {
                             e.preventDefault();
@@ -830,7 +877,7 @@
                         /></svg
                     ><svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="text-sky-300 w-[20px] h-[20px] border-none outline-none cursor-pointer hover:text-orange-300"
+                        class="text-sky-300 w-[30px] h-[30px] border-none outline-none cursor-pointer hover:text-orange-300"
                         style={quickCurrent
                             ? "color: rgb(257.48, 161.84, 162.27)"
                             : ""}
@@ -862,7 +909,7 @@
                         /><path d="M12 10l-7 -7M12 10l7 -7" /></svg
                     ><svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="text-sky-300 w-[20px] h-[20px] border-none outline-none cursor-pointer hover:text-orange-300"
+                        class="text-sky-300 w-[30px] h-[30px] border-none outline-none cursor-pointer hover:text-orange-300"
                         width="32"
                         height="32"
                         viewBox="0 0 48 48"

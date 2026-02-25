@@ -98,7 +98,7 @@
         style={o1 ? "top: -40vh" : ""}
     >
         <div
-            class="h-[50%] w-[50vh] border-l-8 border-l-black shrink-0 flex items-center"
+            class="h-[50%] w-[60vh] border-l-8 border-l-black shrink-0 flex items-center"
             style={o2
                 ? ""
                 : "top: 0; bottom: 0; height: fit-content; margin-top: auto; margin-bottom: auto;"}
@@ -111,7 +111,7 @@
             />
         </div>
         {#if o3}
-            <div class="h-[50%] w-[100vh] flex items-center justify-end">
+            <div class="h-[50%] w-[115vh] flex items-center justify-end">
                 <div
                     class="text-left pl-[24vh] w-[100vh]"
                     style="font-size: 2vh"
@@ -125,7 +125,7 @@
         <div
             in:fade={{ duration: 400 }}
             out:fade={{ duration: 400 }}
-            class="border border-yellow-300 border-solid absolute top-0 left-0 right-0 bottom-0 m-auto w-[105vh] h-[80vh]"
+            class="border border-yellow-300 border-solid absolute top-0 left-0 right-0 bottom-0 m-auto w-[115vh] h-[80vh]"
         >
             <div
                 class="absolute bottom-4 left-0 w-full flex flex-col items-center"
@@ -145,7 +145,7 @@
                     {@html v2}
                 </div> -->
                 <div
-                    class="text-center text-gray-100 relative h-[30vh] mt-4 w-[70vh]"
+                    class="text-center text-gray-100 relative h-[30vh] mt-4 w-[75vh]"
                     style="font-size: 2vh"
                 >
                     <div class="animate-light-shine-before"></div>
@@ -160,13 +160,13 @@
     <img
         src={GeorgeNocoat}
         alt="George"
-        class="absolute top-[6vh] -left-[95vh] right-0 mx-auto h-[94vh] z-20"
+        class="absolute top-[6vh] -left-[105vh] right-0 mx-auto h-[94vh] z-20"
     />
     {#if o6}
         <img
             src={GeorgeNoeye}
             alt="GeorgeNoeye"
-            class="absolute top-[6vh] -left-[95vh] right-0 mx-auto h-[94vh] z-21"
+            class="absolute top-[6vh] -left-[105vh] right-0 mx-auto h-[94vh] z-21"
         />
     {/if}
     {#if !o1}
