@@ -499,7 +499,8 @@
             if (n === -11) {
                 plusOne();
                 break;
-            } else if (n === -13) {
+            }
+            if (gd(n).type === "to") {
                 quickCurrent = false;
                 showMainScreen = false;
                 await sleep(500);
@@ -964,6 +965,8 @@
                 await sleep(500);
                 showMainScreen = true;
                 await sleep(500);
+                dialogDom = document.querySelector(".dialog-by") as HTMLDivElement;
+                dialogDom.scrollTop = dialogDom.scrollHeight + 200;
                 showStar();
             }}
         ></Saved>
