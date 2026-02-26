@@ -148,11 +148,14 @@
     // Tony 样式
     let TonyStyle = $state("");
     let TonyImage = $state("");
-    import TonyClothHand from "../../assets/illustration/sms_cloth_hand.png";
-    import TonyClothNohand from "../../assets/illustration/sms_cloth_nohand.png";
-    import TonyNoclothHand from "../../assets/illustration/sms_nocloth_hand.png";
-    import TonyNoclothNohand from "../../assets/illustration/sms_nocloth_nohand.png";
-    import TonyNoEye from "../../assets/illustration/sms_noeye.png";
+    import AndreyCloth from "../../assets/illustration/andrey_cloth.png";
+    import AndreyNocloth from "../../assets/illustration/andrey_nocloth.png";
+    import AndreyNoEye from "../../assets/illustration/andrey_noeye.png";
+    import TonyCoat from "../../assets/illustration/tony_coat.png";
+    import TonyShirt from "../../assets/illustration/tony_shirt.png"
+    import TonyNoeye from "../../assets/illustration/tony_noeye.png";
+    import AndreyHand from "../../assets/illustration/andrey_hand.png";
+    import AndreyFace from "../../assets/illustration/andrey_face.png";
     import Chapter from "./Chapter.svelte";
     import End from "./End.svelte";
     import Saved from "./Saved.svelte";
@@ -168,7 +171,7 @@
             backStyle = `opacity: 1;`;
             // if (!isQuick) await sleep(500);
         } else if (gd(current).id === "tonyshow1") {
-            TonyImage = TonyClothHand as string;
+            TonyImage = TonyCoat as string;
             TonyStyle = `opacity: 1; bottom: 0; right: 0; height: 80%`;
         } else if (gd(current).id === "tonyhide1") {
             TonyStyle = `opacity: 0; bottom: 0; right: 0; height: 80%`;
@@ -578,7 +581,7 @@
         setSaveInfo("updateTime", updateTime);
         try {
             await save(
-                // $currentSave.some,
+                // params.some,
                 "",
                 updateTime,
                 name,
@@ -646,8 +649,8 @@
                     >
                         {#if !TonyEye}
                             <img
-                                src={TonyNoEye}
-                                alt="Tony脸"
+                                src={TonyNoeye}
+                                alt="Tony眨眼"
                                 class="absolute top-0 left-0 w-auto h-full"
                             />
                         {/if}
