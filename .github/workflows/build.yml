@@ -139,8 +139,7 @@ jobs:
           # 再然后修改 AndroidManifest 进行强制横屏处理！
           sed -i '/android:name=".MainActivity"/aandroid:screenOrientation="sensorLandscape"' src-tauri/gen/android/app/src/main/AndroidManifest.xml
           # 再然后把所有图标放入目录里
-          rm -rf src-tauri/gen/android/app/src/main/res/*
-          mv -f src-tauri/icons/android/* src-tauri/gen/android/app/src/main/res/
+          rsync -av --remove-source-files src-tauri/icons/android/ src-tauri/gen/android/app/src/main/res/
           # 最后再开始打包 Android。。 开始构建！！
           npm run tauri android build -- --target ${{ matrix.arch }}
       - name: Upload artifact Windows
