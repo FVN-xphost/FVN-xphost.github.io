@@ -143,7 +143,7 @@ interface DialogInterface {
 }
 // 以下均是为了方便构建最终的 dialogInstance 而创建的函数！各位既可以忽略，也可以直接照着写！
 function Normal(
-  id: string = "",
+  id: string,
   name: string,
   message: string,
   ifbranch: IfInterface[] | undefined = undefined,
@@ -207,6 +207,18 @@ function Tony(
   return Normal(
     id,
     `<span style="${publicCss} background-color: orange;">托尼</span>`,
+    message,
+    ifbranch,
+  );
+}
+function Andrey(
+  message: string,
+  ifbranch: IfInterface[] | undefined = undefined,
+  id: string = "",
+) {
+  return Normal(
+    id,
+    `<span style="${publicCss} background-color: #2E8B57;">安德烈</span>`,
     message,
     ifbranch,
   );
@@ -619,13 +631,13 @@ export const dialogChapter0 = readable<DialogInterface[]>([
     "好，这东西总能排上用处，我可以考虑帮你卖掉这张船票，但卖掉的钱绝对不够再买回它的。",
     ifbranch3a4,
   ),
-  {
-    name: `<span style="color: orange">托尼</span>`,
-    avatar: "",
-    message: "你要卖掉这张船票吗？",
-    id: "isSell",
-    if: ifbranch3a4,
-  },
+  Tony("你要卖掉这张船票吗？", ifbranch3a4, "isSell"),
+  // {
+  //   name: `<span style="color: orange">托尼</span>`,
+  //   message: "你要卖掉这张船票吗？",
+  //   id: "isSell",
+  //   if: ifbranch3a4,
+  // },
   Choice("branch5", ["不卖船票", "送给托尼", "卖掉船票"], ifbranch3a4),
   George("还是算了，总要去看一眼地球才甘心。", [
     {
