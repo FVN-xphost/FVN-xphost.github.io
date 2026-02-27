@@ -152,7 +152,7 @@
     .trans2 {
         transform: rotate(0);
         background-color: white;
-        background-image: url("../../assets/gallery/galleryback.jpg");
+        background-image: url("../../assets/Home/galleryback.jpg");
         z-index: 10;
         cursor: pointer;
     }
