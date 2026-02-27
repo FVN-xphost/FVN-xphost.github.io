@@ -11,10 +11,7 @@ const config = {
   kit: {
     adapter: adapter({
       fallback: "index.html",
-    }),
-  },
-  compilerOptions: {
-    customElement: true
+    })
   }
 };
 

@@ -7,6 +7,7 @@
     import { onMount } from "svelte";
     import { router } from "../../utils/all";
     import GalleryBack from "../../assets/Home/galleryback.jpg";
+    import "../../components/input/MyStarBack"
     let galleryTrans1 = $state(new Array($galleryLock.length).fill(false));
     let galleryTrans2 = $state(new Array($galleryLock.length).fill(false));
     let o1 = $state(false);
@@ -36,55 +37,9 @@
             galleryTrans2[i] = true;
         }
     }
-    import StarUp from "../../assets/Home/star_up.png";
-    import StarMiddle from "../../assets/Home/star_middle.png";
-    import StarDown from "../../assets/Home/star_down.png";
     onMount(async () => {
         page = $galleryPage;
         o1 = true;
-        await sleep(100);
-        let dom = document.querySelector(".back") as HTMLDivElement;
-        for (let i = 0; i < 3; i++) {
-            let starback = document.createElement("img");
-            starback.src = [StarDown, StarMiddle, StarUp][i];
-            starback.style.maxHeight = "none";
-            starback.style.maxWidth = "none";
-            starback.style.width = `${i * 30 + 80}vw`;
-            starback.style.height = `${i * 30 + 80}vh`;
-            starback.style.zIndex = (i + 1).toString();
-            starback.style.position = "absolute";
-            starback.style.transition = "transform 0.2s ease-out";
-            starback.classList.add("starback");
-            starback.setAttribute("data-speed", (i * 40 + 20).toString());
-            dom?.appendChild(starback);
-            // for (let i = 0; i < 50; i++) {
-            //     let star = document.createElement("img");
-            //     star.style.width = Math.random() / 3 + "vw";
-            //     star.style.height = Math.random() / 2 + "vh";
-            //     star.style.position = "absolute";
-            //     star.style.top = Math.random() * 100 + "%";
-            //     star.style.left = Math.random() * 100 + "%";
-            //     star.style.backgroundColor = "white";
-            //     star.style.borderRadius = "50%";
-            //     star.style.opacity = (Math.random() * 0.7 + 0.3).toString();
-            //     // star.style.animation = `star ${Math.random() * 2 + 3}s infinite`;
-            //     star.style.zIndex = "-1";
-            //     starback?.appendChild(star);
-            //     await sleep(10);
-            // }
-        }
-        const layers = document.querySelectorAll(".starback");
-        dom?.addEventListener("mousemove", (e: MouseEvent) => {
-            const x = window.innerWidth / 2 - e.pageX;
-            const y = window.innerHeight / 2 - e.pageY;
-
-            layers.forEach((layer: any) => {
-                const speed = parseInt(layer.getAttribute("data-speed")!);
-                const xPos = (x * speed) / 500;
-                const yPos = (y * speed) / 500;
-                layer.style.transform = `translateX(${xPos}px) translateY(${yPos}px)`;
-            });
-        });
         await sleep(300);
         await load();
     });
@@ -112,13 +67,13 @@
 {#if o1}
     <div
         in:fade={{ duration: 1500 }}
-        class="back bg-[url(/src/assets/Home/back.jpg)] fixed overflow-hidden left-0 top-0 w-screen h-screen grid grid-cols-3 grid-rows-2 bg-img-full"
+        class="bg-[url(/src/assets/Home/back.jpg)] fixed overflow-hidden left-0 top-0 w-screen h-screen grid grid-cols-3 grid-rows-2 bg-img-full"
     >
         {#each $galleryLock.filter((_, index) => {
             const pm = page - 1;
             return index >= pm * pageLength && index < pm * pageLength + pageLength;
         }) as item, index}
-            <div class="relative">
+            <div class="relative z-10">
                 {#if galleryTrans2[index]}
                     <button
                         in:rot2
@@ -144,6 +99,7 @@
                 {/if}
             </div>
         {/each}
+        <my-star-back></my-star-back>
         <div
             class="fixed bottom-[20px] right-[446px] z-10000 text-[20px] font-bold"
             style="color: white;"

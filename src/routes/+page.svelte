@@ -7,10 +7,8 @@
     import { currentSave, mounted, saveData } from "../store/store";
     import { fade } from "svelte/transition";
     import { router } from "../utils/all";
-    import StarUp from "../assets/Home/star_up.png";
-    import StarMiddle from "../assets/Home/star_middle.png";
-    import StarDown from "../assets/Home/star_down.png";
     import titlejpg from "../assets/Home/title.jpg";
+    import "../components/input/MyStarBack"
     let o1 = $state(false);
     let o2 = $state(false);
     let o3 = $state(false);
@@ -18,57 +16,11 @@
     let o5 = $state(false);
     let o6 = $state(false);
     let isStart = $state<number>(-1);
-    // 等待 1200 秒
-    async function showStar() {
-        await sleep(1200);
-        let dom = document.getElementById("myBack") as HTMLDivElement;
-        for (let i = 0; i < 3; i++) {
-            let starback = document.createElement("img");
-            starback.src = [StarDown, StarMiddle, StarUp][i];
-            starback.style.maxHeight = "none";
-            starback.style.maxWidth = "none";
-            starback.style.width = `${i * 30 + 80}vw`;
-            starback.style.height = `${i * 30 + 80}vh`;
-            starback.style.zIndex = (i + 1).toString();
-            starback.style.position = "absolute";
-            starback.style.transition = "transform 0.2s ease-out";
-            starback.classList.add("starback");
-            starback.setAttribute("data-speed", (i * 40 + 20).toString());
-            dom?.appendChild(starback);
-            // for (let i = 0; i < 50; i++) {
-            //     let star = document.createElement("img");
-            //     star.style.width = Math.random() / 3 + "vw";
-            //     star.style.height = Math.random() / 2 + "vh";
-            //     star.style.position = "absolute";
-            //     star.style.top = Math.random() * 100 + "%";
-            //     star.style.left = Math.random() * 100 + "%";
-            //     star.style.backgroundColor = "white";
-            //     star.style.borderRadius = "50%";
-            //     star.style.opacity = (Math.random() * 0.7 + 0.3).toString();
-            //     // star.style.animation = `star ${Math.random() * 2 + 3}s infinite`;
-            //     star.style.zIndex = "-1";
-            //     starback?.appendChild(star);
-            //     await sleep(10);
-            // }
-        }
-        const layers = document.querySelectorAll(".starback");
-        dom?.addEventListener("mousemove", (e: MouseEvent) => {
-            const x = window.innerWidth / 2 - e.pageX;
-            const y = window.innerHeight / 2 - e.pageY;
-
-            layers.forEach((layer: any) => {
-                const speed = parseInt(layer.getAttribute("data-speed")!);
-                const xPos = (x * speed) / 500;
-                const yPos = (y * speed) / 500;
-                layer.style.transform = `translateX(${xPos}px) translateY(${yPos}px)`;
-            });
-        });
-    }
     onMount(async () => {
         if ($mounted) {
             isStart = 0;
             o1 = true;
-            await showStar();
+            await sleep(1200);
             o2 = true;
             o3 = true;
             o4 = true;
@@ -79,7 +31,7 @@
         mounted.set(true);
         init();
         o1 = true;
-        await showStar();
+        await sleep(1200);
         o2 = true;
         await sleep(1500);
         isStart = 0;
@@ -101,7 +53,6 @@
 
 {#if o1}
     <div
-        id="myBack"
         class="fixed flex flex-col items-center justify-center w-screen h-screen overflow-hidden bg-img-full bg-[url(/src/assets/Home/back.jpg)]"
         in:fade={{ duration: 1500 }}
         onclick={showStart}
@@ -110,10 +61,11 @@
         tabindex="0"
         role="button"
     >
+        <my-star-back></my-star-back>
         {#if o2}
             <div
                 in:fade={{ duration: 1500 }}
-                class="absolute w-screen h-[30vh] top-[20vh] left-0 right-0 flex flex-col items-center overflow-auto z-10"
+                class="absolute w-screen h-[30vh] top-[20vh] left-0 right-0 flex flex-col items-center overflow-auto"
             >
                 <img
                     src={titlejpg}
@@ -142,7 +94,7 @@
                 <div
                     in:fade={{ duration: 1500 }}
                     out:fade={{ duration: 300 }}
-                    class="flex flex-col absolute bottom-[10vh] h-[30vh] gap-1 left-0 right-0 w-[35vw] mx-auto z-10
+                    class="flex flex-col absolute bottom-[10vh] h-[30vh] gap-1 left-0 right-0 w-[35vw] mx-auto
                     before:content-['主选单/存档'] before:absolute before:text-[0.75rem] before:text-yellow-300 before:-top-6 before:left-0"
                 >
                     <div class="flex-3 flex flex-col overflow-auto gap-1">
@@ -181,7 +133,7 @@
                 <div
                     in:fade={{ duration: 1500 }}
                     out:fade={{ duration: 300 }}
-                    class="flex flex-col absolute bottom-[10vh] h-[30vh] gap-1 left-0 right-0 w-[20vw] z-10 mx-auto
+                    class="flex flex-col absolute bottom-[10vh] h-[30vh] gap-1 left-0 right-0 w-[20vw] mx-auto
                     before:content-['主选单/'] before:absolute before:text-[0.75rem] before:text-yellow-300 before:-top-6 before:left-0"
                 >
                     <button
@@ -232,7 +184,7 @@
                 <div
                     in:fade={{ duration: 1500 }}
                     out:fade={{ duration: 300 }}
-                    class="absolute border border-yellow-300 border-solid p-1 bottom-[10vh] h-[30vh] left-[50vw] right-0 w-[20vw] mx-auto z-10
+                    class="absolute border border-yellow-300 border-solid p-1 bottom-[10vh] h-[30vh] left-[50vw] right-0 w-[20vw] mx-auto
                     before:content-['制作成员/'] before:absolute before:text-[0.75rem] before:text-yellow-300 before:-top-6 before:left-0"
                 >
                     <div
@@ -258,13 +210,13 @@
                 <div
                     in:fade={{ duration: 1500 }}
                     out:fade={{ duration: 300 }}
-                    class="animate-bounce text-yellow-300 absolute bottom-[40vh] w-screen flex items-center justify-center z-10"
+                    class="animate-bounce text-yellow-300 absolute bottom-[40vh] w-screen flex items-center justify-center"
                 >
                     单击以继续
                 </div>
             {/if}
             <button
-                class="fixed bottom-10 left-10 w-20 h-10 bg-yellow-300 border-none outline-none cursor-pointer hover:bg-white active:bg-black active:text-white z-10"
+                class="fixed bottom-10 left-10 w-20 h-10 bg-yellow-300 border-none outline-none cursor-pointer hover:bg-white active:bg-black active:text-white"
                 onclick={() => {
                     reset();
                 }}

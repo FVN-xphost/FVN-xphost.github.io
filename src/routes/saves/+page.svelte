@@ -11,9 +11,8 @@
     import { save, unlockGallery } from "../../utils/backend-tauri";
     import Scene1 from "../../assets/scene/scene1.png";
     import MyInputName from "./MyInputName.svelte";
-    import StarUp from "../../assets/Home/star_up.png";
-    import StarMiddle from "../../assets/Home/star_middle.png";
-    import StarDown from "../../assets/Home/star_down.png";
+    import "../../components/input/MyStarBack";
+    import "../../components/input/MyCustomComponent"
     // 控制主屏幕显示。
     let showMainScreen = $state(false);
     // 控制 空格键 锁定
@@ -152,7 +151,7 @@
     import AndreyNocloth from "../../assets/illustration/andrey_nocloth.png";
     import AndreyNoEye from "../../assets/illustration/andrey_noeye.png";
     import TonyCoat from "../../assets/illustration/tony_coat.png";
-    import TonyShirt from "../../assets/illustration/tony_shirt.png"
+    import TonyShirt from "../../assets/illustration/tony_shirt.png";
     import TonyNoeye from "../../assets/illustration/tony_noeye.png";
     import AndreyHand from "../../assets/illustration/andrey_hand.png";
     import AndreyFace from "../../assets/illustration/andrey_face.png";
@@ -316,40 +315,8 @@
         await sleep(500);
         dialogDom = document.querySelector(".dialog-by") as HTMLDivElement;
         dialogDom.scrollTop = dialogDom.scrollHeight + 200;
-        showStar();
         await next(false);
-    });
-    function showStar() {
         const back = document.querySelector(".back") as HTMLDivElement;
-        for (let i = 0; i < 3; i++) {
-            let starback = document.createElement("img");
-            starback.src = [StarDown, StarMiddle, StarUp][i];
-            starback.style.maxHeight = "none";
-            starback.style.maxWidth = "none";
-            starback.style.width = `${i * 30 + 80}vw`;
-            starback.style.height = `${i * 30 + 80}vh`;
-            starback.style.zIndex = (i + 1).toString();
-            starback.style.position = "absolute";
-            starback.style.transition = "transform 0.2s ease-out";
-            starback.classList.add("starback");
-            starback.setAttribute("data-speed", (i * 40 + 20).toString());
-            back?.appendChild(starback);
-            // for (let i = 0; i < 50; i++) {
-            //     let star = document.createElement("div");
-            //     star.style.width = Math.random() / 3 + "vw";
-            //     star.style.height = Math.random() / 2 + "vh";
-            //     star.style.position = "absolute";
-            //     star.style.top = Math.random() * 100 + "%";
-            //     star.style.left = Math.random() * 100 + "%";
-            //     star.style.backgroundColor = "white";
-            //     star.style.borderRadius = "50%";
-            //     star.style.opacity = (Math.random() * 0.7 + 0.3).toString();
-            //     // star.style.animation = `star ${Math.random() * 2 + 3}s infinite`;
-            //     star.style.zIndex = "-1";
-            //     starback?.appendChild(star);
-            // }
-        }
-        const layers = document.querySelectorAll(".starback");
         const mc = document.querySelectorAll(".mousecover");
         back.addEventListener("mousemove", (e: MouseEvent) => {
             const x = window.innerWidth / 2 - e.pageX;
@@ -359,14 +326,8 @@
                 const yPos = y / 300;
                 el.style.transform = `translateX(${xPos}px) translateY(${yPos}px)`;
             });
-            layers.forEach((layer: any) => {
-                const speed = parseInt(layer.getAttribute("data-speed")!);
-                const xPos = (x * speed) / 500;
-                const yPos = (y * speed) / 500;
-                layer.style.transform = `translateX(${xPos}px) translateY(${yPos}px)`;
-            });
         });
-    }
+    });
     async function next(plus: boolean = true) {
         // if (lockText) {
         //     exitText = true;
@@ -401,7 +362,6 @@
             await sleep(500);
             dialogDom = document.querySelector(".dialog-by") as HTMLDivElement;
             dialogDom.scrollTop = dialogDom.scrollHeight + 200;
-            showStar();
             await next(false);
             return;
         }
@@ -413,16 +373,14 @@
             return;
         }
         setc(n);
-        historyFile.push({
-            name: replaceCurrentText(gd(gc()).name),
-            text: "",
-        });
         // lockText = true;
         await doStyle(gc());
-        let ct = replaceCurrentText(gd(gc()).message);
         // let isLt = false;
         dialogDom.scrollTop = dialogDom.scrollHeight + 200;
-        historyFile[historyFile.length - 1].text = ct;
+        historyFile.push({
+            name: gd(gc()).name,
+            text: gd(gc()).message,
+        });
         // for (let i = 0; i < (ct?.length ?? 0); i++) {
         //     if (exitText) {
         //         break;
@@ -444,8 +402,8 @@
         //     }
         // }
         await sleep(50);
-        for (let i = 0; i < 100; i++) {
-            dialogDom.scrollTop += 10;
+        for (let i = 0; i < 200; i++) {
+            dialogDom.scrollTop += 5;
             await sleep(5);
         }
         // dialogDom.scrollTop = dialogDom.scrollHeight + 200;
@@ -517,6 +475,7 @@
                 await sleep(500);
                 setc(0);
                 next(false);
+                showMainScreen = true;
                 return;
             }
             if (gd(n).type === "end") {
@@ -617,7 +576,7 @@
 
 {#if showMainScreen}
     <div
-        class="back bg-img-full bg-[url(/src/assets/Home/back.jpg)] fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden flex items-center justify-center"
+        class="back bg-img-full bg-[url(/src/assets/Home/back.jpg)] fixed top-0 left-0 right-0 bottom-0 m-0 w-screen h-screen border-none outline-none overflow-hidden flex items-center justify-center z-10"
         in:fade={{ duration: 500 }}
         out:fade={{ duration: 500 }}
         onclick={() => {
@@ -629,6 +588,7 @@
         tabindex="0"
         role="button"
     >
+        <my-star-back></my-star-back>
         <div
             class="w-[50vw] h-[90vh] border-y-gray-300 border-y flex items-center relative"
         >
@@ -756,7 +716,7 @@
                             style={`filter: brightness(${index === historyFile.length - 1 ? "1" : "0.5"}); ${index === 0 ? "margin-top: auto;" : ""}`}
                         >
                             {@html replaceCurrentText(
-                                item.name === "" || item.name === undefined
+                                item.name === undefined || item.name === ""
                                     ? ""
                                     : item.name + "：",
                             )}
@@ -968,9 +928,10 @@
                 await sleep(500);
                 showMainScreen = true;
                 await sleep(500);
-                dialogDom = document.querySelector(".dialog-by") as HTMLDivElement;
+                dialogDom = document.querySelector(
+                    ".dialog-by",
+                ) as HTMLDivElement;
                 dialogDom.scrollTop = dialogDom.scrollHeight + 200;
-                showStar();
             }}
         ></Saved>
     </div>

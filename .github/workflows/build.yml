@@ -73,6 +73,7 @@ jobs:
             pkg install -y webkit2-gtk_41 node npm rust
           run: |
             npm install
+            npm run tauri icon
             npm run tauri build -- --target ${{ matrix.target }}
       - name: setup node
         if: ${{ matrix.platform != 'freebsd' }}
@@ -111,7 +112,9 @@ jobs:
           rustup target add ${{ matrix.target }}
       - name: install frontend dependencies
         if: ${{ matrix.platform != 'freebsd' }}
-        run: npm install
+        run: |
+          npm install
+          npm run tauri icon
       - name: Build the app
         if: ${{ matrix.platform != 'android' && matrix.platform != 'freebsd' }}
         run: npm run tauri build -- --target ${{ matrix.target }}

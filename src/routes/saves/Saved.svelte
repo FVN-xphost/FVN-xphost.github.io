@@ -2,56 +2,7 @@
     import { currentSave, saveData } from "../../store/store";
     import { branchCount, saveCount, sleep } from "../../utils/all";
     import { save } from "../../utils/backend-tauri";
-    import { onMount } from "svelte";
-
-    import StarUp from "../../assets/Home/star_up.png";
-    import StarMiddle from "../../assets/Home/star_middle.png";
-    import StarDown from "../../assets/Home/star_down.png";
-    onMount(async () => {
-        await sleep(100);
-        let dom = document.querySelector(".back") as HTMLDivElement;
-        for (let i = 0; i < 3; i++) {
-            let starback = document.createElement("img");
-            starback.src = [StarDown, StarMiddle, StarUp][i];
-            starback.style.maxHeight = "none";
-            starback.style.maxWidth = "none";
-            starback.style.width = `${i * 30 + 80}vw`;
-            starback.style.height = `${i * 30 + 80}vh`;
-            starback.style.zIndex = (i + 1).toString();
-            starback.style.position = "absolute";
-            starback.style.transition = "transform 0.2s ease-out";
-            starback.classList.add("starback");
-            starback.setAttribute("data-speed", (i * 40 + 20).toString());
-            dom?.appendChild(starback);
-            // for (let i = 0; i < 50; i++) {
-            //     let star = document.createElement("img");
-            //     star.style.width = Math.random() / 3 + "vw";
-            //     star.style.height = Math.random() / 2 + "vh";
-            //     star.style.position = "absolute";
-            //     star.style.top = Math.random() * 100 + "%";
-            //     star.style.left = Math.random() * 100 + "%";
-            //     star.style.backgroundColor = "white";
-            //     star.style.borderRadius = "50%";
-            //     star.style.opacity = (Math.random() * 0.7 + 0.3).toString();
-            //     // star.style.animation = `star ${Math.random() * 2 + 3}s infinite`;
-            //     star.style.zIndex = "-1";
-            //     starback?.appendChild(star);
-            //     await sleep(10);
-            // }
-        }
-        const layers = document.querySelectorAll(".starback");
-        dom?.addEventListener("mousemove", (e: MouseEvent) => {
-            const x = window.innerWidth / 2 - e.pageX;
-            const y = window.innerHeight / 2 - e.pageY;
-
-            layers.forEach((layer: any) => {
-                const speed = parseInt(layer.getAttribute("data-speed")!);
-                const xPos = (x * speed) / 500;
-                const yPos = (y * speed) / 500;
-                layer.style.transform = `translateX(${xPos}px) translateY(${yPos}px)`;
-            });
-        });
-    });
+    import "../../components/input/MyStarBack"
     const { result } = $props();
     let showHint = $state(false);
     function getc(index: number): any {
@@ -96,6 +47,7 @@
 </script>
 
 <div class="back bg-img-full bg-[url(/src/assets/Home/back.jpg)] fixed top-0 left-0 w-screen h-screen">
+    <my-star-back></my-star-back>
     <div
         class="z-10 absolute top-0 left-0 bottom-0 right-0 m-auto w-[40vw] h-[40vh] flex flex-col gap-1 overflow-y-auto"
     >

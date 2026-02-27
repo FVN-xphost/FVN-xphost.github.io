@@ -11,7 +11,7 @@
             else if (endText[i] === ">") boo = false;
             endRealText += endText[i];
             if (!boo) {
-                await sleep(150);
+                await sleep(200);
             }
         }
         await sleep(3000);
