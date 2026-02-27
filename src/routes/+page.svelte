@@ -204,6 +204,9 @@
                         <div class="ml-4">南司</div>
                         <div>音乐：</div>
                         <div class="ml-4">阿庆</div>
+                        <div>特别鸣谢：</div>
+                        <div class="ml-4">音效/背景</div>
+                        <div class="ml-8">pixabay.com</div>
                     </div>
                 </div>
             {:else if isStart === 0}

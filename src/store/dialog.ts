@@ -322,7 +322,7 @@ export const dialogChapter0 = readable<DialogInterface[]>([
       Admin("名字？", ifbranch),
     ];
   })(),
-  George("%name。"),
+  George("%name。", [], "start2"),
   Admin("种族？"),
   George("食肉动物。"),
   Admin("年龄？"),
@@ -347,15 +347,15 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   Aside("一张纸被递了过来，你潦草地签好了名字。"), // 播放 签字声，无需阻止线程。
   Admin("看镜头，看这里。"),
   Aside("他按动了某处开关，一个照相机从边缘升上来。"),
-  George("还要拍照？"),
+  George("还要拍照？", [], "camera"),
   // 闪光声，快门声
   Admin("别说话，重拍。"),
   // 闪光声，快门声
-  Admin("好了。出门左拐走到头，看到两扇大门推开进去。"),
+  Admin("好了。出门左拐走到头，看到两扇大门推开进去。", [], "camera"),
   // 切换场景：走廊
-  Aside("走廊像一条苍白的喉咙。"),
+  Aside("走廊像一条苍白的喉咙。", [], "start3"),
   // 托尼走上来
-  Tony("%name，你还好吧？", [], "tonyshow1"),
+  Tony("%name，你还好吧？", [], "start4"),
   Choice("branch6", [
     "还好，只是没想到还要照相。",
     "不太好。我感觉自己要被闪光灯谋杀了。",
@@ -374,7 +374,7 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   ),
   Aside("大门被拉开，门轴发出摩擦的声音。"),
   // 切换场景：告别厅
-  Tony("那么，你和逝者的关系？"),
+  Tony("那么，你和逝者的关系？", [], "start5"),
   Choice("branch7", [
     "又来？就非要做这种事吗？",
     "刚刚在那个办公室已经问过我一遍了。",
@@ -399,7 +399,7 @@ export const dialogChapter0 = readable<DialogInterface[]>([
     "确认一下查理的遗产。他的遗产不多，一个还剩15年许可的储物柜兼1.74m可折叠式休息区，一点信用点存款，还有一个……蛋？那种情况下都能把它拽下来，唔，我都不知道该怎么说了。总之先签字吧。",
   ),
   // 签字声
-  Tony("最后一个流程，啧。"),
+  Tony("最后一个流程，啧。", [], "writing"),
   George("怎么了？"),
   Tony("我们可能有一点小麻烦，但相信我，会过去的，很简单。"),
   Aside("托尼看着我的眼睛，轻轻地推着我的手臂，让我在座位上坐好。"),
@@ -472,12 +472,12 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   // 切换场景：宿舍床铺
   Aside(
     "最终，你回到休息区，带着饥饿、疲惫还有些陌生的情绪，你并不愿意去确认那到底是什么。",
+    [],
+    "start6"
   ),
   Aside("蛋也没事，它完整地被你带回来了。"),
   Aside(
-    "休息区仍是你熟悉的样子，紧贴墙壁的垂直货架，上面摆了许多稀奇的小玩意——都是从垃圾传送带上捡回来的。",
-    [],
-    "tonyhide1"
+    "休息区仍是你熟悉的样子，紧贴墙壁的垂直货架，上面摆了许多稀奇的小玩意——都是从垃圾传送带上捡回来的。"
   ),
   Aside("把货架沿着滑轨抬上去，剩下的空间才是你真正的家——一张床铺。"),
   Aside(
@@ -501,7 +501,7 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   George("因为查理死了。"),
   Wildebeest("哦？噢，我想起来了，是这么回事。"),
   George("你们之前相处的怎么样？"),
-  Aside("（巨大的低沉的机械运作噪声）"),
+  Aside("（巨大的低沉的机械运作噪声）", [], "machine"),
   Aside("你和邻居的聊天就像被按下暂停键。"),
   Aside(
     "这上面是太空港的装卸仓，时不时就会响起这样的噪声，但这小小的代价也换来了巨大的收益，你们有更大的空间，甚至还有一列升降货架。",
@@ -511,10 +511,11 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   ),
   Aside("你好想舔自己的鼻子。"),
   Aside("……"),
-  Aside("噪声过去了。"),
+  Aside("噪声过去了。", [], "machinestop"),
   Wildebeest("不，我和查理不熟。"),
   Aside("他转过身，开始换下工作服，无意再与你交谈。你慢慢地坐下去，床铺很软。"),
-  Aside("嘭！"), //（播放重物摔落声，不阻止线程）
+  // 播放重物坠落声
+  Aside("嘭！", [], "collapse"), 
   Aside(
     "那枚蛋从床铺上滚到地上，细细纹路出现在它的表面，越来越大，就像是裂缝。",
   ),
@@ -533,7 +534,6 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   Aside(
     "你的手攥冰冷的金属滑轨，就像按着濒死的躯体，兴奋感化成一股热流沿着脊椎爬行到脑子里，你压抑不住的、从胸腔深处发出的闷哼在狭小的休息区内撞击回荡，又被新一阵的机器噪声淹没。",
   ),
-  // 播放：机器噪声
   Aside("最终你用尽所有的力气在金属边框留下一个浅浅的痕迹。"),
   Aside("你筋疲力尽。"),
   George("抹布，抹布，抹布……"),
@@ -545,7 +545,7 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   Aside(
     "你蹲下身，看着那枚蛋，指尖摩挲这裂缝的边缘，光滑，甚至有微微的弧度。你用力沿着裂缝一掰——",
   ),
-  Aside("咔！"), // 播放：盒子打开的声音（不阻止线程）
+  Aside("咔！", [], "openbox"), // 播放：盒子打开的声音（不阻止线程）
   Aside(
     "蛋壳顺滑地分成两半，里面空空如也。没有蛋清，没有蛋黄，没有任何活体组织应有的痕迹。内壁光滑如镜，闪着陶瓷的光泽。",
   ),
@@ -556,7 +556,6 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   Aside(
     "它很薄，却异常坚韧，像是某种合成织物，又带着一点生物材质的柔韧。你小心地把它翻转过来——",
   ),
-  // 场景切换：家园号
   Aside("家园号-全程-顶层豪奢套间<br>目的地：地球"),
   Aside(
     "你知道这趟飞船，这座太空港就是为它建设的，据说是史上最庞大，最昂贵，也最声名远播的星际客轮。你曾经和托尼一起幻想过其中的生活，十几种口味的营养膏，随时供应的热水，真空一般的安静，还有高含氧无异味的空气……",
@@ -580,7 +579,8 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   Tony(
     "稍等……好，再来一趟告别厅，我用你的名义发起一次投诉访问，接待人是我。这样在解决投诉期间那边的监控器会暂时地故障一会儿，方便我采取一切可能的拒保行动。",
   ),
-  Aside("20分钟后，我闻到熟悉的消毒水味。托尼迎了上来。"),
+  // 场景切换：告别厅
+  Aside("20分钟后，我闻到熟悉的消毒水味。托尼迎了上来。", [], "start7"),
   Tony(
     "我们有大概十五分钟。到底怎么了？流程还有问题，还是有人找你麻烦？垃圾分类中心的那帮蠢货？",
   ),
@@ -632,12 +632,6 @@ export const dialogChapter0 = readable<DialogInterface[]>([
     ifbranch3a4,
   ),
   Tony("你要卖掉这张船票吗？", ifbranch3a4, "isSell"),
-  // {
-  //   name: `<span style="color: orange">托尼</span>`,
-  //   message: "你要卖掉这张船票吗？",
-  //   id: "isSell",
-  //   if: ifbranch3a4,
-  // },
   Choice("branch5", ["不卖船票", "送给托尼", "卖掉船票"], ifbranch3a4),
   George("还是算了，总要去看一眼地球才甘心。", [
     {
@@ -680,7 +674,7 @@ export const dialogChapter0 = readable<DialogInterface[]>([
       Tony("送给我？", ifbranch),
       Aside("托尼伸手敲敲自己的脑袋。", ifbranch),
       {
-        name: `<span style="color: orange">托尼</span>`,
+        name: `<span style="${publicCss} background-color: orange;">托尼</span>`,
         avatar: "",
         message: "那地方可到处是水，连屋顶都没有，我可去不了。你再想想。",
         goto: "isSell",
@@ -699,6 +693,7 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   Aside(
     "一艘银色的太空船缓缓地向着太空港驶来，像羽毛一样轻盈，像水滴一样光滑。整座太空港都忙碌起来，先是引力预警器发出低沉的、持续性的嗡鸣，像一头巨鲸在深海发出的鸣叫。然后无数牵引车像蚂蚁一样沿着互不干扰的轨迹爬行，卸下集装箱，堆满港口。",
     ifbranch3o4o5,
+    "start8"
   ),
   Aside(
     "下一步，港区所有的灯光，无论是刺目的作业灯还是微弱的指示灯，都开始同步明灭，仿佛整座太空港都在跟随一个遥远的心跳呼吸。接着，主对接廊桥牢牢咬合在客船的气闸，金属骨架传导来的、深沉至极的“咚！”一声沉闷的巨响，更多的管线——能源的、数据的、维生的——如蛇一般自动连接。",
@@ -812,5 +807,8 @@ export const dialogChapter0 = readable<DialogInterface[]>([
 ]);
 export const dialogChapter1 = readable<DialogInterface[]>([
   George("你好！有人吗？"),
-  Aside("你在船上漫步着。")
+  Aside("寂静无声。"),
+  Aside("刚来到船舶的%name感到非常迷茫，因为他完全不知道接下来会发生什么。到底是有人会把他赶下去，还是有人会把他丢出宇宙飞船。"),
+  Aside("但是他转念一想，自己获得了顶层豪奢套间的船票，还会怕有人会把他赶下去不成？吼吼！这么一想，他顿时放轻松了。"),
+  Aside("不过，这个地方为什么一个人也没有？他环顾四周，周围空荡荡的，这里明明已经到候船厅了，为什么一个人也没有？"),
 ])

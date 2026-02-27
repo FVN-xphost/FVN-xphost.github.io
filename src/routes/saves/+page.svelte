@@ -9,10 +9,9 @@
     } from "../../store/dialog";
     import { sleep, router, branchCount } from "../../utils/all";
     import { save, unlockGallery } from "../../utils/backend-tauri";
-    import Scene1 from "../../assets/scene/scene1.png";
     import MyInputName from "./MyInputName.svelte";
     import "../../components/input/MyStarBack";
-    import "../../components/input/MyCustomComponent"
+    import "../../components/input/MyCustomComponent";
     // 控制主屏幕显示。
     let showMainScreen = $state(false);
     // 控制 空格键 锁定
@@ -147,86 +146,113 @@
     // Tony 样式
     let TonyStyle = $state("");
     let TonyImage = $state("");
+    // George 样式
+    let GeorgeStyle = $state("");
+    let GeorgeImage = $state("");
+    // Andrey 样式
+    let AndreyStyle = $state("");
+    let AndreyImage = $state("");
+    // 背景资源
+    import Workplace from "../../assets/scene/workplace.jpg";
+    import Hallway from "../../assets/scene/hallway.jpg";
+    import Funeral from "../../assets/scene/funeral.jpg";
+    import Bedroom from "../../assets/scene/bedroom.jpg";
+    import Spaceport from "../../assets/scene/spaceport.jpg";
+    // 立绘资源
     import AndreyCloth from "../../assets/illustration/andrey_cloth.png";
     import AndreyNocloth from "../../assets/illustration/andrey_nocloth.png";
-    import AndreyNoEye from "../../assets/illustration/andrey_noeye.png";
+    import AndreyNoeye from "../../assets/illustration/andrey_noeye.png";
+    import AndreyHand from "../../assets/illustration/andrey_hand.png";
+    import AndreyFace from "../../assets/illustration/andrey_face.png";
     import TonyCoat from "../../assets/illustration/tony_coat.png";
     import TonyShirt from "../../assets/illustration/tony_shirt.png";
     import TonyNoeye from "../../assets/illustration/tony_noeye.png";
-    import AndreyHand from "../../assets/illustration/andrey_hand.png";
-    import AndreyFace from "../../assets/illustration/andrey_face.png";
+    import GeorgeAll from "../../assets/illustration/george_all.png";
+    import GeorgeNoall from "../../assets/illustration/george_noall.png";
+    import GeorgeNocloth from "../../assets/illustration/george_nocloth.png";
+    import GeorgeNocoat from "../../assets/illustration/george_nocoat.png";
+    import GeorgeNoeye from "../../assets/illustration/george_noeye.png";
+    import GeorgeNovest from "../../assets/illustration/george_novest.png";
     import Chapter from "./Chapter.svelte";
     import End from "./End.svelte";
     import Saved from "./Saved.svelte";
+    // 音效资源
+    import Machine from "../../assets/sounds/ogg/machine.ogg";
+    const machine = new Audio(Machine);
+    machine.loop = true;
+    machine.volume = 0.2;
+    import Camera from "../../assets/sounds/ogg/camera.ogg";
+    const camera = new Audio(Camera);
+    import Writing from "../../assets/sounds/ogg/writing.ogg";
+    const writing = new Audio(Writing);
+    import Collapse from "../../assets/sounds/ogg/collapse.ogg";
+    const collapse = new Audio(Collapse);
+    import Openbox from "../../assets/sounds/ogg/openbox.ogg";
+    const openbox = new Audio(Openbox);
     async function doStyle(current: number, isQuick: boolean = false) {
         if (current === 0) {
             backStyle = `opacity: 0`;
             backImage = "";
             TonyStyle = `opacity: 0; bottom: 0; right: 0; height: 80%`;
             TonyImage = "";
+            GeorgeStyle = `opacity: 0; bottom: 0; left: 0; height: 80%`;
+            GeorgeImage = "";
+            AndreyStyle = `opacity: 0; bottom: 0; right: 0; height: 80%`;
+            AndreyImage = "";
         }
         if (gd(current).id === "start1") {
-            backImage = Scene1 as string;
+            backImage = Workplace as string;
             backStyle = `opacity: 1;`;
-            // if (!isQuick) await sleep(500);
-        } else if (gd(current).id === "tonyshow1") {
+        } else if (gd(current).id === "start2") {
+            GeorgeImage = GeorgeAll;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 0; height: 80%`;
+        } else if (gd(current).id === "start3") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Hallway;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start4") {
             TonyImage = TonyCoat as string;
             TonyStyle = `opacity: 1; bottom: 0; right: 0; height: 80%`;
-        } else if (gd(current).id === "tonyhide1") {
+        } else if (gd(current).id === "start5") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Funeral;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start6") {
             TonyStyle = `opacity: 0; bottom: 0; right: 0; height: 80%`;
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Bedroom;
+            backStyle = `opacity: 1`;
+            GeorgeImage = GeorgeNocoat;
+        } else if (gd(current).id === "start7") {
+            TonyImage = TonyShirt;
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Funeral;
+            backStyle = `opacity: 1`;
+            TonyStyle = `opacity: 1; bottom: 0; right: 0; height: 80%`;
+            GeorgeImage = GeorgeAll;
+        } else if (gd(current).id === "start8") {
+            TonyStyle = `opacity: 0; bottom: 0; right: 0; height: 80%`;
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Spaceport;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "writing") {
+            if (!isQuick) writing.play();
+        } else if (gd(current).id === "camera") {
+            if (!isQuick) camera.play();
+        } else if (gd(current).id === "collapse") {
+            if (!isQuick) collapse.play();
+        } else if (gd(current).id === "machine") {
+            machine.play();
+        } else if (gd(current).id === "openbox") {
+            if (!isQuick) openbox.play();
+        } else if (gd(current).id === "machinestop") {
+            machine.pause();
         }
-        // if (current === 0) {
-        //     backStyle = "opacity: 0;";
-        //     liveStyleTiger = "transform: translateX(110vh);";
-        // } else if (current === 5) {
-        //     liveStyleDragon = "";
-        // } else if (current === 6) {
-        //     liveStyleDragon = "animation: run 2s infinite;";
-        // } else if (current === 7) {
-        //     liveStyleDragon = "transform: rotateY(180deg);";
-        // } else if (current === 8) {
-        //     liveStyleDragon = "scale: 1.2;";
-        // } else if (current === 9) {
-        //     liveStyleDragon = "animation: vibration 0.2s infinite;";
-        // } else if (current === 10) {
-        //     await unlockGallery(1);
-        //     liveStyleDragon = "";
-        // } else if (current === 11) {
-        //     experienceIns.play();
-        //     liveStyleDragon = "";
-        // } else if (current === 12) {
-        //     pianoIns.play();
-        //     liveStyleDragon = "";
-        // } else if (current === 35) {
-        //     liveStyleDragon = "";
-        //     liveStyleTiger = "transform: translateX(110vh);";
-        // } else if (current === 36) {
-        //     liveStyleDragon = "animation: runleft 2s;";
-        //     if (!isQuick) await sleep(2000);
-        //     liveStyleDragon = "transform: translateX(-10vh) rotateY(180deg);";
-        //     liveStyleTiger = "animation: runleft2 1s";
-        //     if (!isQuick) await sleep(1000);
-        //     liveStyleTiger = "transform: translateX(10vh)";
-        // } else if (current === 37) {
-        //     backStyle = "opacity: 0;";
-        // } else if (current === 38) {
-        //     backStyle = "animation: opac1 0.5s";
-        //     if (!isQuick) await sleep(500);
-        //     backStyle = "opacity: 1";
-        // }
-        // if (current >= 0 && current < 36) {
-        //     backStyle = "opacity: 0;";
-        //     if (current < 36) {
-        //         liveStyleTiger = "transform: translateX(110vh);";
-        //     }
-        // }
-        // if (current >= 36) {
-        //     liveStyleDragon = "transform: translateX(-10vh) rotateY(180deg);";
-        //     liveStyleTiger = "transform: translateX(10vh)";
-        //     if (current >= 38) {
-        //         backStyle = "opacity: 1";
-        //     }
-        // }
     }
     // 会根据 对话内容 进行下一步处理！
     // 返回 -10 代表已经走到末尾，返回 -11 代表这是一个选项。返回 -12 代表已经到末尾！
@@ -562,10 +588,25 @@
         }
     }, 3000);
     let TonyEye = $state(true);
+    let GeorgeEye = $state(true);
+    let AndreyEye = $state(true);
     setInterval(async () => {
+        await sleep(Math.random() * 1000 + 2000);
         TonyEye = false;
         await sleep(500);
         TonyEye = true;
+    }, 5000);
+    setInterval(async () => {
+        await sleep(Math.random() * 1000 + 2000);
+        GeorgeEye = false;
+        await sleep(500);
+        GeorgeEye = true;
+    }, 5000);
+    setInterval(async () => {
+        await sleep(Math.random() * 1000 + 2000);
+        AndreyEye = false;
+        await sleep(500);
+        AndreyEye = true;
     }, 5000);
     // setInterval(() => {
     //     if(dialogDom) {
@@ -605,6 +646,23 @@
                     />
                     <div
                         class="mousecover absolute transition-opacity duration-500 w-auto z-10"
+                        style={GeorgeStyle}
+                    >
+                        {#if !GeorgeEye}
+                            <img
+                                src={GeorgeNoeye}
+                                alt="主角眨眼"
+                                class="absolute top-0 left-0 w-auto h-full"
+                            />
+                        {/if}
+                        <img
+                            src={GeorgeImage}
+                            alt="主角图片"
+                            class="w-auto h-full"
+                        />
+                    </div>
+                    <div
+                        class="mousecover absolute transition-opacity duration-500 w-auto z-10"
                         style={TonyStyle}
                     >
                         {#if !TonyEye}
@@ -617,6 +675,23 @@
                         <img
                             src={TonyImage}
                             alt="Tony图片"
+                            class="w-auto h-full"
+                        />
+                    </div>
+                    <div
+                        class="mousecover absolute transition-opacity duration-500 w-auto z-10"
+                        style={AndreyStyle}
+                    >
+                        {#if !AndreyEye}
+                            <img
+                                src={AndreyNoeye}
+                                alt="主角眨眼"
+                                class="absolute top-0 left-0 w-auto h-full"
+                            />
+                        {/if}
+                        <img
+                            src={AndreyImage}
+                            alt="主角图片"
                             class="w-auto h-full"
                         />
                     </div>
@@ -875,6 +950,7 @@
                             e.preventDefault();
                             e.stopPropagation();
                             router.back();
+                            machine.pause();
                         }}
                         onkeydown={(e) => {
                             e.preventDefault();
