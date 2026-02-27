@@ -631,7 +631,7 @@
     >
         <my-star-back></my-star-back>
         <div
-            class="w-[50vw] h-[90vh] border-y-gray-300 border-y flex items-center relative"
+            class="w-[60vw] h-[90vh] border-y-gray-300 border-y flex items-center relative"
         >
             <div
                 class="w-full h-[88.5vh] border-y-gray-600 border-y flex items-center z-10"
@@ -863,7 +863,7 @@
             </div>
         </div>
         <div
-            class="w-[12vw] h-[90vh] border-y-gray-300 border-y flex items-center z-10"
+            class="w-[10vw] h-[90vh] border-y-gray-300 border-y flex items-center z-10"
         >
             <div
                 class="w-full h-[88.5vh] border-y-gray-600 border-y flex items-center relative"
