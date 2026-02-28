@@ -30,20 +30,11 @@
 *::-webkit-scrollbar {
     display: none;
 }
-@keyframes star {
+@keyframes walk {
     0% {
-        opacity: 0;
+        transform: translateX(0);
     }
-
-    20% {
-        opacity: 1;
-    }
-
-    80% {
-        opacity: 1;
-    }
-
     100% {
-        opacity: 0;
+        transform: translateX(100vw);
     }
 }

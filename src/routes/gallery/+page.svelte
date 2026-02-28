@@ -1,165 +1,254 @@
 <script lang="ts">
     import { fade } from "svelte/transition";
     import { sleep } from "../../utils/all";
-    import { galleryLock, galleryPage, saveData } from "../../store/store";
+    import { saveData } from "../../store/store";
     import "../../components/input/MyMenuButton";
-    import { quadInOut } from "svelte/easing";
     import { onMount } from "svelte";
     import { router } from "../../utils/all";
-    import GalleryBack from "../../assets/Home/galleryback.jpg";
-    import "../../components/input/MyStarBack"
-    let galleryTrans1 = $state(new Array($galleryLock.length).fill(false));
-    let galleryTrans2 = $state(new Array($galleryLock.length).fill(false));
+    import "../../components/input/MyStarBack";
+    // 立绘资源
+    import AndreyAll from "../../assets/illustration/andrey_all.png";
+    import AndreyNohand from "../../assets/illustration/andrey_nohand.png";
+    import AndreyNocloth from "../../assets/illustration/andrey_nocloth.png";
+    import AndreyNoeye from "../../assets/illustration/andrey_noeye.png";
+    import AndreyFace from "../../assets/illustration/andrey_face.png";
+    import TonyCoat from "../../assets/illustration/tony_coat.png";
+    import TonyShirt from "../../assets/illustration/tony_shirt.png";
+    import TonyNoeye from "../../assets/illustration/tony_noeye.png";
+    import GeorgeAll from "../../assets/illustration/george_all.png";
+    import GeorgeNoall from "../../assets/illustration/george_noall.png";
+    import GeorgeNocloth from "../../assets/illustration/george_nocloth.png";
+    import GeorgeNocoat from "../../assets/illustration/george_nocoat.png";
+    import GeorgeNovest from "../../assets/illustration/george_novest.png";
+    import GeorgeNoeye from "../../assets/illustration/george_noeye.png";
+    // CG 资源
+    import TestCG from "../../assets/scene/bedroom.jpg";
     let o1 = $state(false);
-    const pageLength = 6;
-    const galleryPageLength = Math.ceil($galleryLock.length / pageLength);
-    let page = $state(1);
-    // true 为 上一页，false 为 下一页
-    async function changePages(pageControl: boolean) {
-        page = pageControl ? page - 1 : page + 1;
-        if (
-            (page >= 1 && pageControl) ||
-            (page <= galleryPageLength && !pageControl)
-        ) {
-            galleryPage.set(page);
-            await load();
-        }
-        if (page >= galleryPageLength) page = galleryPageLength;
-        else if (page <= 1) page = 1;
+    let cg = $state(0);
+    const galleryLock = [
+        {
+            id: "1",
+            images: [TestCG, TestCG, TestCG],
+            name: "照顾",
+        },
+        {
+            id: "2",
+            images: [],
+            name: "太空港",
+        },
+    ];
+    const illustratorMan = [
+        {
+            name: "乔治-穿衣",
+            image: GeorgeAll,
+            eye: 1,
+        },
+        {
+            name: "乔治-脱外套",
+            image: GeorgeNocoat,
+            eye: 1,
+        },
+        {
+            name: "乔治-脱背心",
+            image: GeorgeNovest,
+            eye: 1,
+        },
+        {
+            name: "乔治-脱上衣",
+            image: GeorgeNocloth,
+            eye: 1,
+        },
+        {
+            name: "乔治-短裤",
+            image: GeorgeNoall,
+            eye: 1,
+        },
+        {
+            name: "安德烈-穿衣",
+            image: AndreyAll,
+            eye: 2,
+        },
+        {
+            name: "安德烈-无机械臂",
+            image: AndreyNohand,
+            eye: 2,
+        },
+        {
+            name: "安德烈-脱衣",
+            image: AndreyNocloth,
+            eye: 2,
+        },
+        {
+            name: "托尼-西装",
+            image: TonyCoat,
+            eye: 3,
+        },
+        {
+            name: "托尼-脱外套",
+            image: TonyShirt,
+            eye: 3,
+        },
+    ];
+    let galleryStyle = $state("opacity: 0;");
+    let galleryImage = $state([]);
+    async function showGallery(item: any) {
+        if (!($saveData?.gallery ?? {})[`gallery${item.id}`]) return;
+        console.log("success!", item);
+        galleryStyle = "opacity: 0";
+        await sleep(250);
+        const c = document.querySelector(".gallery");
+        c!.scrollLeft = 0;
+        c?.addEventListener("wheel", (e: Event) => {
+            e.preventDefault();
+            c.scrollLeft += (e as WheelEvent).deltaY;
+        });
+        galleryImage = item.images;
+        await sleep(50);
+        galleryStyle = "opacity: 1";
     }
-    async function load() {
-        galleryTrans1 = new Array(pageLength).fill(false);
-        galleryTrans2 = new Array(pageLength).fill(false);
-        await sleep(20);
-        for (let i = 0; i < $galleryLock.length; i++) {
-            galleryTrans1[i] = true;
-            await sleep(200);
-            galleryTrans2[i] = true;
-        }
+    let illustraEye = $state(0);
+    let illustraReal = $state("");
+    let illustraStyle = $state("opacity: 0;");
+    async function showIllustration(item: any) {
+        illustraStyle = `opacity: 0`;
+        await sleep(250);
+        illustraReal = item.image;
+        await sleep(50);
+        illustraEye = item.eye;
+        illustraStyle = `opacity: 1`;
+        mc = document.querySelectorAll(".mousecover") as any as HTMLElement[];
     }
+    let mc = $state<HTMLElement[]>([]);
     onMount(async () => {
-        page = $galleryPage;
         o1 = true;
         await sleep(300);
-        await load();
+        const back = document.querySelector(".back") as HTMLDivElement;
+        back.addEventListener("mousemove", (e: MouseEvent) => {
+            const x = window.innerWidth / 2 - e.pageX;
+            const y = window.innerHeight / 2 - e.pageY;
+            mc.forEach((el: HTMLElement) => {
+                const xPos = x / 300;
+                const yPos = y / 300;
+                el.style.transform = `translateX(${xPos}px) translateY(${yPos}px)`;
+            });
+        });
     });
-    function rot1(node: HTMLElement) {
-        return {
-            delay: 0,
-            duration: 1500,
-            easing: quadInOut,
-            css: (t: number, n: number) =>
-                `opacity: ${t}; transform: rotate(${n * 20 + 10}deg)`,
-        };
-    }
-    function rot2(node: HTMLElement) {
-        return {
-            delay: 0,
-            duration: 1500,
-            easing: quadInOut,
-            css: (t: number, n: number) => {
-                return `opacity: ${t}; transform: rotate(${n * 20}deg)`;
-            },
-        };
-    }
+    let Eye = $state(true);
+    setInterval(async () => {
+        await sleep(Math.random() * 1000 + 2000);
+        Eye = false;
+        await sleep(500);
+        Eye = true;
+    }, 5000);
 </script>
 
 {#if o1}
     <div
         in:fade={{ duration: 1500 }}
-        class="bg-[url(/src/assets/Home/back.jpg)] fixed overflow-hidden left-0 top-0 w-screen h-screen grid grid-cols-3 grid-rows-2 bg-img-full"
+        class="back bg-img-full bg-[url(/src/assets/Home/back.jpg)] fixed overflow-hidden left-0 top-0 w-screen h-screen flex"
     >
-        {#each $galleryLock.filter((_, index) => {
-            const pm = page - 1;
-            return index >= pm * pageLength && index < pm * pageLength + pageLength;
-        }) as item, index}
-            <div class="relative z-10">
-                {#if galleryTrans2[index]}
-                    <button
-                        in:rot2
-                        class="trans trans2 bg-img-full"
-                        style={`background-image: url(${($saveData?.gallery ?? {})[`gallery${item.id}`] ? (item.images[0] ?? GalleryBack) : GalleryBack})`}
-                        onclick={() => {
-                            if (($saveData?.gallery ?? {})[`gallery${item.id}`])
-                                router.push(`/gallery/${item.id}`);
-                        }}
-                        aria-labelledby="Click me!"
-                    ></button>
-                {/if}
-                {#if galleryTrans1[index]}
-                    <button
-                        in:rot1
-                        class="trans"
-                        onclick={() => {
-                            if (($saveData?.gallery ?? {})[`gallery${item.id}`])
-                                router.push(`/gallery/${item.id}`);
-                        }}
-                        aria-labelledby="Click me!"
-                    ></button>
-                {/if}
-            </div>
-        {/each}
         <my-star-back></my-star-back>
-        <div
-            class="fixed bottom-[20px] right-[446px] z-10000 text-[20px] font-bold"
-            style="color: white;"
-        >
-            页码：{page} / {galleryPageLength}
+        <div class="flex-1 h-full flex flex-col items-center z-10">
+            <my-menu-button
+                click={async () => {
+                    cg = 0;
+                    illustraStyle = `opacity: 0`;
+                    await sleep(300);
+                    cg = 1;
+                }}
+                style="margin-top: 3vh;">立绘</my-menu-button
+            >
+            <my-menu-button
+                click={async () => {
+                    cg = 0;
+                    illustraStyle = `opacity: 0`;
+                    await sleep(300);
+                    cg = 2;
+                }}
+                style="margin-top: 3vh;"
+                >C · G ·
+            </my-menu-button>
+        </div>
+        <div class="flex-1 h-full z-10">
+            {#if cg === 1}
+                <div
+                    in:fade={{ duration: 300 }}
+                    out:fade={{ duration: 300 }}
+                    class="w-full h-full flex flex-col items-center"
+                >
+                    {#each illustratorMan as item}
+                        <my-menu-button
+                            click={() => showIllustration(item)}
+                            style="margin-top: 3vh"
+                        >
+                            {item.name}
+                        </my-menu-button>
+                    {/each}
+                </div>
+            {:else if cg === 2}
+                <div
+                    in:fade={{ duration: 300 }}
+                    out:fade={{ duration: 300 }}
+                    class="w-full h-full flex flex-col items-center"
+                >
+                    {#each galleryLock as item}
+                        <my-menu-button
+                            in:fade={{ duration: 300 }}
+                            out:fade={{ duration: 300 }}
+                            click={() => showGallery(item)}
+                            style="margin-top: 3vh"
+                        >
+                            {($saveData?.gallery ?? {})[`gallery${item.id}`]
+                                ? item.name
+                                : "【Locked】"}
+                        </my-menu-button>
+                    {/each}
+                </div>
+            {/if}
+        </div>
+        <div class="w-[60vw] h-full relative z-10">
+            {#if cg === 1}
+                <div
+                    in:fade={{ duration: 300 }}
+                    out:fade={{ duration: 300 }}
+                    class="mousecover transition-opacity duration-300 absolute w-fit bottom-0 h-[90%] mx-auto left-0 right-0"
+                    style={illustraStyle}
+                >
+                    {#if !Eye}
+                        <img
+                            src={["", GeorgeNoeye, AndreyNoeye, TonyNoeye][
+                                illustraEye
+                            ]}
+                            alt="眨眼"
+                            class="absolute top-0 left-0 w-auto h-full"
+                        />
+                    {/if}
+                    <img src={illustraReal} alt="立绘" class="w-auto h-full" />
+                </div>
+            {:else if cg === 2}
+                <div
+                    in:fade={{ duration: 300 }}
+                    out:fade={{ duration: 300 }}
+                    class="gallery border-yellow-300 border-2 border-dashed transition-opacity overflow-x-auto duration-300 w-[60vw] absolute left-0 right-0 top-0 bottom-0 my-auto aspect-16/10 flex"
+                    style={galleryStyle}
+                >
+                    {#each galleryImage as gallery}
+                        <img
+                            src={gallery}
+                            alt="C · G · "
+                            class="w-[60vw] h-full shrink-0"
+                        />
+                    {/each}
+                </div>
+            {/if}
         </div>
         <my-menu-button
             click={() => {
-                changePages(true);
-            }}
-            style="position: fixed; bottom: 10px; right: 296px; z-index: 10000;"
-        >
-            上一页
-        </my-menu-button>
-        <my-menu-button
-            click={() => {
-                changePages(false);
-            }}
-            style="position: fixed; bottom: 10px; right: 156px; z-index: 10000;"
-        >
-            下一页
-        </my-menu-button>
-        <my-menu-button
-            click={() => {
-                galleryPage.set(1);
                 router.push("/");
             }}
-            style="position: fixed; bottom: 10px; right: 16px; z-index: 10000;"
+            style="position: fixed; bottom: 10px; right: 16px; z-index: 10;"
         >
             返回
         </my-menu-button>
     </div>
 {/if}
-
-<style>
-    .trans {
-        width: 20vw;
-        height: 30vh;
-        background-color: white;
-        transform-origin: 80% 80%;
-        transform: rotate(10deg);
-        position: absolute;
-        top: calc(50% - 15vh);
-        left: calc(50% - 10vw);
-        background-color: gray;
-        transition: box-shadow 0.2s;
-        border: none;
-        cursor: pointer;
-    }
-    .trans2 {
-        transform: rotate(0);
-        background-color: white;
-        background-image: url("../../assets/Home/galleryback.jpg");
-        z-index: 10;
-        cursor: pointer;
-    }
-    .trans2:hover {
-        box-shadow: 0 0 12px purple;
-    }
-    .trans2:hover + .trans {
-        box-shadow: 0 0 12px gray;
-    }
-</style>

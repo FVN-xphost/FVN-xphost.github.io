@@ -60,6 +60,7 @@
             ...$currentSave,
             [key]: value,
         });
+        // console.log($currentSave);
     }
     // 解锁任一画廊
     async function ug(id: number) {
@@ -158,11 +159,14 @@
     import Funeral from "../../assets/scene/funeral.jpg";
     import Bedroom from "../../assets/scene/bedroom.jpg";
     import Spaceport from "../../assets/scene/spaceport.jpg";
+    import Grassland from "../../assets/scene/grassland.jpg";
+    import Train from "../../assets/scene/train.jpg";
+    import Station from "../../assets/scene/station.jpg";
     // 立绘资源
-    import AndreyCloth from "../../assets/illustration/andrey_cloth.png";
+    import AndreyAll from "../../assets/illustration/andrey_all.png";
     import AndreyNocloth from "../../assets/illustration/andrey_nocloth.png";
+    import AndreyNohand from "../../assets/illustration/andrey_nohand.png";
     import AndreyNoeye from "../../assets/illustration/andrey_noeye.png";
-    import AndreyHand from "../../assets/illustration/andrey_hand.png";
     import AndreyFace from "../../assets/illustration/andrey_face.png";
     import TonyCoat from "../../assets/illustration/tony_coat.png";
     import TonyShirt from "../../assets/illustration/tony_shirt.png";
@@ -193,11 +197,11 @@
         if (current === 0) {
             backStyle = `opacity: 0`;
             backImage = "";
-            TonyStyle = `opacity: 0; bottom: 0; right: 0; height: 80%`;
+            TonyStyle = `opacity: 0; bottom: 0; right: 2rem; height: 90%`;
             TonyImage = "";
-            GeorgeStyle = `opacity: 0; bottom: 0; left: 0; height: 80%`;
+            GeorgeStyle = `opacity: 0; bottom: 0; left: 2rem; height: 90%`;
             GeorgeImage = "";
-            AndreyStyle = `opacity: 0; bottom: 0; right: 0; height: 80%`;
+            AndreyStyle = `opacity: 0; bottom: 0; right: 2rem; height: 90%`;
             AndreyImage = "";
         }
         if (gd(current).id === "start1") {
@@ -205,7 +209,7 @@
             backStyle = `opacity: 1;`;
         } else if (gd(current).id === "start2") {
             GeorgeImage = GeorgeAll;
-            GeorgeStyle = `opacity: 1; bottom: 0; left: 0; height: 80%`;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%`;
         } else if (gd(current).id === "start3") {
             backStyle = `opacity: 0`;
             if (!isQuick) await sleep(500);
@@ -213,14 +217,14 @@
             backStyle = `opacity: 1`;
         } else if (gd(current).id === "start4") {
             TonyImage = TonyCoat as string;
-            TonyStyle = `opacity: 1; bottom: 0; right: 0; height: 80%`;
+            TonyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%`;
         } else if (gd(current).id === "start5") {
             backStyle = `opacity: 0`;
             if (!isQuick) await sleep(500);
             backImage = Funeral;
             backStyle = `opacity: 1`;
         } else if (gd(current).id === "start6") {
-            TonyStyle = `opacity: 0; bottom: 0; right: 0; height: 80%`;
+            TonyStyle = `opacity: 0; bottom: 0; right: 2rem; height: 90%`;
             backStyle = `opacity: 0`;
             if (!isQuick) await sleep(500);
             backImage = Bedroom;
@@ -232,14 +236,38 @@
             if (!isQuick) await sleep(500);
             backImage = Funeral;
             backStyle = `opacity: 1`;
-            TonyStyle = `opacity: 1; bottom: 0; right: 0; height: 80%`;
+            TonyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%`;
             GeorgeImage = GeorgeAll;
         } else if (gd(current).id === "start8") {
-            TonyStyle = `opacity: 0; bottom: 0; right: 0; height: 80%`;
+            TonyStyle = `opacity: 0; bottom: 0; right: 2rem; height: 90%`;
             backStyle = `opacity: 0`;
             if (!isQuick) await sleep(500);
             backImage = Spaceport;
             backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start10") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Grassland as string;
+            backStyle = `opacity: 1`;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%`;
+            GeorgeImage = GeorgeAll as string;
+        } else if (gd(current).id === "start12") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Train as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start11") {
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%; animation: walk 0.5s; transform: translateX(100vw);`;
+            if (!isQuick) await sleep(500);
+            backStyle = `opacity: 0`;
+            GeorgeStyle = `opacity: 0; bottom: 0; left: 2rem; height: 90%; transform: translateX(100vw);`;
+            if (!isQuick) await sleep(500);
+            backImage = Station as string;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%;`;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start11") {
+            AndreyImage = AndreyAll as string;
+            AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
         } else if (gd(current).id === "writing") {
             if (!isQuick) writing.play();
         } else if (gd(current).id === "camera") {
@@ -374,8 +402,7 @@
             showMainScreen = false;
             await sleep(500);
             chapterNum = gd(n).to;
-            console.log(chapterNum);
-            setSaveInfo("saved", gd(n).to);
+            setSaveInfo("saved", chapterNum);
             showChapter = true;
             await sleep(5000);
             historyFile = [];
@@ -637,7 +664,7 @@
                 class="w-full h-[88.5vh] border-y-gray-600 border-y flex items-center z-10"
             >
                 <!-- 立绘区域 -->
-                <div class="shrink-0 w-full h-full relative">
+                <div class="shrink-0 w-full h-full relative overflow-hidden">
                     <img
                         src={backImage}
                         alt="背景图片"

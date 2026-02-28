@@ -1,11 +1,14 @@
 <script lang="ts">
     import CS from '../../assets/title/0.png'
     import C1 from '../../assets/title/1.png'
+    import C2 from '../../assets/title/2.png'
+    import C3 from '../../assets/title/3.png'
+    import C4 from '../../assets/title/4.png'
     import Mask from '../../assets/title/mask.png'
     const { chapter } = $props()
 </script>
 <div class="fixed top-0 left-0 w-screen h-screen back">
-    <img class="absolute left-[50%] h-screen top-0 -translate-x-[50%] text" src={chapter === 0 ? CS : chapter === 1 ? C1 : ''} alt="文字">
+    <img class="absolute left-[50%] h-screen top-0 -translate-x-[50%] text" src={[CS, C1, C2, C3, C4][chapter] ?? CS} alt="文字">
     <img class="absolute left-[50%] h-screen top-0 -translate-x-[50%] mask" alt="蒙版" src={Mask}>
 </div>
 <style>
