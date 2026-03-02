@@ -181,7 +181,7 @@
     import Room from "../../assets/scene/room.jpg";
     import Pipeline from "../../assets/scene/pipeline.jpg";
     import Kitchen from "../../assets/scene/kitchen.jpg";
-    import Gameroom from "../../assets/scene/Gameroom.jpg";
+    import Gameroom from "../../assets/scene/gameroom.jpg";
     import Hotel from "../../assets/scene/hotel.jpg";
     import Hotelroom from "../../assets/scene/hotelroom.jpg";
     import Bridge from "../../assets/scene/bridge.jpg";
