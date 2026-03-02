@@ -23,6 +23,11 @@
     box-sizing: border-box;
 }
 
+.wvr {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+}
+
 *:not(.button-span) {
     font-family: AlibabaPuHuiTi, system-ui;
 }
@@ -30,11 +35,31 @@
 *::-webkit-scrollbar {
     display: none;
 }
+
 @keyframes walk {
     0% {
         transform: translateX(0);
     }
+
     100% {
         transform: translateX(100vw);
+    }
+}
+
+@keyframes gtr {
+    0% {
+        left: 2rem;
+    }
+    100% {
+        left: calc(100% - 24rem);
+    }
+}
+
+@keyframes gtl {
+    0% {
+        left: calc(100% - 24rem);
+    }
+    100% {
+        left: 2rem;
     }
 }

@@ -2,7 +2,6 @@
     import { fade } from "svelte/transition";
     import { sleep } from "../../utils/all";
     import { saveData } from "../../store/store";
-    import "../../components/input/MyMenuButton";
     import { onMount } from "svelte";
     import { router } from "../../utils/all";
     import "../../components/input/MyStarBack";
@@ -22,19 +21,15 @@
     import GeorgeNovest from "../../assets/illustration/george_novest.png";
     import GeorgeNoeye from "../../assets/illustration/george_noeye.png";
     // CG 资源
-    import TestCG from "../../assets/scene/bedroom.jpg";
+    import Book from "../../assets/gallery/book.jpg";
     let o1 = $state(false);
     let cg = $state(0);
+    let gs = $state(0);
     const galleryLock = [
         {
             id: "1",
-            images: [TestCG, TestCG, TestCG],
+            images: [Book],
             name: "照顾",
-        },
-        {
-            id: "2",
-            images: [],
-            name: "太空港",
         },
     ];
     const illustratorMan = [
@@ -92,7 +87,7 @@
     let galleryStyle = $state("opacity: 0;");
     let galleryImage = $state([]);
     async function showGallery(item: any) {
-        if (!($saveData?.gallery ?? {})[`gallery${item.id}`]) return;
+        // if (!($saveData?.gallery ?? {})[`gallery${item.id}`]) return;
         console.log("success!", item);
         galleryStyle = "opacity: 0";
         await sleep(250);
@@ -119,16 +114,39 @@
         mc = document.querySelectorAll(".mousecover") as any as HTMLElement[];
     }
     let mc = $state<HTMLElement[]>([]);
+    async function load() {
+        const skewbutton = document.querySelectorAll(
+            ".skewbutton",
+        ) as any as HTMLDivElement[];
+        skewbutton.forEach((ele: HTMLDivElement) => {
+            ele.addEventListener("mousemove", (e: MouseEvent) => {
+                const rect = ele.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const rotateX = ((y - centerY) / centerY) * -25;
+                const rotateY = ((x - centerX) / centerX) * 25;
+
+                ele.style.transform = `scale(1.1) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            ele.addEventListener("mouseleave", () => {
+                ele.style.transform = "scale(1) rotateX(0deg) rotateY(0deg)";
+            });
+        });
+    }
     onMount(async () => {
         o1 = true;
         await sleep(300);
+        await load();
         const back = document.querySelector(".back") as HTMLDivElement;
         back.addEventListener("mousemove", (e: MouseEvent) => {
             const x = window.innerWidth / 2 - e.pageX;
             const y = window.innerHeight / 2 - e.pageY;
             mc.forEach((el: HTMLElement) => {
-                const xPos = x / 300;
-                const yPos = y / 300;
+                const xPos = x / 180;
+                const yPos = y / 180;
                 el.style.transform = `translateX(${xPos}px) translateY(${yPos}px)`;
             });
         });
@@ -148,65 +166,107 @@
         class="back bg-img-full bg-[url(/src/assets/Home/back.jpg)] fixed overflow-hidden left-0 top-0 w-screen h-screen flex"
     >
         <my-star-back></my-star-back>
-        <div class="flex-1 h-full flex flex-col items-center z-10">
-            <my-menu-button
-                click={async () => {
-                    cg = 0;
-                    illustraStyle = `opacity: 0`;
-                    await sleep(300);
-                    cg = 1;
+        <div
+            class="shrink-0 w-[180px] h-full flex flex-col items-center justify-center z-10 px-[20px] gap-[40px] py-[60px]"
+        >
+            <button
+                class="flex font-bold cursor-pointer items-start justify-center transition-all duration-200 wvr skewbutton flex-1 w-full border-3 border-solid border-yellow-300 bg-transparent text-white hover:bg-yellow-300 hover:text-black"
+                aria-labelledby="角色"
+                style="font-size: 3rem;"
+                onclick={async () => {
+                    if (cg !== 1) {
+                        cg = 0;
+                        gs = 0;
+                        illustraStyle = `opacity: 0`;
+                        await sleep(300);
+                        cg = 1;
+                    }
                 }}
-                style="margin-top: 3vh;">立绘</my-menu-button
             >
-            <my-menu-button
-                click={async () => {
-                    cg = 0;
-                    illustraStyle = `opacity: 0`;
-                    await sleep(300);
-                    cg = 2;
+                角色
+            </button>
+            <button
+                class="flex font-bold cursor-pointer items-start justify-center transition-all duration-200 wvr skewbutton flex-1 w-full border-3 border-solid border-yellow-300 bg-transparent text-white hover:bg-yellow-300 hover:text-black"
+                aria-labelledby="插画"
+                style="font-size: 3rem;"
+                onclick={async () => {
+                    if (cg !== 2) {
+                        cg = 0;
+                        gs = 0;
+                        galleryStyle = `opacity: 0`;
+                        await sleep(300);
+                        cg = 2;
+                    }
                 }}
-                style="margin-top: 3vh;"
-                >C · G ·
-            </my-menu-button>
+            >
+                插画
+            </button>
         </div>
-        <div class="flex-1 h-full z-10">
+        <div
+            class="shrink-0 w-[150px] h-full z-10 border-x-3 border-yellow-300 border-solid"
+        >
             {#if cg === 1}
                 <div
                     in:fade={{ duration: 300 }}
                     out:fade={{ duration: 300 }}
-                    class="w-full h-full flex flex-col items-center"
+                    class="w-full h-full flex flex-col items-center px-4 py-8 gap-6 overflow-auto"
                 >
-                    {#each illustratorMan as item}
-                        <my-menu-button
-                            click={() => showIllustration(item)}
-                            style="margin-top: 3vh"
+                    {#each illustratorMan as item, index}
+                        <button
+                            aria-labelledby="角色"
+                            class="relative shrink-0 cursor-pointer transition-all duration-200 skewbutton h-[80px] w-full border-2 border-solid border-yellow-300 bg-transparent text-white hover:bg-yellow-300 hover:text-black"
+                            onclick={() => {
+                                if (gs !== index + 1) {
+                                    showIllustration(item);
+                                    gs = index + 1;
+                                }
+                            }}
+                            style={gs === index + 1
+                                ? "background-color: oklch(90.5% 0.182 98.111)"
+                                : ""}
                         >
-                            {item.name}
-                        </my-menu-button>
+                            <img
+                                src={item.image}
+                                alt="立绘"
+                                class="absolute bottom-0 left-0 right-0 mx-auto h-[90%]"
+                            />
+                        </button>
                     {/each}
                 </div>
             {:else if cg === 2}
                 <div
                     in:fade={{ duration: 300 }}
                     out:fade={{ duration: 300 }}
-                    class="w-full h-full flex flex-col items-center"
+                    class="w-full h-full flex flex-col items-center px-4 py-8 gap-6 overflow-auto"
                 >
-                    {#each galleryLock as item}
-                        <my-menu-button
-                            in:fade={{ duration: 300 }}
-                            out:fade={{ duration: 300 }}
-                            click={() => showGallery(item)}
-                            style="margin-top: 3vh"
+                    {#each galleryLock as item, index}
+                        <button
+                            aria-labelledby="插画"
+                            class="shrink-0 cursor-pointer transition-all duration-200 skewbutton h-[80px] w-full border-2 border-solid border-yellow-300 bg-transparent text-white hover:bg-yellow-300 hover:text-black"
+                            onclick={() => {
+                                if (gs !== index + 1) {
+                                    showGallery(item);
+                                    gs = index + 1;
+                                }
+                            }}
+                            style={gs === index + 1
+                                ? "background-color: oklch(90.5% 0.182 98.111)"
+                                : ""}
                         >
-                            {($saveData?.gallery ?? {})[`gallery${item.id}`]
-                                ? item.name
-                                : "【Locked】"}
-                        </my-menu-button>
+                            <img src={item.images[0]} alt="图片" style="width: 100%; height: 100%;">
+                            <!-- {@html ($saveData?.gallery ?? {})[
+                                `gallery${item.id}`
+                            ]
+                                ? `<img src="${item.images[0]}" alt="图片" style="width: 100%; height: 100%;">`
+                                : "锁定中……"} -->
+                        </button>
                     {/each}
                 </div>
             {/if}
         </div>
-        <div class="w-[60vw] h-full relative z-10">
+        <div
+            class="flex-1 h-full relative z-10 flex flex-col justify-center items-center"
+        >
             {#if cg === 1}
                 <div
                     in:fade={{ duration: 300 }}
@@ -229,26 +289,41 @@
                 <div
                     in:fade={{ duration: 300 }}
                     out:fade={{ duration: 300 }}
-                    class="gallery border-yellow-300 border-2 border-dashed transition-opacity overflow-x-auto duration-300 w-[60vw] absolute left-0 right-0 top-0 bottom-0 my-auto aspect-16/10 flex"
+                    class="gallery border-[#4a90e2] border-2 border-dashed transition-opacity overflow-x-auto duration-300 max-w-full max-h-[80%] aspect-16/10 flex"
                     style={galleryStyle}
                 >
                     {#each galleryImage as gallery}
                         <img
                             src={gallery}
                             alt="C · G · "
-                            class="w-[60vw] h-full shrink-0"
+                            class="w-full h-full shrink-0"
                         />
                     {/each}
                 </div>
             {/if}
         </div>
-        <my-menu-button
-            click={() => {
+        <button
+            aria-labelledby="返回"
+            onclick={() => {
                 router.push("/");
             }}
-            style="position: fixed; bottom: 10px; right: 16px; z-index: 10;"
+            class="cursor-pointer bg-yellow-300 border-3 border-solid border-yellow-300 skewbutton px-10 py-4 fixed bottom-10 right-16 z-10"
         >
             返回
-        </my-menu-button>
+        </button>
     </div>
 {/if}
+
+<style>
+    .skewbutton {
+        transition:
+            transform 0.1s ease-out,
+            background-color 0.2s,
+            color 0.2s;
+    }
+    .skewbutton:active {
+        background-color: #000 !important;
+        color: #ffeb3b !important;
+        transform: scale(0.95) !important;
+    }
+</style>

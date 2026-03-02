@@ -1,11 +1,14 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { fade } from "svelte/transition";
+    import { fade, slide } from "svelte/transition";
     import { currentSave, saveData } from "../../store/store";
     import {
         choiceTitle,
         dialogChapter0,
         dialogChapter1,
+        dialogChapter2,
+        dialogChapter3,
+        dialogChapter4,
     } from "../../store/dialog";
     import { sleep, router, branchCount } from "../../utils/all";
     import { save, unlockGallery } from "../../utils/backend-tauri";
@@ -60,7 +63,6 @@
             ...$currentSave,
             [key]: value,
         });
-        // console.log($currentSave);
     }
     // 解锁任一画廊
     async function ug(id: number) {
@@ -77,7 +79,13 @@
         return parseInt(getSaveInfo("current"));
     }
     function gi(): any {
-        return chapterNum === 0 ? $dialogChapter0 : $dialogChapter1;
+        return [
+            $dialogChapter0,
+            $dialogChapter1,
+            $dialogChapter2,
+            $dialogChapter3,
+            $dialogChapter4,
+        ][chapterNum];
     }
     function gd(index: number): any {
         return gi()[index] ?? {};
@@ -141,6 +149,13 @@
         }
         return resNum;
     }
+    let hintText = $state("");
+    function showhint(text: string) {
+        hintText = text;
+        setTimeout(() => {
+            hintText = "";
+        }, 5000);
+    }
     // 背景样式
     let backStyle = $state("");
     let backImage = $state("");
@@ -162,6 +177,15 @@
     import Grassland from "../../assets/scene/grassland.jpg";
     import Train from "../../assets/scene/train.jpg";
     import Station from "../../assets/scene/station.jpg";
+    import Spaceship from "../../assets/scene/spaceship.jpg";
+    import Room from "../../assets/scene/room.jpg";
+    import Pipeline from "../../assets/scene/pipeline.jpg";
+    import Kitchen from "../../assets/scene/kitchen.jpg";
+    import Gameroom from "../../assets/scene/Gameroom.jpg";
+    import Hotel from "../../assets/scene/hotel.jpg";
+    import Hotelroom from "../../assets/scene/hotelroom.jpg";
+    import Bridge from "../../assets/scene/bridge.jpg";
+    import Therma from "../../assets/scene/therma.jpg";
     // 立绘资源
     import AndreyAll from "../../assets/illustration/andrey_all.png";
     import AndreyNocloth from "../../assets/illustration/andrey_nocloth.png";
@@ -193,6 +217,8 @@
     const collapse = new Audio(Collapse);
     import Openbox from "../../assets/sounds/ogg/openbox.ogg";
     const openbox = new Audio(Openbox);
+    import Explode from "../../assets/sounds/ogg/explode.ogg";
+    const explode = new Audio(Explode);
     async function doStyle(current: number, isQuick: boolean = false) {
         if (current === 0) {
             backStyle = `opacity: 0`;
@@ -245,8 +271,6 @@
             backImage = Spaceport;
             backStyle = `opacity: 1`;
         } else if (gd(current).id === "start10") {
-            backStyle = `opacity: 0`;
-            if (!isQuick) await sleep(500);
             backImage = Grassland as string;
             backStyle = `opacity: 1`;
             GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%`;
@@ -265,9 +289,131 @@
             backImage = Station as string;
             GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%;`;
             backStyle = `opacity: 1`;
-        } else if (gd(current).id === "start11") {
+        } else if (gd(current).id === "start13") {
             AndreyImage = AndreyAll as string;
             AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start14") {
+            AndreyStyle = `opacity: 0; bottom: 0; right: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start15") {
+            AndreyImage = AndreyAll as string;
+            AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start16") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Spaceship as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start17") {
+            GeorgeImage = GeorgeNocoat;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%`;
+            AndreyImage = AndreyNohand as string;
+            AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
+            backImage = Room as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start18") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Pipeline as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start19") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Kitchen as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start20") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Room as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start21") {
+            AndreyStyle = `opacity: 0; bottom: 0; right: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start22") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10'%3E%3Crect width='16' height='10' fill='black' /%3E%3C/svg%3E`;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start23") {
+            GeorgeImage = GeorgeNoall;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%`;
+            backImage = Room as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start24") {
+            GeorgeStyle = `opacity: 0; bottom: 0; left: 2rem; height: 90%`;
+            if (!isQuick) await sleep(500);
+            GeorgeImage = GeorgeAll;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%`;
+        } else if (gd(current).id === "start25") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Gameroom as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start26") {
+            AndreyImage = AndreyNohand as string;
+            AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start27") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Hotel as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start28") {
+            AndreyImage = AndreyAll as string;
+            AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start29") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Hotelroom as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start30") {
+            backStyle = `opacity: 0`;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%; animation: gtr 0.5s;`
+            if (!isQuick) await sleep(500);
+            GeorgeStyle = `opacity: 1; bottom: 0; height: 90%; left: calc(100% - 24rem);`
+            backImage = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10'%3E%3Crect width='16' height='10' fill='black' /%3E%3C/svg%3E`;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start31") {
+            backStyle = `opacity: 0`;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: calc(100% - 24rem); height: 90%; animation: gtl 0.5s;`
+            if (!isQuick) await sleep(500);
+            GeorgeStyle = `opacity: 1; bottom: 0; height: 90%; left: 2rem;`
+            backImage = Hotelroom as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start32") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Bridge as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start33") {
+            AndreyImage = AndreyAll as string;
+            AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start34") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Spaceship as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start35") {
+            AndreyImage = AndreyAll as string;
+            AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start36") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Room as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start37") {
+            backImage = Therma as string;
+            backStyle = `opacity: 1`;
+            AndreyImage = AndreyNohand as string;
+            AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
+            GeorgeImage = GeorgeNocoat as string;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start38") {
+            AndreyStyle = `opacity: 0 bottom: 0; right: 2rem; height: 90%;`;
+            if (!isQuick) await sleep(500);
+            AndreyImage = AndreyNocloth as string;
+            AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start39") {
+            GeorgeStyle = `opacity: 0 bottom: 0; left: 2rem; height: 90%;`;
+            if (!isQuick) await sleep(500);
+            GeorgeImage = GeorgeNoall as string;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%;`;
         } else if (gd(current).id === "writing") {
             if (!isQuick) writing.play();
         } else if (gd(current).id === "camera") {
@@ -278,16 +424,50 @@
             machine.play();
         } else if (gd(current).id === "openbox") {
             if (!isQuick) openbox.play();
+        } else if (gd(current).id === "explode") {
+            if (!isQuick) explode.play();
         } else if (gd(current).id === "machinestop") {
             machine.pause();
+        } else if (gd(current).id === "hintexam") {
+            if (!isQuick)
+                showhint(
+                    "以下为测验环节，会根据你在序章所看到的所有个人信息答题，答对三个即可。请存档~",
+                );
+        } else if (gd(current).id === "hintmaze") {
+            if (!isQuick)
+                showhint(
+                    "以下为走迷宫环节，可能需要试错很多次，走到特殊路径则触发 bad ending，请存档~<br>为了方便以对话框形式进行，角色的面朝向永远面向前方，前后左右将等于你键盘上的前后左右键！",
+                );
+        } else if (gd(current).id === "hintgo") {
+            if (!isQuick)
+                showhint(
+                    "以下为分支选项，你有很多个场景可以选择！你可以在此处存档，并体验不同场景的不同剧情！",
+                );
         }
     }
-    // 会根据 对话内容 进行下一步处理！
-    // 返回 -10 代表已经走到末尾，返回 -11 代表这是一个选项。返回 -12 代表已经到末尾！
-    function nextOne(index: number, plus: boolean): number {
+    // 跳转 index！
+    function gotoNext(index: number): number {
         let resNum = index;
-        if (resNum >= gi().length) return -10;
-        if (gd(resNum).goto && gd(resNum).if) {
+        if (gd(resNum).goto && gd(resNum).if && gd(resNum).if.length > 0) {
+            const i = gi().findIndex(
+                (item: any) => item.id === gd(resNum).goto,
+            );
+            if (i >= 0) {
+                resNum = i;
+            }
+        }
+        return resNum;
+    }
+    // 会根据 对话内容 进行下一步处理！
+    // 返回的第一个值 -10 代表已经走到末尾，-11 代表这是一个选项。-12 代表已经到末尾！否则它应该与第二个值一模一样！
+    // 返回的第二个值 代表当前实际的 resNum 键值！
+    // 返回的第三个值 代表当前是否被 goto 捕获！
+    function nextOne(index: number, plus: boolean): [number, number, boolean] {
+        let resNum = index;
+        if (resNum >= gi().length) return [-10, resNum, false];
+        let gotoc = false;
+        if (gd(resNum).goto && gd(resNum).if && gd(resNum).if.length > 0) {
+            gotoc = true;
             const i = gi().findIndex(
                 (item: any) => item.id === gd(resNum).goto,
             );
@@ -299,10 +479,10 @@
             resNum = jumpTo(true, resNum);
             resNum++;
         }
-        if (gd(resNum).type === "choice") return -11;
-        if (gd(resNum).type === "to") return resNum;
-        if (!gd(resNum).message) return -12;
-        return resNum;
+        if (gd(resNum).type === "choice") return [-11, resNum, gotoc];
+        if (gd(resNum).type === "to") return [resNum, resNum, gotoc];
+        if (gd(resNum).message === undefined) return [-12, resNum, gotoc];
+        return [resNum, resNum, gotoc];
     }
     function prevOne(index: number): number {
         let resNum = index;
@@ -339,7 +519,8 @@
         // 回朔历史
         // 直接在初始化里面显示【历史】！（不直接用按钮显示了。。）
         while (m < gc()) {
-            let n = nextOne(m, false);
+            let nn = nextOne(m, false);
+            let n = nn[0];
             if (n !== -10 && n !== -11) {
                 m = n;
                 m = jumpTo(true, m);
@@ -391,12 +572,28 @@
         //     dialogDom.scrollTop = dialogDom.scrollHeight + 200;
         //     return;
         // }
-        if (!gd(gc()).message) return;
-        let n = nextOne(gc(), plus);
+        if (gd(gc()).message === undefined) return;
+        let nn = nextOne(gc(), plus);
+        let n = nn[0];
         if (n === -10 || n === -12) return;
         else if (n === -11) {
-            plusOne();
-            return;
+            if (nn[2]) {
+                setc(nn[1]);
+                await sleep(50);
+                for (let i = 0; i < 100; i++) {
+                    dialogDom.scrollTop += 5;
+                    await sleep(5);
+                }
+                return;
+                // n = gotoNext(n);
+                // setc(n);
+                // await doStyle(gc());
+                // next(false);
+                // return;
+            } else {
+                plusOne();
+                return;
+            }
         }
         if (gd(n).type === "to") {
             showMainScreen = false;
@@ -507,12 +704,23 @@
         quickCurrent = !quickCurrent;
         if (!quickCurrent) return;
         while (true) {
-            if (!gd(gc()).message) break;
-            let n = nextOne(gc(), true);
+            if (gd(gc()).message === undefined) break;
+            let nn = nextOne(gc(), true);
+            let n = nn[0];
             if (n === -10 || n === -12 || !quickCurrent) break;
             if (n === -11) {
-                plusOne();
-                break;
+                if (nn[2]) {
+                    setc(nn[1]);
+                    return;
+                    // n = gotoNext(n);
+                    // setc(n);
+                    // await doStyle(gc());
+                    // next(false);
+                    // return;
+                } else {
+                    plusOne();
+                    return;
+                }
             }
             if (gd(n).type === "to") {
                 quickCurrent = false;
@@ -668,7 +876,7 @@
                     <img
                         src={backImage}
                         alt="背景图片"
-                        class="absolute top-[50%] left-[50%] translate-[-50%] w-full aspect-16/10 transition-opacity duration-500"
+                        class="absolute object-fill top-[50%] left-[50%] translate-[-50%] w-full aspect-16/10 transition-opacity duration-500"
                         style={backStyle}
                     />
                     <div
@@ -836,8 +1044,8 @@
                             {#each gd(gc()).choice as choice, index}
                                 <button
                                     class="zwtext break-all border-none text-left outline-none px-2.5 w-full h-auto py-1 shrink-0 text-white cursor-pointer
-                                    hover:*:text-black hover:text-black hover:bg-yellow-300
-                                    active:text-yellow-300 active:bg-black active:*:text-yellow-300 active:outline-yellow-300 active:outline-2 active:outline-solid"
+                                    hover:*:not-[.yy]:text-black hover:text-black hover:bg-yellow-300
+                                    active:text-yellow-300 active:bg-black active:*:not-[.yy]:text-yellow-300 active:outline-yellow-300 active:outline-2 active:outline-solid"
                                     aria-labelledby={choice}
                                     onclick={(e) => {
                                         e.preventDefault();
@@ -861,7 +1069,7 @@
                                         plusOne();
                                         next(false);
                                     }}
-                                    ><span class="text-yellow-400"
+                                    ><span class="yy text-yellow-400"
                                         >{index + 1}.</span
                                     >
                                     {@html replaceCurrentText(choice)}</button
@@ -1001,6 +1209,16 @@
                 </div>
             </div>
         </div>
+        {#if hintText != ""}
+            <div
+                in:slide={{ duration: 400 }}
+                out:slide={{ duration: 400 }}
+                class="absolute top-1 left-0 px-8 py-4 z-1000 text-white border-2 border-solid border-white"
+                style="font-size: 2vh"
+            >
+                {@html hintText}
+            </div>
+        {/if}
     </div>
 {/if}
 {#if showInput}
@@ -1041,10 +1259,6 @@
 {/if}
 
 <style>
-    .wvr {
-        writing-mode: vertical-rl;
-        text-orientation: upright;
-    }
     :global(.zwtext) {
         font-size: 1.5vw;
     }

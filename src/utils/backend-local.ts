@@ -29,6 +29,7 @@ export async function save(
   id: string,
   updateTime: string,
   name: string,
+  saved: number,
   current: number,
   branches: Array<string>,
 ) {
@@ -36,6 +37,7 @@ export async function save(
   savedata.saveInstance[`save${id}`].current = current;
   savedata.saveInstance[`save${id}`].name = name;
   savedata.saveInstance[`save${id}`].remark = "";
+  savedata.saveInstance[`save${id}`].saved = saved;
   savedata.saveInstance[`save${id}`].updateTime = updateTime;
   for (let i = 0; i < branches.length; i++) {
     savedata.saveInstance[`save${id}`][`branch${i + 1}`] = branches[i];

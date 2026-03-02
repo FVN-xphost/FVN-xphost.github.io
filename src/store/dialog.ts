@@ -1,3 +1,4 @@
+import { keyed } from "lit/directives/keyed.js";
 import { readable } from "svelte/store";
 /**
  * key: 传入你需要判断的 branch 名称。
@@ -126,9 +127,10 @@ interface ScoreInterface {
  * score: 定义分数。见上面所示
  * // 以下时全局定义
  * if: 优先级最大，可以当作分支运行，程序会先判断 if 分支，再判断是否应该执行该内容，此处适用于任何 type 任何值的任何地方。。
- * goto: 表示跳转对话。优先级次要，会跳转到对应 id 的对话。无论这个对话在哪。如果对话在前，则重新进入时历史记录将不会显示在表单里。
+ * goto: 表示跳转对话。优先级次要，会跳转到对应 id 的对话。无论这个对话在哪。如果对话在前，则重新进入时历史记录将不会显示在页面上。
+ * goto 另一种说法：
  * to: 表示跳转章节。0 代表序章，1 代表第一章。以下分别用 dialogChapter0、dialogChapter1 代替。
- */ 
+ */
 interface DialogInterface {
   type?: string;
   id?: string;
@@ -142,17 +144,20 @@ interface DialogInterface {
   to?: number;
 }
 // 以下均是为了方便构建最终的 dialogInstance 而创建的函数！各位既可以忽略，也可以直接照着写！
+// Normal 有 goto 选项，为的就是简化下列操作。
 function Normal(
   name: string,
   message: string,
   ifbranch: IfInterface[] | undefined = undefined,
   id: string = "",
+  goto: string | undefined = undefined
 ): DialogInterface {
   return {
-    id: id,
-    name: name,
-    message: message,
+    id,
+    name,
+    message,
     if: ifbranch,
+    goto,
   };
 }
 const publicCss = `color: white; background-color: transparent; font-size: 1.2vw; padding: 2px; border-radius: 2px;`;
@@ -160,19 +165,23 @@ function Aside(
   message: string,
   ifbranch: IfInterface[] | undefined = undefined,
   id: string = "",
+  goto: string | undefined = undefined
 ) {
-  return Normal("", message, ifbranch, id);
+  return Normal("", message, ifbranch, id, goto);
 }
+// 这里乔治的 goto 参数仅是为了解决下列的 走迷宫环节 跳转做准备！
 function George(
   message: string,
   ifbranch: IfInterface[] | undefined = undefined,
   id: string = "",
+  goto: string | undefined = undefined
 ) {
   return Normal(
-    `<span style="${publicCss} background-color: #2B7FFF;">%name</span>`,
+    `<span style="${publicCss} background-color: brown;">%name</span>`,
     message,
     ifbranch,
     id,
+    goto
   );
 }
 function Admin(
@@ -181,7 +190,7 @@ function Admin(
   id: string = "",
 ) {
   return Normal(
-    `<span style="${publicCss} background-color: #31C950;">管理员</span>`,
+    `<span style="${publicCss} background-color: limegreen;">管理员</span>`,
     message,
     ifbranch,
     id,
@@ -215,12 +224,14 @@ function Andrey(
   message: string,
   ifbranch: IfInterface[] | undefined = undefined,
   id: string = "",
+  goto: string | undefined = undefined
 ) {
   return Normal(
-    `<span style="${publicCss} background-color: #2E8B57;">安德烈</span>`,
+    `<span style="${publicCss} background-color: gold;">安德烈</span>`,
     message,
     ifbranch,
     id,
+    goto,
   );
 }
 function Wildebeest(
@@ -452,7 +463,7 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   Wildebeest("不，我和查理不熟。"),
   Aside("他转过身，开始换下工作服，无意再与你交谈。你慢慢地坐下去，床铺很软。"),
   // 播放重物坠落声
-  Aside("嘭！", [], "collapse"), 
+  Aside("嘭！", [], "collapse"),
   Aside("那枚蛋从床铺上滚到地上，细细纹路出现在它的表面，越来越大，就像是裂缝。"),
   Aside("是的，它就是裂缝。蛋摔坏了。"),
   Wildebeest("唔，我离它可很远。"),
@@ -519,7 +530,19 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   Aside("托尼叹了口气。", ifbranch3a4),
   Tony("好，这东西总能排上用处，我可以考虑帮你卖掉这张船票，但卖掉的钱绝对不够再买回它的。", ifbranch3a4),
   Tony("你要卖掉这张船票吗？", ifbranch3a4, "isSell"),
-  Choice("branch5", ["不卖船票", "送给托尼", "卖掉船票"], ifbranch3a4),
+  {
+    type: "choice",
+    choice: ["不卖船票", "送给托尼", "卖掉船票"],
+    id: "branch5",
+    score: {
+      targetId: "branch100",
+      action: (branch: string, rawValue: string) => {
+        if (branch === "送给托尼") return ((parseInt(rawValue) ?? 0) + 1).toString();
+        else return rawValue;
+      }
+    }
+  },
+  // Choice("branch5", ["不卖船票", "送给托尼", "卖掉船票"], ifbranch3a4),
   George("还是算了，总要去看一眼地球才甘心。", [
     {
       key: "branch3",
@@ -551,7 +574,14 @@ export const dialogChapter0 = readable<DialogInterface[]>([
       {
         key: "branch5",
         value: "送给托尼",
+        next: "and"
       },
+      {
+        key: "branch100",
+        value: (branch_value: string) => {
+          return parseInt(branch_value) < 10
+        }
+      }
     ];
     return [
       George("托尼，我打算把它送给你，你在很多方面一直都在照顾我，我想除了这个，我再也没什么能表示感谢了。", ifbranch),
@@ -559,12 +589,25 @@ export const dialogChapter0 = readable<DialogInterface[]>([
       Aside("托尼伸手敲敲自己的脑袋。", ifbranch),
       {
         name: `<span style="${publicCss} background-color: orange;">托尼</span>`,
-        avatar: "",
         message: "那地方可到处是水，连屋顶都没有，我可去不了。你再想想。",
         goto: "isSell",
         if: ifbranch,
       },
     ];
+  })(),
+  ...(() => {
+    const ifbranch: IfInterface[] = [
+      {
+        key: "branch100",
+        value: (branch_value: string) => {
+          return parseInt(branch_value) >= 10
+        }
+      }
+    ]
+    return [
+      Tony("好了好了，行了，知道你的好心了，别再说送给我了！车已经帮你备好了！", ifbranch),
+      George("我的天，谢谢你托尼，你知道的，我一直都很喜欢你！那还是我自己上船吧~", ifbranch),
+    ]
   })(),
   Tony("谢天谢地，你的脑子终于好用了一次，16个小时后就有飞船出发，4个小时后就开始检票。你在这可以等上1小时，剩下3个小时就在港区转悠，等时间一到你就可以拿着票进贵宾候船厅！", ifbranch3o4o5),
   George("托尼，我会想你的。", ifbranch3o4o5),
@@ -632,10 +675,11 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   }
 ]);
 // 第一章
+const police = `<span style="${publicCss} background-color: violet;">保安</span>`
 export const dialogChapter1 = readable<DialogInterface[]>([
   George("你好！有人吗？", [], "start10"),
   Aside("寂静无声。"),
-  Aside("刚来到船舶的%name感到非常迷茫，因为你完全不知道接下来会发生什么。到底是有人会把你赶下去，还是有人会把你丢出宇宙飞船。"),
+  Aside("刚来到船舶的你感到非常迷茫，因为你完全不知道接下来会发生什么。到底是有人会把你赶下去，还是有人会把你丢出宇宙飞船。"),
   Aside("但是你转念一想，自己获得了顶层豪奢套间的船票，还会怕有人会把你赶下去不成？吼吼！这么一想，你顿时放轻松了。"),
   Aside("不过，这个地方为什么一个人也没有？你环顾四周，周围空荡荡的，这里明明已经到候船厅了，为什么一个人也没有？你不知道该往哪里走。"),
   Choice("branch10", ["左边有亮光，往左走。", "右边似乎有人，往右走。"]),
@@ -661,23 +705,10 @@ export const dialogChapter1 = readable<DialogInterface[]>([
     return [
       Aside("这是一个类似于行李室的地方，周围摆放了很多行李箱。", ifbranch, "start12"),
       George("此时，突然有人闯了进来！", ifbranch),
-      Normal(`<span style="${publicCss} background-color: violet;">保安</span>`, "你是谁？在那里干什么？", ifbranch),
+      Normal(police, "你是谁？在那里干什么？", ifbranch),
       George("不，不，我只是……对不起！", ifbranch),
       Aside("说完你赶快往左边跑了。", ifbranch),
     ]
   })(),
-
-  George("这里就是车站吗？", [], "start11"),
-  Aside("这里总算是有人了，并且这里挤满了兽人，没办法，去往地球的船票卖的就是这么好。"),
-  Aside("路上，你经过了入船口的保安室，里面的熊兽人保安正在站岗。他紧紧的盯着所有即将上船的人。但是他的门口却有一个人坐在地上。"),
-  Aside("那个坐在地上的人是一名虎兽人，此时正在虎视眈眈的看着保安室。眼神对保安室的熊兽人异常凶猛，甚至下一秒钟就有可能会吃了那个熊兽人。", [], "start13"),
-  Aside("你本来不想管那个兽人的，但是那个兽人身上穿着一身修理工的衣服，一件修理工的裤子。外形看着很壮实。看着像修理飞船的员工。按道理来说，这个时候他应该去查看飞船是否有损坏，或者别的。他怎么会在这？难道他想……"),
-])
-// 第二章
-export const dialogChapter2 = readable<DialogInterface[]>([])
-// 第三章
-export const dialogChapter3 = readable<DialogInterface[]>([])
-// 第四章
-export const dialogChapter4 = readable<DialogInterface[]>([])
-// 第五章
-export const dialogChapter5 = readable<DialogInterface[]>([])
+  George("这里就是候船厅吗？", [], "start11"),
+]);
