@@ -712,3 +712,8 @@ export const dialogChapter1 = readable<DialogInterface[]>([
   })(),
   George("这里就是候船厅吗？", [], "start11"),
 ]);
+
+export const dialogChapter2 = readable<DialogInterface[]>([])
+export const dialogChapter3 = readable<DialogInterface[]>([])
+export const dialogChapter4 = readable<DialogInterface[]>([])
+export const dialogChapter5 = readable<DialogInterface[]>([])
