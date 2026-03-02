@@ -424,11 +424,12 @@
             if (!isQuick) await sleep(500);
             GeorgeImage = GeorgeNovest as string;
             GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%;`;
-        } else if (gd(current).id === "start41") {
+        } else if (gd(current).id === "start42") {
             backImage = Gameroom as string;
             backStyle = `opacity: 1`;
             GeorgeImage = GeorgeAll as string;
             GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start43") {
             AndreyImage = AndreyAll as string;
             AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
         } else if (gd(current).id === "writing") {

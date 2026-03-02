@@ -139,7 +139,7 @@
                     办公室
                 </div>
                 <div
-                    class="text-center text-gray-100 flex justify-center items-center relative h-[30vh] mt-8 w-[75vh]"
+                    class="text-center text-gray-100 flex justify-center items-center relative h-[30vh] mt-[3vh] w-[75vh]"
                     style="font-size: 2vh;"
                 >
                     <div class="animate-light-shine-before"></div>

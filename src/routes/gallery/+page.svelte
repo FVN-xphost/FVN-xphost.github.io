@@ -22,64 +22,56 @@
     import GeorgeNoeye from "../../assets/illustration/george_noeye.png";
     // CG 资源
     import Book from "../../assets/gallery/book.jpg";
+    import Shower from "../../assets/gallery/shower.jpg";
     let o1 = $state(false);
     let cg = $state(0);
     let gs = $state(0);
     const galleryLock = [
         {
-            id: "1",
             images: [Book],
-            name: "照顾",
+        },
+        {
+            images: [Shower],
         },
     ];
     const illustratorMan = [
         {
-            name: "乔治-穿衣",
             image: GeorgeAll,
             eye: 1,
         },
         {
-            name: "乔治-脱外套",
             image: GeorgeNocoat,
             eye: 1,
         },
         {
-            name: "乔治-脱背心",
             image: GeorgeNovest,
             eye: 1,
         },
         {
-            name: "乔治-脱上衣",
             image: GeorgeNocloth,
             eye: 1,
         },
         {
-            name: "乔治-短裤",
             image: GeorgeNoall,
             eye: 1,
         },
         {
-            name: "安德烈-穿衣",
             image: AndreyAll,
             eye: 2,
         },
         {
-            name: "安德烈-无机械臂",
             image: AndreyNohand,
             eye: 2,
         },
         {
-            name: "安德烈-脱衣",
             image: AndreyNocloth,
             eye: 2,
         },
         {
-            name: "托尼-西装",
             image: TonyCoat,
             eye: 3,
         },
         {
-            name: "托尼-脱外套",
             image: TonyShirt,
             eye: 3,
         },
