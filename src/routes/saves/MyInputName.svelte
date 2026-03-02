@@ -53,17 +53,17 @@
         }
     }
     async function showV0() {
-        const v = `请输入`;
+        const v = `输入文本`;
         for (let i = 0; i < v.length; i++) {
             v0 += v[i];
-            await sleep(800);
+            await sleep(200);
         }
     }
     async function sureName1() {
         o0 = true;
         await sleep(1000);
         await showV0();
-        await sleep(200);
+        await sleep(400);
         o2 = true;
     }
     async function sureName2() {
@@ -91,32 +91,32 @@
 >
     <my-star-back></my-star-back>
     <div
-        class="absolute left-0 w-screen transition-[top] duration-1000 h-[25vh] bg-yellow-300 z-15 flex flex-col items-center my-auto top-0 bottom-0
-        before:content-['回想你的名字（默认：乔治）'] before:text-[2vh] before:text-yellow-300 before:absolute before:top-[-4vh] before:-left-[30vh] before:w-fit before:mx-auto before:right-0"
+        class="absolute left-0 w-screen transition-[top] duration-1000 h-[20vh] bg-[#FFF81D] z-15 flex flex-col items-center my-auto top-0 bottom-0
+        before:content-['回想你的名字（默认：乔治）'] before:text-[2vh] before:text-[#bfbfbf] before:absolute before:top-[-4vh] before:-left-[35vh] before:w-fit before:mx-auto before:right-0"
         style={o1 ? "top: -40vh" : ""}
     >
         {#if o0}
             <div
                 in:fade={{ duration: 400 }}
                 out:fade={{ duration: 400 }}
-                class="h-[50%] w-[40vh] transition-[width] duration-1000 border-l-8 border-l-black shrink-0 flex items-center"
+                class="h-fit w-[40vh] transition-[width] duration-1000 border-l-8 border-l-black shrink-0 flex items-center"
                 style={o1
-                    ? "width: 60vh"
-                    : "height: fit-content; margin-top: auto; margin-bottom: auto;"}
+                    ? "width: 60vh; margin-top: 0.8vh; margin-bottom: -1.5vh"
+                    : "margin-top: auto; margin-bottom: auto;"}
             >
                 <input
                     onblur={onInputblur}
                     placeholder={v0}
-                    class="outline-none border-none pl-[2vh] font-bold"
-                    style="font-size: 6vh"
+                    class="outline-none border-none pl-[1vh] -my-[1.5vh] py-0 font-bold placeholder:text-[#bfbfbf] text-[#bfbfbf]"
+                    style="font-size: 7.9vh"
                 />
             </div>
         {/if}
         {#if o3}
-            <div class="h-[50%] w-[115vh] flex items-center justify-end">
+            <div class="h-[50%] w-[115vh] flex items-start mt-[2vh] justify-end">
                 <div
                     class="text-left pl-[24vh] w-[100vh]"
-                    style="font-size: 2vh"
+                    style="font-size: 2vh;"
                 >
                     {@html v1}
                 </div>
@@ -127,20 +127,20 @@
         <div
             in:fade={{ duration: 400 }}
             out:fade={{ duration: 400 }}
-            class="backdrop-blur-xs bg-[#6666661C] border z-10 border-yellow-300 border-solid absolute top-0 left-0 right-0 bottom-0 m-auto w-[115vh] h-[80vh]"
+            class="backdrop-blur-xs bg-[#00000066] border-3 z-10 border-[#FFF81D] border-solid absolute top-0 left-0 right-0 bottom-0 m-auto w-[115vh] h-[80vh]"
         >
             <div
-                class="absolute bottom-4 left-0 w-full flex flex-col items-center"
+                class="absolute bottom-[6vh] left-0 w-full flex flex-col items-center"
             >
                 <div
-                    class="border-l-8 border-l-yellow-300 font-bold pl-6 -ml-6 text-yellow-300"
-                    style="font-size: 6vh"
+                    class="border-l-8 border-l-[#FFF81D] overflow-hidden max-h-[8vh] flex items-center -my-[1vh] font-bold pl-[2vh] -ml-6 text-[#FFF81D]"
+                    style="font-size: 7.4vh"
                 >
                     办公室
                 </div>
                 <div
-                    class="text-center text-gray-100 flex justify-center items-center relative h-[30vh] mt-4 w-[75vh]"
-                    style="font-size: 2vh"
+                    class="text-center text-gray-100 flex justify-center items-center relative h-[30vh] mt-8 w-[75vh]"
+                    style="font-size: 2vh;"
                 >
                     <div class="animate-light-shine-before"></div>
                     <div class="animate-light-shine-before-before"></div>
@@ -160,7 +160,7 @@
         <button
             in:fade={{ duration: 400 }}
             out:fade={{ duration: 400 }}
-            class="z-10 absolute cursor-pointer bottom-[30vh] h-[5vh] mx-auto left-0 right-0 w-[50vh] bg-white text-black hover:bg-yellow-300 active:bg-black active:text-white"
+            class="z-10 absolute cursor-pointer bottom-[30vh] h-[5vh] mx-auto left-0 right-0 w-[50vh] bg-white text-black hover:bg-[#FFF81D] active:bg-black active:text-white"
             aria-label="确定"
             onclick={sureName2}
         >
@@ -178,7 +178,8 @@
         <button
             in:fade={{ duration: 400 }}
             out:fade={{ duration: 400 }}
-            class="active:border active:border-solid active:border-yellow-300 z-10 absolute cursor-pointer bottom-[2.5vh] h-[5vh] mx-auto left-0 right-0 w-[50vh] bg-white text-black hover:bg-yellow-300 active:bg-black active:text-white"
+            class="active:border active:border-solid active:border-[#FFF81D] z-10 absolute cursor-pointer bottom-[3vh] h-[4vh] mx-auto left-0 right-0 w-[25vh] bg-white text-black hover:bg-[#FFF81D] active:bg-black active:text-white"
+            style="font-size: 2.6vh;"
             onclick={returnResult}
             aria-label="敲门"
         >
@@ -209,8 +210,8 @@
         position: absolute;
         width: 1px;
         left: 0;
-        height: 100%;
-        top: 0;
+        height: calc(100% - 4vh);
+        top: 2vh;
         background-color: oklch(90.5% 0.182 98.111);
         animation: light-shine-before-before 3s;
     }
@@ -219,8 +220,8 @@
         position: absolute;
         width: 1px;
         right: 0;
-        height: 100%;
-        top: 0;
+        height: calc(100% - 4vh);
+        top: 2vh;
         background-color: oklch(90.5% 0.182 98.111);
         animation: light-shine-after-after 3s;
     }
@@ -270,8 +271,8 @@
             top: 50%;
         }
         100% {
-            height: 100%;
-            top: 0;
+            height: calc(100% - 4vh);
+            top: 2vh;
         }
     }
     @keyframes light-shine-after-after {
@@ -284,8 +285,8 @@
             top: 50%;
         }
         100% {
-            height: 100%;
-            top: 0;
+            height: calc(100% - 4vh);
+            top: 2vh;
         }
     }
 </style>

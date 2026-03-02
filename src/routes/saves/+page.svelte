@@ -940,7 +940,7 @@
             </div>
         </div>
         <div
-            class="relative flex flex-col items-center flex-1 h-full border-x-gray-600 border-x z-10"
+            class="relative flex flex-col items-center flex-1 h-full border-x-white border-x z-10"
         >
             <!-- 四个角的装饰 -->
             <div
@@ -950,10 +950,10 @@
                 class="absolute top-0 -right-[0.2rem] w-[0.3rem] h-[7.5vh] bg-white"
             ></div>
             <div
-                class="absolute -left-[3.4vh] w-[4vh] top-[4.75vh] h-[0.3rem] bg-white"
+                class="absolute -left-[3vh] w-[5vh] top-[4.75vh] h-[0.3rem] bg-white -z-1"
             ></div>
             <div
-                class="absolute -right-[3.4vh] w-[4vh] top-[4.75vh] h-[0.3rem] bg-white"
+                class="absolute -right-[3vh] w-[5vh] top-[4.75vh] h-[0.3rem] bg-white -z-1"
             ></div>
             <div
                 class="absolute bottom-0 -left-[0.2rem] w-[0.3rem] h-[7.5vh] bg-white"
@@ -1014,7 +1014,7 @@
                 </svg>
             </div>
             <div
-                class="flex flex-col items-center h-full w-[98%] border-x-gray-300 border-x bg-[#3D3D3DFF]"
+                class="flex flex-col items-center h-full w-[96%] bg-[#3D3D3DFF]"
             >
                 <!-- 对话区域 -->
                 <div
@@ -1044,8 +1044,8 @@
                             {#each gd(gc()).choice as choice, index}
                                 <button
                                     class="zwtext break-all border-none text-left outline-none px-2.5 w-full h-auto py-1 shrink-0 text-white cursor-pointer
-                                    hover:*:not-[.yy]:text-black hover:text-black hover:bg-yellow-300
-                                    active:text-yellow-300 active:bg-black active:*:not-[.yy]:text-yellow-300 active:outline-yellow-300 active:outline-2 active:outline-solid"
+                                    hover:*:not-[.yy]:text-black hover:text-black hover:bg-[#FFF81D]
+                                    active:text-[#FFF81D] active:bg-black active:*:not-[.yy]:text-[#FFF81D] active:outline-[#FFF81D] active:outline-2 active:outline-solid"
                                     aria-labelledby={choice}
                                     onclick={(e) => {
                                         e.preventDefault();
@@ -1082,9 +1082,9 @@
                             class="absolute top-0 left-0 flex shrink-0 h-[10vh] p-2.5 w-full items-center justify-center"
                         >
                             <button
-                                class="zwtext break-all border-none text-left outline-none px-2.5 w-full h-auto py-1 shrink-0 bg-yellow-300 text-black cursor-pointer
+                                class="zwtext break-all border-none text-left outline-none px-2.5 w-full h-auto py-1 shrink-0 bg-[#FFF81D] text-black cursor-pointer
                                     hover:*:text-black hover:text-black hover:bg-white
-                                    active:text-yellow-300 active:bg-black active:*:text-yellow-300 active:outline-yellow-300 active:outline-2 active:outline-solid"
+                                    active:text-[#FFF81D] active:bg-black active:*:text-[#FFF81D] active:outline-[#FFF81D] active:outline-2 active:outline-solid"
                                 aria-labelledby="继续"
                                 onclick={() => {
                                     if (quickCurrent) quickCurrent = false;
@@ -1098,7 +1098,7 @@
             </div>
         </div>
         <div
-            class="w-[10vw] h-[90vh] border-y-gray-300 border-y flex items-center z-10"
+            class="w-[10vw] h-[90vh] border-y-gray-300 border-y flex items-center z-9"
         >
             <div
                 class="w-full h-[88.5vh] border-y-gray-600 border-y flex items-center relative"

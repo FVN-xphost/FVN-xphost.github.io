@@ -170,7 +170,7 @@
             class="shrink-0 w-[180px] h-full flex flex-col items-center justify-center z-10 px-[20px] gap-[40px] py-[60px]"
         >
             <button
-                class="flex font-bold cursor-pointer items-start justify-center transition-all duration-200 wvr skewbutton flex-1 w-full border-3 border-solid border-yellow-300 bg-transparent text-white hover:bg-yellow-300 hover:text-black"
+                class="flex font-bold cursor-pointer items-start justify-center transition-all duration-200 wvr skewbutton flex-1 w-full border-3 border-solid border-[#FFF81D] bg-transparent text-white hover:bg-[#FFF81D] hover:text-black"
                 aria-labelledby="角色"
                 style="font-size: 3rem;"
                 onclick={async () => {
@@ -186,7 +186,7 @@
                 角色
             </button>
             <button
-                class="flex font-bold cursor-pointer items-start justify-center transition-all duration-200 wvr skewbutton flex-1 w-full border-3 border-solid border-yellow-300 bg-transparent text-white hover:bg-yellow-300 hover:text-black"
+                class="flex font-bold cursor-pointer items-start justify-center transition-all duration-200 wvr skewbutton flex-1 w-full border-3 border-solid border-[#FFF81D] bg-transparent text-white hover:bg-[#FFF81D] hover:text-black"
                 aria-labelledby="插画"
                 style="font-size: 3rem;"
                 onclick={async () => {
@@ -203,7 +203,7 @@
             </button>
         </div>
         <div
-            class="shrink-0 w-[150px] h-full z-10 border-x-3 border-yellow-300 border-solid"
+            class="shrink-0 w-[150px] h-full z-10 border-x-3 border-[#FFF81D] border-solid"
         >
             {#if cg === 1}
                 <div
@@ -214,7 +214,7 @@
                     {#each illustratorMan as item, index}
                         <button
                             aria-labelledby="角色"
-                            class="relative shrink-0 cursor-pointer transition-all duration-200 skewbutton h-[80px] w-full border-2 border-solid border-yellow-300 bg-transparent text-white hover:bg-yellow-300 hover:text-black"
+                            class="relative shrink-0 cursor-pointer transition-all duration-200 skewbutton h-[80px] w-full border-2 border-solid border-[#FFF81D] bg-transparent text-white hover:bg-[#FFF81D] hover:text-black"
                             onclick={() => {
                                 if (gs !== index + 1) {
                                     showIllustration(item);
@@ -242,7 +242,7 @@
                     {#each galleryLock as item, index}
                         <button
                             aria-labelledby="插画"
-                            class="shrink-0 cursor-pointer transition-all duration-200 skewbutton h-[80px] w-full border-2 border-solid border-yellow-300 bg-transparent text-white hover:bg-yellow-300 hover:text-black"
+                            class="shrink-0 cursor-pointer transition-all duration-200 skewbutton h-[80px] w-full border-2 border-solid border-[#FFF81D] bg-transparent text-white hover:bg-[#FFF81D] hover:text-black"
                             onclick={() => {
                                 if (gs !== index + 1) {
                                     showGallery(item);
@@ -307,7 +307,7 @@
             onclick={() => {
                 router.push("/");
             }}
-            class="cursor-pointer bg-yellow-300 border-3 border-solid border-yellow-300 skewbutton px-10 py-4 fixed bottom-10 right-16 z-10"
+            class="cursor-pointer bg-[#FFF81D] border-3 border-solid border-[#FFF81D] skewbutton px-10 py-4 fixed bottom-10 right-16 z-10"
         >
             返回
         </button>

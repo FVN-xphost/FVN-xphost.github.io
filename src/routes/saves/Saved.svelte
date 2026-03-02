@@ -53,13 +53,13 @@
     >
         {#each new Array(saveCount).fill(null) as _, index}
             <div
-                class="border-white border border-solid active:border-yellow-300 p-1 shrink-0"
+                class="border-white border border-solid active:border-[#FFF81D] p-1 shrink-0"
             >
                 <button
                     class="text-left flex items-center justify-between px-2 w-full h-[10vh] cursor-pointer {getc(
                         index,
                     ).name
-                        ? 'bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white'
+                        ? 'bg-[#FFF81D] text-black hover:bg-white active:bg-black active:text-white'
                         : 'bg-[#FFFFFF4C] hover:bg-[#FFFFFF6C] active:bg-[#FFFFFF8C] text-black'}"
                     onclick={() => saveClick(index)}
                     aria-labelledby="存档"
@@ -72,7 +72,7 @@
 <button
     aria-labelledby="返回"
     onclick={result}
-    class="cursor-pointer absolute bottom-[10vh] h-[10vh] w-[40vw] left-0 right-0 mx-auto bg-yellow-300 text-black hover:bg-white active:bg-black active:text-white"
+    class="cursor-pointer absolute bottom-[10vh] h-[10vh] w-[40vw] left-0 right-0 mx-auto bg-[#FFF81D] text-black hover:bg-white active:bg-black active:text-white"
 >
     返回
 </button>
