@@ -298,7 +298,14 @@ const ifbranch3o4o5: IfInterface[] = [
   {
     key: "branch5",
     value: "不卖船票",
+    next: "or"
   },
+  {
+    key: "branch100",
+    value: (branch_value: string) => {
+      return parseInt(branch_value) >= 10
+    }
+  }
 ];
 // 这里是选项的【标题】
 export const choiceTitle = `<span style="${publicCss} background-color: blue;">选项</span>`;
@@ -536,7 +543,7 @@ export const dialogChapter0 = readable<DialogInterface[]>([
     score: {
       targetId: "branch100",
       action: (branch: string, rawValue: string) => {
-        if (branch === "送给托尼") return ((parseInt(rawValue) ?? 0) + 1).toString();
+        if (branch === "送给托尼") return ((parseInt(rawValue) || 0) + 1).toString();
         else return rawValue;
       }
     }
@@ -578,7 +585,7 @@ export const dialogChapter0 = readable<DialogInterface[]>([
       {
         key: "branch100",
         value: (branch_value: string) => {
-          return parseInt(branch_value) < 10
+          return (parseInt(branch_value) || 0) < 10
         }
       }
     ];

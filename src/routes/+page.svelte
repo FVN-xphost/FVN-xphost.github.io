@@ -39,13 +39,13 @@
     async function showStart() {
         if (isStart === 0) {
             isStart = 1;
-            await sleep(300);
+            // await sleep(300);
             o3 = true;
-            await sleep(300);
+            // await sleep(300);
             o4 = true;
-            await sleep(300);
+            // await sleep(300);
             o5 = true;
-            await sleep(300);
+            // await sleep(300);
             o6 = true;
         }
     }

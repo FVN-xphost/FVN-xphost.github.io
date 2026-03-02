@@ -364,16 +364,16 @@
             backStyle = `opacity: 1`;
         } else if (gd(current).id === "start30") {
             backStyle = `opacity: 0`;
-            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%; animation: gtr 0.5s;`
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%; animation: gtr 0.5s;`;
             if (!isQuick) await sleep(500);
-            GeorgeStyle = `opacity: 1; bottom: 0; height: 90%; left: calc(100% - 24rem);`
+            GeorgeStyle = `opacity: 1; bottom: 0; height: 90%; left: calc(100% - 24rem);`;
             backImage = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10'%3E%3Crect width='16' height='10' fill='black' /%3E%3C/svg%3E`;
             backStyle = `opacity: 1`;
         } else if (gd(current).id === "start31") {
             backStyle = `opacity: 0`;
-            GeorgeStyle = `opacity: 1; bottom: 0; left: calc(100% - 24rem); height: 90%; animation: gtl 0.5s;`
+            GeorgeStyle = `opacity: 1; bottom: 0; left: calc(100% - 24rem); height: 90%; animation: gtl 0.5s;`;
             if (!isQuick) await sleep(500);
-            GeorgeStyle = `opacity: 1; bottom: 0; height: 90%; left: 2rem;`
+            GeorgeStyle = `opacity: 1; bottom: 0; height: 90%; left: 2rem;`;
             backImage = Hotelroom as string;
             backStyle = `opacity: 1`;
         } else if (gd(current).id === "start32") {
@@ -414,6 +414,23 @@
             if (!isQuick) await sleep(500);
             GeorgeImage = GeorgeNoall as string;
             GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start40") {
+            AndreyStyle = `opacity: 0 bottom: 0; right: 2rem; height: 90%;`;
+            if (!isQuick) await sleep(500);
+            AndreyImage = AndreyNohand as string;
+            AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start41") {
+            GeorgeStyle = `opacity: 0 bottom: 0; left: 2rem; height: 90%;`;
+            if (!isQuick) await sleep(500);
+            GeorgeImage = GeorgeNovest as string;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start41") {
+            backImage = Gameroom as string;
+            backStyle = `opacity: 1`;
+            GeorgeImage = GeorgeAll as string;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%;`;
+            AndreyImage = AndreyAll as string;
+            AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
         } else if (gd(current).id === "writing") {
             if (!isQuick) writing.play();
         } else if (gd(current).id === "camera") {
@@ -436,12 +453,17 @@
         } else if (gd(current).id === "hintmaze") {
             if (!isQuick)
                 showhint(
-                    "以下为走迷宫环节，可能需要试错很多次，走到特殊路径则触发 bad ending，请存档~<br>为了方便以对话框形式进行，角色的面朝向永远面向前方，前后左右将等于你键盘上的前后左右键！",
+                    "以下为走迷宫环节，可能需要试错很多次，走到特殊路径则触发 bad ending，请存档~<br>为了方便以对话框形式进行，角色的面朝向永远面向前方，上下左右将等于你键盘上的前后左右键！",
                 );
         } else if (gd(current).id === "hintgo") {
             if (!isQuick)
                 showhint(
                     "以下为分支选项，你有很多个场景可以选择！你可以在此处存档，并体验不同场景的不同剧情！",
+                );
+        } else if (gd(current).id === "hintplan") {
+            if (!isQuick)
+                showhint(
+                    "下列开始定义作战计划，这次计划可能会影响到下一章节，如果你想体验下个章节的不同分支，请存档~<br>以下可能会分出大约8种不同的分支，请酌情考虑。",
                 );
         }
     }
@@ -651,10 +673,11 @@
         //         break;
         //     }
         // }
-        await sleep(50);
-        for (let i = 0; i < 200; i++) {
-            dialogDom.scrollTop += 5;
-            await sleep(5);
+        await sleep(100);
+        for (let i = 50; i < 100; i++) {
+            const n = Math.min(i, 150 - i);
+            dialogDom.scrollTop += n / 75 * 4;
+            await sleep(n / 10);
         }
         // dialogDom.scrollTop = dialogDom.scrollHeight + 200;
         // exitText = false;
@@ -756,10 +779,11 @@
             });
             dialogDom.scrollTop = dialogDom.scrollHeight + 200;
         }
-        await sleep(50);
-        for (let i = 0; i < 200; i++) {
-            dialogDom.scrollTop += 5;
-            await sleep(5);
+        await sleep(100);
+        for (let i = 50; i < 100; i++) {
+            const n = Math.min(i, 150 - i);
+            dialogDom.scrollTop += n / 75 * 4;
+            await sleep(n / 10);
         }
     }
     function spaceDown(e: KeyboardEvent) {
@@ -1033,13 +1057,12 @@
                             {@html replaceCurrentText(item.text)}
                         </div>
                     {/each}
-                </div>
-                <!-- 选项区域 -->
-                <div class="relative w-full h-[35vh]">
+                    <!-- </div> -->
+                    <!-- 选项区域 -->
+                    <!-- <div class="relative w-full h-[35vh]"> -->
                     {#if gd(gc()).type === "choice"}
                         <div
-                            transition:fade={{ duration: 400 }}
-                            class="absolute top-0 left-0 flex flex-col w-full h-full p-2.5 overflow-y-auto gap-3"
+                            class="flex shrink-0 flex-col w-full h-[35vh] p-2.5 overflow-y-auto gap-3"
                         >
                             {#each gd(gc()).choice as choice, index}
                                 <button
@@ -1078,8 +1101,7 @@
                         </div>
                     {:else}
                         <div
-                            transition:fade={{ duration: 400 }}
-                            class="absolute top-0 left-0 flex shrink-0 h-[10vh] p-2.5 w-full items-center justify-center"
+                            class="flex shrink-0 h-[35vh] flex-col py-2.5 w-full items-center"
                         >
                             <button
                                 class="zwtext break-all border-none text-left outline-none px-2.5 w-full h-auto py-1 shrink-0 bg-[#FFF81D] text-black cursor-pointer
@@ -1092,7 +1114,6 @@
                                 }}>继续</button
                             >
                         </div>
-                        <div class="flex-1"></div>
                     {/if}
                 </div>
             </div>
