@@ -15,8 +15,14 @@
     let o4 = $state(false);
     let o5 = $state(false);
     let o6 = $state(false);
-    let isStart = $state<number>(-1);
+    import Jingzhang from "../assets/sounds/mp3/紧张.ogg";
+    const jingzhang = new Audio(Jingzhang);
+    let isStart = $state(-1);
     onMount(async () => {
+        jingzhang.volume = 0.8;
+        jingzhang.currentTime = 0;
+        jingzhang.loop = true;
+        jingzhang.play();
         if ($mounted) {
             isStart = 0;
             o1 = true;
@@ -29,7 +35,7 @@
             return;
         }
         mounted.set(true);
-        init();
+        await init();
         o1 = true;
         await sleep(1200);
         o2 = true;
@@ -119,6 +125,7 @@
                                                     `save${index + 1}`
                                                 ],
                                             );
+                                            jingzhang.pause();
                                             router.push("/saves");
                                         }
                                     }}
@@ -160,6 +167,7 @@
                                     [`branch${i + 1}`]: "",
                                 });
                             }
+                            jingzhang.pause();
                             router.push("/saves");
                             // isStart = 2;
                         }}>新游戏</button

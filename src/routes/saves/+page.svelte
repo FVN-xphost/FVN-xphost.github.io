@@ -15,6 +15,7 @@
     import { save, unlockGallery } from "../../utils/backend-tauri";
     import MyInputName from "./MyInputName.svelte";
     import "../../components/input/MyCustomComponent";
+    import MyStarBack from "../../components/svelte/MyStarBack.svelte";
     // 控制主屏幕显示。
     let showMainScreen = $state(false);
     // 控制 空格键 锁定
@@ -190,6 +191,8 @@
     import Overworld from "../../assets/scene/overworld.jpg";
     // CG
     import G_Shower from "../../assets/gallery/shower.jpg";
+    import G_Photo1 from "../../assets/gallery/photo1.jpg";
+    import G_Photo2 from "../../assets/gallery/photo2.jpg";
     // 立绘资源
     import AndreyAll from "../../assets/illustration/andrey_all.png";
     import AndreyNocloth from "../../assets/illustration/andrey_nocloth.png";
@@ -222,8 +225,15 @@
     import Openbox from "../../assets/sounds/ogg/openbox.ogg";
     const openbox = new Audio(Openbox);
     import Explode from "../../assets/sounds/ogg/explode.ogg";
-    import MyStarBack from "../../components/svelte/MyStarBack.svelte";
     const explode = new Audio(Explode);
+    import ShuHuan from "../../assets/sounds/mp3/舒缓.ogg";
+    const shuhuan = new Audio(ShuHuan);
+    import Baizao from "../../assets/sounds/mp3/电台白噪声.ogg";
+    const baizao = new Audio(Baizao);
+    import YueHui from "../../assets/sounds/mp3/约会.ogg";
+    const yuehui = new Audio(YueHui);
+    import Xiju from "../../assets/sounds/mp3/喜剧.ogg";
+    const xiju = new Audio(Xiju);
     async function doStyle(current: number, isQuick: boolean = false) {
         if (current === 0) {
             backStyle = `opacity: 0`;
@@ -234,16 +244,22 @@
             GeorgeImage = "";
             AndreyStyle = `opacity: 0; bottom: 0; right: 2rem; height: 90%`;
             AndreyImage = "";
+            baizao.loop = true;
+            baizao.volume = 0.3;
+            baizao.currentTime = 0;
+            baizao.play();
         }
         if (gd(current).id === "start1") {
             backImage = Workplace as string;
             backStyle = `opacity: 1;`;
         } else if (gd(current).id === "start2") {
-            GeorgeImage = GeorgeAll;
+            GeorgeImage = GeorgeNocoat;
             GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%`;
         } else if (gd(current).id === "start3") {
             backStyle = `opacity: 0`;
             if (!isQuick) await sleep(500);
+            GeorgeImage = GeorgeNocoat;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%`;
             backImage = Hallway;
             backStyle = `opacity: 1`;
         } else if (gd(current).id === "start4") {
@@ -426,7 +442,7 @@
             if (!isQuick) await sleep(500);
             backImage = G_Shower as string;
             backStyle = `opacity: 1`;
-            await ug(2);
+            await ug(3);
         } else if (gd(current).id === "cgrshower") {
             backStyle = `opacity: 0`;
             if (!isQuick) await sleep(500);
@@ -498,8 +514,19 @@
             backStyle = `opacity: 1`;
         } else if (gd(current).id === "writing") {
             if (!isQuick) writing.play();
-        } else if (gd(current).id === "camera") {
+        } else if (gd(current).id === "camera1") {
+            backStyle = `opacity: 0`;
+            GeorgeStyle = "opacity: 0; bottom: 0; left: 2rem; height: 90%;"
+            if (!isQuick) await sleep(500);
             if (!isQuick) camera.play();
+            backImage = G_Photo2 as string;
+            backStyle = `opacity: 1`;
+            await ug(2);
+        } else if (gd(current).id === "camera2") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) camera.play();
+            backImage = G_Photo1 as string;
+            backStyle = `opacity: 1`;
         } else if (gd(current).id === "collapse") {
             if (!isQuick) collapse.play();
         } else if (gd(current).id === "machine") {
@@ -669,7 +696,6 @@
         //     dialogDom.scrollTop = dialogDom.scrollHeight + 200;
         //     return;
         // }
-        console.log(getSaveInfo("branch40"));
         if (gd(gc()).message === undefined) return;
         let nn = nextOne(gc(), plus);
         let n = nn[0];
@@ -749,7 +775,7 @@
         //         break;
         //     }
         // }
-        await sleep(100);
+        await sleep(200);
         for (let i = 50; i < 100; i++) {
             const n = Math.min(i, 150 - i);
             dialogDom.scrollTop += n / 75 * 4;
@@ -799,6 +825,7 @@
         setc(prevOne(gc()));
         historyFile.pop();
     }
+    // 快进
     async function quick() {
         quickCurrent = !quickCurrent;
         if (!quickCurrent) return;
@@ -855,7 +882,7 @@
             });
             dialogDom.scrollTop = dialogDom.scrollHeight + 200;
         }
-        await sleep(100);
+        await sleep(200);
         for (let i = 50; i < 100; i++) {
             const n = Math.min(i, 150 - i);
             dialogDom.scrollTop += n / 75 * 4;

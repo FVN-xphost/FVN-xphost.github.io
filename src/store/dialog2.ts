@@ -361,11 +361,11 @@ export const dialogChapter0 = readable<DialogInterface[]>([
   Aside("一张纸被递了过来，你潦草地签好了名字。", [], "writing"),
   Admin("看镜头，看这里。"),
   Aside("他按动了某处开关，一个照相机从边缘升上来。"),
-  George("还要拍照？", [], "camera"),
+  George("还要拍照？", [], "camera1"),
   // 闪光声，快门声
   Admin("别说话，重拍。"),
   // 闪光声，快门声
-  Admin("好了。出门左拐走到头，看到两扇大门推开进去。", [], "camera"),
+  Admin("好了。出门左拐走到头，看到两扇大门推开进去。", [], "camera2"),
   // 切换场景：走廊
   Aside("走廊像一条苍白的喉咙。", [], "start3"),
   // 托尼走上来

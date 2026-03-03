@@ -3,6 +3,7 @@
     import { sleep } from "../../utils/all";
     import { onMount } from "svelte";
     import { router } from "../../utils/all";
+    import MyStarBack from "../../components/svelte/MyStarBack.svelte";
     // 立绘资源
     import AndreyAll from "../../assets/illustration/andrey_all.png";
     import AndreyNohand from "../../assets/illustration/andrey_nohand.png";
@@ -21,13 +22,17 @@
     // CG 资源
     import Book from "../../assets/gallery/book.jpg";
     import Shower from "../../assets/gallery/shower.jpg";
-    import MyStarBack from "../../components/svelte/MyStarBack.svelte";
+    import Photo1 from "../../assets/gallery/photo1.jpg";
+    import Photo2 from "../../assets/gallery/photo2.jpg";
     let o1 = $state(false);
     let cg = $state(0);
     let gs = $state(0);
     const galleryLock = [
         {
             images: [Book],
+        },
+        {
+            images: [Photo1, Photo2],
         },
         {
             images: [Shower],
