@@ -9,11 +9,11 @@
         dialogChapter2,
         dialogChapter3,
         dialogChapter4,
-    } from "../../store/dialog";
+        dialogChapter5,
+    } from "../../store/dialog2";
     import { sleep, router, branchCount } from "../../utils/all";
     import { save, unlockGallery } from "../../utils/backend-tauri";
     import MyInputName from "./MyInputName.svelte";
-    import "../../components/input/MyStarBack";
     import "../../components/input/MyCustomComponent";
     // 控制主屏幕显示。
     let showMainScreen = $state(false);
@@ -85,6 +85,7 @@
             $dialogChapter2,
             $dialogChapter3,
             $dialogChapter4,
+            $dialogChapter5
         ][chapterNum];
     }
     function gd(index: number): any {
@@ -186,6 +187,9 @@
     import Hotelroom from "../../assets/scene/hotelroom.jpg";
     import Bridge from "../../assets/scene/bridge.jpg";
     import Therma from "../../assets/scene/therma.jpg";
+    import Overworld from "../../assets/scene/overworld.jpg";
+    // CG
+    import G_Shower from "../../assets/gallery/shower.jpg";
     // 立绘资源
     import AndreyAll from "../../assets/illustration/andrey_all.png";
     import AndreyNocloth from "../../assets/illustration/andrey_nocloth.png";
@@ -218,6 +222,7 @@
     import Openbox from "../../assets/sounds/ogg/openbox.ogg";
     const openbox = new Audio(Openbox);
     import Explode from "../../assets/sounds/ogg/explode.ogg";
+    import MyStarBack from "../../components/svelte/MyStarBack.svelte";
     const explode = new Audio(Explode);
     async function doStyle(current: number, isQuick: boolean = false) {
         if (current === 0) {
@@ -405,22 +410,39 @@
             GeorgeImage = GeorgeNocoat as string;
             GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%;`;
         } else if (gd(current).id === "start38") {
-            AndreyStyle = `opacity: 0 bottom: 0; right: 2rem; height: 90%;`;
+            AndreyStyle = `opacity: 0; bottom: 0; right: 2rem; height: 90%;`;
             if (!isQuick) await sleep(500);
             AndreyImage = AndreyNocloth as string;
             AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
         } else if (gd(current).id === "start39") {
-            GeorgeStyle = `opacity: 0 bottom: 0; left: 2rem; height: 90%;`;
+            GeorgeStyle = `opacity: 0; bottom: 0; left: 2rem; height: 90%;`;
             if (!isQuick) await sleep(500);
             GeorgeImage = GeorgeNoall as string;
             GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%;`;
+        } else if (gd(current).id === "cgshower") {
+            AndreyStyle = `opacity: 0; bottom: 0; right: 2rem; height: 90%;`;
+            GeorgeStyle = `opacity: 0; bottom: 0; left: 2rem; height: 90%;`;
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = G_Shower as string;
+            backStyle = `opacity: 1`;
+            await ug(2);
+        } else if (gd(current).id === "cgrshower") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Therma as string;
+            backStyle = `opacity: 1`;
+            AndreyImage = AndreyNohand as string;
+            AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
+            GeorgeImage = GeorgeNoall as string;
+            GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%;`;
         } else if (gd(current).id === "start40") {
-            AndreyStyle = `opacity: 0 bottom: 0; right: 2rem; height: 90%;`;
+            AndreyStyle = `opacity: 0; bottom: 0; right: 2rem; height: 90%;`;
             if (!isQuick) await sleep(500);
             AndreyImage = AndreyNohand as string;
             AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
         } else if (gd(current).id === "start41") {
-            GeorgeStyle = `opacity: 0 bottom: 0; left: 2rem; height: 90%;`;
+            GeorgeStyle = `opacity: 0; bottom: 0; left: 2rem; height: 90%;`;
             if (!isQuick) await sleep(500);
             GeorgeImage = GeorgeNovest as string;
             GeorgeStyle = `opacity: 1; bottom: 0; left: 2rem; height: 90%;`;
@@ -432,6 +454,48 @@
         } else if (gd(current).id === "start43") {
             AndreyImage = AndreyAll as string;
             AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start44") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Kitchen as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start45") {
+            AndreyStyle = `opacity: 0; bottom: 0; right: 2rem; height: 90%;`
+        } else if (gd(current).id === "start46") {
+            backStyle = `opacity: 0;`
+            if (!isQuick) await sleep(500);
+            backImage = Spaceship as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start47") {
+            AndreyImage = AndreyAll as string;
+            AndreyStyle = `opacity: 1; bottom: 0; right: 2rem; height: 90%;`;
+        } else if (gd(current).id === "start48") {
+            backStyle = `opacity: 0`;
+            AndreyStyle = `opacity: 0; bottom: 0; right: 2rem; height: 90%;`
+            if (!isQuick) await sleep(500);
+            backImage = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10'%3E%3Crect width='16' height='10' fill='white' /%3E%3C/svg%3E`;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start49") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Overworld as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start50") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10'%3E%3Crect width='16' height='10' fill='black' /%3E%3C/svg%3E`;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start51") {
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Room as string;
+            backStyle = `opacity: 1`;
+        } else if (gd(current).id === "start52") {
+            AndreyStyle = `opacity: 0; bottom: 0; right: 2rem; height: 90%;`;
+            backStyle = `opacity: 0`;
+            if (!isQuick) await sleep(500);
+            backImage = Funeral as string;
+            backStyle = `opacity: 1`;
         } else if (gd(current).id === "writing") {
             if (!isQuick) writing.play();
         } else if (gd(current).id === "camera") {
@@ -446,7 +510,12 @@
             if (!isQuick) explode.play();
         } else if (gd(current).id === "machinestop") {
             machine.pause();
-        } else if (gd(current).id === "hintexam") {
+        } else if (gd(current).id === "hintend") {
+            if (!isQuick)
+                showhint(
+                    "以下部分情节可能会对继续剧情产生影响，你可以在此处存档~",
+                );
+        }else if (gd(current).id === "hintexam") {
             if (!isQuick)
                 showhint(
                     "以下为测验环节，会根据你在序章所看到的所有个人信息答题，答对三个即可。请存档~",
@@ -464,9 +533,14 @@
         } else if (gd(current).id === "hintplan") {
             if (!isQuick)
                 showhint(
-                    "下列开始定义作战计划，这次计划可能会影响到下一章节，如果你想体验下个章节的不同分支，请存档~<br>以下可能会分出大约8种不同的分支，请酌情考虑。",
+                    "下列开始定义作战计划，这次计划可能会影响到下一章节，如果你想体验下个章节的不同分支，请存档~<br>以下可能会分出大约4种不同的分支，请酌情考虑。",
                 );
-        }
+        } else if (gd(current).id === "hintmore") {
+            if (!isQuick)
+                showhint(
+                    "下列的选项有一个是抽奖，大概有50%概率成功。如果你想体验完整剧情，请在此处存档，下列会分出4种不同的结局！",
+                );
+        } 
     }
     // 跳转 index！
     function gotoNext(index: number): number {
@@ -595,6 +669,7 @@
         //     dialogDom.scrollTop = dialogDom.scrollHeight + 200;
         //     return;
         // }
+        console.log(getSaveInfo("branch40"));
         if (gd(gc()).message === undefined) return;
         let nn = nextOne(gc(), plus);
         let n = nn[0];
@@ -889,7 +964,7 @@
         tabindex="0"
         role="button"
     >
-        <my-star-back></my-star-back>
+        <MyStarBack></MyStarBack>
         <div
             class="w-[60vw] h-[90vh] border-y-gray-300 border-y flex items-center relative"
         >

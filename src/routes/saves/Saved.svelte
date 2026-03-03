@@ -1,8 +1,8 @@
 <script lang="ts">
+    import MyStarBack from "../../components/svelte/MyStarBack.svelte";
     import { currentSave, saveData } from "../../store/store";
     import { branchCount, saveCount, sleep } from "../../utils/all";
     import { save } from "../../utils/backend-tauri";
-    import "../../components/input/MyStarBack"
     const { result } = $props();
     let showHint = $state(false);
     function getc(index: number): any {
@@ -47,7 +47,7 @@
 </script>
 
 <div class="back bg-img-full bg-[url(/src/assets/Home/back.jpg)] fixed top-0 left-0 w-screen h-screen">
-    <my-star-back></my-star-back>
+    <MyStarBack></MyStarBack>
     <div
         class="z-10 absolute top-0 left-0 bottom-0 right-0 m-auto w-[40vw] h-[40vh] flex flex-col gap-1 overflow-y-auto"
     >

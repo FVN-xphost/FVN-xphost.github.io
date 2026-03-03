@@ -4,7 +4,7 @@
     import C2 from '../../assets/title/2.png'
     import C3 from '../../assets/title/3.png'
     import C4 from '../../assets/title/4.png'
-    import C5 from '../../assets/title/4.png'
+    import C5 from '../../assets/title/5.png'
     import Mask from '../../assets/title/mask.png'
     const { chapter } = $props()
 </script>

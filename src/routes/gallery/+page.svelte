@@ -1,10 +1,8 @@
 <script lang="ts">
     import { fade } from "svelte/transition";
     import { sleep } from "../../utils/all";
-    import { saveData } from "../../store/store";
     import { onMount } from "svelte";
     import { router } from "../../utils/all";
-    import "../../components/input/MyStarBack";
     // 立绘资源
     import AndreyAll from "../../assets/illustration/andrey_all.png";
     import AndreyNohand from "../../assets/illustration/andrey_nohand.png";
@@ -23,6 +21,7 @@
     // CG 资源
     import Book from "../../assets/gallery/book.jpg";
     import Shower from "../../assets/gallery/shower.jpg";
+    import MyStarBack from "../../components/svelte/MyStarBack.svelte";
     let o1 = $state(false);
     let cg = $state(0);
     let gs = $state(0);
@@ -157,7 +156,7 @@
         in:fade={{ duration: 1500 }}
         class="back bg-img-full bg-[url(/src/assets/Home/back.jpg)] fixed overflow-hidden left-0 top-0 w-screen h-screen flex"
     >
-        <my-star-back></my-star-back>
+        <MyStarBack></MyStarBack>
         <div
             class="shrink-0 w-[180px] h-full flex flex-col items-center justify-center z-10 px-[20px] gap-[40px] py-[60px]"
         >

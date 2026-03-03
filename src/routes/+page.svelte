@@ -8,7 +8,7 @@
     import { fade } from "svelte/transition";
     import { router } from "../utils/all";
     import titlejpg from "../assets/Home/title.jpg";
-    import "../components/input/MyStarBack";
+    import MyStarBack from "../components/svelte/MyStarBack.svelte";
     let o1 = $state(false);
     let o2 = $state(false);
     let o3 = $state(false);
@@ -61,7 +61,7 @@
         tabindex="0"
         role="button"
     >
-        <my-star-back></my-star-back>
+        <MyStarBack></MyStarBack>
         {#if o2}
             <div
                 in:fade={{ duration: 1500 }}

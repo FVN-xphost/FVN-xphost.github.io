@@ -4,8 +4,8 @@
     import { fade } from "svelte/transition";
     import { sleep } from "../../utils/all";
     import { onMount } from "svelte";
+    import MyStarBack from "../../components/svelte/MyStarBack.svelte";
     const { result = (res: string) => {} } = $props();
-    import "../../components/input/MyStarBack";
     let resultValue = "";
     let o0 = $state(false);
     let o1 = $state(false);
@@ -89,7 +89,7 @@
 <div
     class="back bg-img-full bg-[url(/src/assets/Home/back.jpg)] fixed top-0 left-0 w-screen h-screen bg-black z-999"
 >
-    <my-star-back></my-star-back>
+    <MyStarBack></MyStarBack>
     <div
         class="absolute left-0 w-screen transition-[top] duration-1000 h-[20vh] bg-[#FFF81D] z-15 flex flex-col items-center my-auto top-0 bottom-0
         before:content-['回想你的名字（默认：乔治）'] before:text-[2vh] before:text-[#bfbfbf] before:absolute before:top-[-4vh] before:-left-[35vh] before:w-fit before:mx-auto before:right-0"
