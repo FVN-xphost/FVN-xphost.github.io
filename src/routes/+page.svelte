@@ -9,6 +9,7 @@
     import { router } from "../utils/all";
     import titlejpg from "../assets/Home/title.jpg";
     import MyStarBack from "../components/svelte/MyStarBack.svelte";
+    import Contributor from "../assets/Home/contributor.jpg";
     let o1 = $state(false);
     let o2 = $state(false);
     let o3 = $state(false);
@@ -201,7 +202,8 @@
                     class="absolute border border-[#FFF81D] border-solid p-1 bottom-[10vh] h-[30vh] left-[65vw] right-0 w-[20vw] mx-auto
                     before:content-['制作成员_/'] before:absolute before:text-[0.9rem] before:text-[#00FFE5] before:-top-8 before:left-0"
                 >
-                    <div
+                    <img src={Contributor} alt="鸣谢人员" class="w-full h-full" />
+                    <!-- <div
                         class="w-full h-full flex p-2 flex-col gap-1 bg-[#FFFFFF1C] transition-opacity duration-400 *:shrink-0 *:text-white overflow-auto"
                     >
                         <div>程序：</div>
@@ -221,7 +223,7 @@
                         <div class="ml-4">音效/背景</div>
                         <div class="ml-8">pixabay.com</div>
                         <div>本文所有 背景图片/音效 内容均出自于pixabay，</div>
-                    </div>
+                    </div> -->
                 </div>
             {:else if isStart === 0}
                 <div
