@@ -853,7 +853,7 @@
                 showMainScreen = false;
                 await sleep(500);
                 chapterNum = gd(n).to;
-                setSaveInfo("saved", gd(n).to);
+                setSaveInfo("saved", chapterNum);
                 showChapter = true;
                 await sleep(5000);
                 historyFile = [];
